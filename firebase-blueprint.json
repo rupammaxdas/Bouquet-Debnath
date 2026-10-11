@@ -1,0 +1,100 @@
+{
+  "entities": {
+    "product": {
+      "title": "Product",
+      "description": "A floral arrangement or bouquet available for purchase.",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string", "maxLength": 100 },
+        "category": { "type": "string", "enum": ["Romantic", "Seasonal", "Sympathy", "Exotic"] },
+        "price": { "type": "string", "maxLength": 20 },
+        "image": { "type": "string", "maxLength": 500 },
+        "description": { "type": "string", "maxLength": 1000 },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "category", "price", "image"]
+    },
+    "admin": {
+      "title": "Admin",
+      "description": "A user with administrative privileges.",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email" },
+        "role": { "type": "string", "enum": ["admin"] }
+      },
+      "required": ["email", "role"]
+    },
+    "wishlistItem": {
+      "title": "Wishlist Item",
+      "description": "A product saved by a user.",
+      "type": "object",
+      "properties": {
+        "productId": { "type": "string", "maxLength": 100 },
+        "name": { "type": "string", "maxLength": 100 },
+        "price": { "type": "string", "maxLength": 20 },
+        "image": { "type": "string", "maxLength": 500 },
+        "addedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["productId", "name", "price", "image", "addedAt"]
+    },
+    "cartItem": {
+      "title": "Cart Item",
+      "description": "An item in the user's shopping bag.",
+      "type": "object",
+      "properties": {
+        "id": { "type": "string", "maxLength": 100 },
+        "name": { "type": "string", "maxLength": 100 },
+        "price": { "type": "number" },
+        "quantity": { "type": "number" },
+        "image": { "type": "string", "maxLength": 500 },
+        "type": { "type": "string", "enum": ["curated", "bespoke"] },
+        "details": { "type": "string", "maxLength": 1000 },
+        "addedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["id", "name", "price", "quantity", "image", "type", "addedAt"]
+    },
+    "order": {
+      "title": "Order",
+      "description": "A customer flower order with delivery and payment details.",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string", "maxLength": 128 },
+        "userEmail": { "type": "string", "format": "email" },
+        "items": { "type": "string", "maxLength": 5000 },
+        "totalAmount": { "type": "number" },
+        "recipientName": { "type": "string", "maxLength": 100 },
+        "recipientPhone": { "type": "string", "maxLength": 20 },
+        "deliveryAddress": { "type": "string", "maxLength": 500 },
+        "deliveryDate": { "type": "string", "maxLength": 50 },
+        "deliverySlot": { "type": "string", "maxLength": 50 },
+        "cardMessage": { "type": "string", "maxLength": 500 },
+        "paymentMethod": { "type": "string", "maxLength": 50 },
+        "status": { "type": "string", "enum": ["placed", "crafting", "out_for_delivery", "delivered", "cancelled"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "totalAmount", "recipientName", "recipientPhone", "deliveryAddress", "deliveryDate", "status", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/products/{productId}": {
+      "schema": "product",
+      "description": "Store for floral products."
+    },
+    "/admins/{adminId}": {
+      "schema": "admin",
+      "description": "Restricted list of administrators."
+    },
+    "/users/{userId}/wishlist/{productId}": {
+      "schema": "wishlistItem",
+      "description": "User's saved products."
+    },
+    "/users/{userId}/cart/{itemId}": {
+      "schema": "cartItem",
+      "description": "User's active shopping bag."
+    },
+    "/orders/{orderId}": {
+      "schema": "order",
+      "description": "Customer orders."
+    }
+  }
+}

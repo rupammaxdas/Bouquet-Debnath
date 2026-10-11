@@ -1,0 +1,582 @@
+/**
+ * @license
+ * SPDX-License-Identifier: Apache-2.0
+ */
+
+import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  X, 
+  Check, 
+  MapPin, 
+  Calendar, 
+  Clock, 
+  CreditCard, 
+  MessageSquare, 
+  ArrowRight, 
+  ChevronLeft, 
+  Truck, 
+  ShieldCheck, 
+  Sparkles,
+  Loader2,
+  PackageCheck
+} from "lucide-react";
+import { useCart } from "../lib/CartContext";
+import { auth, db, login, handleFirestoreError, OperationType } from "../lib/firebase";
+import { doc, setDoc } from "firebase/firestore";
+
+interface CheckoutModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  onOrderSuccess: (orderId: string) => void;
+}
+
+const OCCASIONS = [
+  "Romantic Love",
+  "Anniversary",
+  "Birthday Celebration",
+  "Gratitude & Thanks",
+  "Congratulations",
+  "Sympathy & Comfort",
+  "Just Because"
+];
+
+const TIME_SLOTS = [
+  { id: "morning", label: "Morning", time: "09:00 AM – 01:00 PM" },
+  { id: "afternoon", label: "Afternoon", time: "01:00 PM – 05:00 PM" },
+  { id: "evening", label: "Evening Express", time: "05:00 PM – 09:00 PM" }
+];
+
+export function CheckoutModal({ isOpen, onClose, onOrderSuccess }: CheckoutModalProps) {
+  const { cart, finalTotal, subtotal, discount, deliveryFee, clearCart } = useCart();
+  
+  const [step, setStep] = useState<1 | 2 | 3>(1);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [createdOrderId, setCreatedOrderId] = useState<string | null>(null);
+
+  // Form states
+  const [recipientName, setRecipientName] = useState("");
+  const [recipientPhone, setRecipientPhone] = useState("");
+  const [senderName, setSenderName] = useState(auth.currentUser?.displayName || "");
+  const [deliveryAddress, setDeliveryAddress] = useState("");
+  const [city, setCity] = useState("Kolkata");
+  const [pincode, setPincode] = useState("700001");
+  const [deliveryDate, setDeliveryDate] = useState(() => {
+    const today = new Date();
+    return today.toISOString().split('T')[0];
+  });
+  const [deliverySlot, setDeliverySlot] = useState("morning");
+  const [occasion, setOccasion] = useState(OCCASIONS[0]);
+  const [cardMessage, setCardMessage] = useState(
+    "Wishing you eternal joy and beauty. May these fresh blooms brighten your day!"
+  );
+  const [paymentMethod, setPaymentMethod] = useState<"upi" | "card" | "netbanking" | "cod">("upi");
+  const [upiId, setUpiId] = useState("");
+
+  const handleNextStep = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (step < 3) {
+      setStep((prev) => (prev + 1) as 1 | 2 | 3);
+    }
+  };
+
+  const handlePlaceOrder = async () => {
+    // If not logged in, prompt sign in first
+    if (!auth.currentUser) {
+      try {
+        await login();
+      } catch {
+        return;
+      }
+    }
+
+    const user = auth.currentUser;
+    if (!user) return;
+
+    setIsSubmitting(true);
+    const orderNum = `DNF-${Math.floor(100000 + Math.random() * 900000)}`;
+    const fullAddress = `${deliveryAddress}, ${city} - ${pincode}`;
+    const now = new Date().toISOString();
+
+    const orderPayload = {
+      userId: user.uid,
+      userEmail: user.email || "",
+      items: JSON.stringify(cart),
+      totalAmount: finalTotal,
+      subtotal,
+      discount,
+      deliveryFee,
+      recipientName,
+      recipientPhone,
+      senderName,
+      deliveryAddress: fullAddress,
+      deliveryDate,
+      deliverySlot,
+      occasion,
+      cardMessage,
+      paymentMethod,
+      status: "placed",
+      createdAt: now,
+    };
+
+    try {
+      await setDoc(doc(db, "orders", orderNum), orderPayload);
+      await clearCart();
+      setCreatedOrderId(orderNum);
+      setIsSubmitting(false);
+    } catch (err) {
+      console.error("Order placement failed:", err);
+      handleFirestoreError(err, OperationType.WRITE, `orders/${orderNum}`);
+      setIsSubmitting(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 z-[130] flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+      {/* Backdrop */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+        className="fixed inset-0 bg-stone-950/60 backdrop-blur-md"
+      />
+
+      {/* Modal Dialog */}
+      <motion.div
+        initial={{ opacity: 0, scale: 0.95, y: 20 }}
+        animate={{ opacity: 1, scale: 1, y: 0 }}
+        exit={{ opacity: 0, scale: 0.95, y: 20 }}
+        className="relative w-full max-w-2xl bg-white rounded-3xl shadow-2xl overflow-hidden z-10 my-auto flex flex-col max-h-[90vh]"
+      >
+        {/* SUCCESS CONFIRMATION STATE */}
+        {createdOrderId ? (
+          <div className="p-8 sm:p-12 text-center flex flex-col items-center justify-center space-y-6 overflow-y-auto">
+            <div className="w-20 h-20 rounded-full bg-emerald-50 text-emerald-600 flex items-center justify-center border-2 border-emerald-200">
+              <PackageCheck size={40} className="animate-bounce" />
+            </div>
+
+            <div>
+              <span className="text-xs uppercase font-mono tracking-widest text-emerald-700 bg-emerald-100/60 px-3 py-1 rounded-full font-bold">
+                Order Confirmed
+              </span>
+              <h2 className="text-3xl font-display font-medium text-stone-900 mt-3">
+                Thank You For Your Order
+              </h2>
+              <p className="text-stone-500 text-xs sm:text-sm mt-1 max-w-md mx-auto">
+                Our master florists have received your bouquet specification and are hand-selecting the freshest stems.
+              </p>
+            </div>
+
+            {/* Receipt Summary Card */}
+            <div className="w-full max-w-md p-5 bg-stone-50 rounded-2xl border border-stone-200 text-left space-y-3">
+              <div className="flex justify-between items-baseline border-b border-stone-200 pb-2.5">
+                <span className="text-xs text-stone-500 font-semibold uppercase tracking-wider">Order ID</span>
+                <span className="font-mono text-sm font-bold text-stone-900">{createdOrderId}</span>
+              </div>
+              <div className="flex justify-between text-xs text-stone-600">
+                <span>Recipient:</span>
+                <strong className="text-stone-900">{recipientName}</strong>
+              </div>
+              <div className="flex justify-between text-xs text-stone-600">
+                <span>Hand Delivery:</span>
+                <strong className="text-stone-900">{deliveryDate} ({deliverySlot})</strong>
+              </div>
+              <div className="flex justify-between text-xs text-stone-600">
+                <span>Delivery Address:</span>
+                <span className="text-stone-900 text-right truncate max-w-[200px] font-medium">{deliveryAddress}, {city}</span>
+              </div>
+              <div className="flex justify-between items-baseline border-t border-stone-200 pt-2.5 text-sm font-semibold text-stone-900">
+                <span>Paid via {paymentMethod.toUpperCase()}</span>
+                <span className="text-base font-bold font-mono">₹{finalTotal.toLocaleString()}</span>
+              </div>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
+              <button
+                onClick={() => {
+                  onClose();
+                  onOrderSuccess(createdOrderId);
+                }}
+                className="flex-1 py-3.5 px-6 rounded-full bg-stone-900 text-white text-xs font-bold uppercase tracking-wider hover:bg-stone-800 transition-colors shadow-md"
+              >
+                Track Live Order
+              </button>
+              <button
+                onClick={onClose}
+                className="flex-1 py-3.5 px-6 rounded-full bg-white border border-stone-200 text-stone-800 text-xs font-bold uppercase tracking-wider hover:bg-stone-50 transition-colors"
+              >
+                Continue Browsing
+              </button>
+            </div>
+          </div>
+        ) : (
+          <>
+            {/* Header with step indicators */}
+            <div className="p-6 bg-stone-50 border-b border-stone-200 flex items-center justify-between">
+              <div>
+                <span className="text-[10px] font-bold uppercase tracking-widest text-stone-400 block">
+                  Debnath Luxury Checkout • Step {step} of 3
+                </span>
+                <h3 className="text-xl font-display font-medium text-stone-900 mt-0.5">
+                  {step === 1 && "Recipient & Delivery Details"}
+                  {step === 2 && "Handwritten Calligraphy Card"}
+                  {step === 3 && "Secure Payment & Finalize"}
+                </h3>
+              </div>
+              <button
+                onClick={onClose}
+                className="p-2 text-stone-400 hover:text-stone-900 hover:bg-stone-200/60 rounded-full transition-colors"
+              >
+                <X size={18} />
+              </button>
+            </div>
+
+            {/* Stepper Progress Bar */}
+            <div className="flex h-1 bg-stone-100">
+              <div 
+                className="bg-stone-900 transition-all duration-300"
+                style={{ width: `${(step / 3) * 100}%` }}
+              />
+            </div>
+
+            {/* Modal Body */}
+            <div className="p-6 sm:p-8 overflow-y-auto flex-1">
+              
+              {/* STEP 1: Delivery Details */}
+              {step === 1 && (
+                <form id="step-1-form" onSubmit={handleNextStep} className="space-y-5">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs font-semibold text-stone-700 block mb-1.5">
+                        Recipient Full Name *
+                      </label>
+                      <input
+                        type="text"
+                        required
+                        value={recipientName}
+                        onChange={(e) => setRecipientName(e.target.value)}
+                        placeholder="e.g. Trisha Debnath"
+                        className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs focus:outline-none focus:border-stone-900 focus:bg-white transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-semibold text-stone-700 block mb-1.5">
+                        Recipient Phone Number *
+                      </label>
+                      <input
+                        type="tel"
+                        required
+                        value={recipientPhone}
+                        onChange={(e) => setRecipientPhone(e.target.value)}
+                        placeholder="+91 98765 43210"
+                        className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs focus:outline-none focus:border-stone-900 focus:bg-white transition-all font-mono"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-semibold text-stone-700 block mb-1.5">
+                      Delivery Street Address & Landmark *
+                    </label>
+                    <textarea
+                      required
+                      rows={2}
+                      value={deliveryAddress}
+                      onChange={(e) => setDeliveryAddress(e.target.value)}
+                      placeholder="Apartment, suite, landmark, street address"
+                      className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs focus:outline-none focus:border-stone-900 focus:bg-white transition-all resize-none"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-xs font-semibold text-stone-700 block mb-1.5">City</label>
+                      <input
+                        type="text"
+                        required
+                        value={city}
+                        onChange={(e) => setCity(e.target.value)}
+                        className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs focus:outline-none focus:border-stone-900 focus:bg-white transition-all"
+                      />
+                    </div>
+                    <div>
+                      <label className="text-xs font-semibold text-stone-700 block mb-1.5">PIN Code</label>
+                      <input
+                        type="text"
+                        required
+                        value={pincode}
+                        onChange={(e) => setPincode(e.target.value)}
+                        className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs focus:outline-none focus:border-stone-900 focus:bg-white transition-all font-mono"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Delivery Date & Time Slot */}
+                  <div className="pt-2 border-t border-stone-100 space-y-3">
+                    <label className="text-xs font-semibold text-stone-900 uppercase tracking-wider block">
+                      Preferred Delivery Schedule
+                    </label>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                      <div>
+                        <span className="text-[11px] text-stone-500 block mb-1">Select Date</span>
+                        <input
+                          type="date"
+                          required
+                          value={deliveryDate}
+                          onChange={(e) => setDeliveryDate(e.target.value)}
+                          className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs focus:outline-none focus:border-stone-900 focus:bg-white transition-all font-mono"
+                        />
+                      </div>
+                      <div>
+                        <span className="text-[11px] text-stone-500 block mb-1">Time Slot</span>
+                        <select
+                          value={deliverySlot}
+                          onChange={(e) => setDeliverySlot(e.target.value)}
+                          className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs focus:outline-none focus:border-stone-900 focus:bg-white transition-all"
+                        >
+                          {TIME_SLOTS.map((slot) => (
+                            <option key={slot.id} value={slot.id}>
+                              {slot.label} ({slot.time})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+                </form>
+              )}
+
+              {/* STEP 2: Card Message & Occasion */}
+              {step === 2 && (
+                <form id="step-2-form" onSubmit={handleNextStep} className="space-y-6">
+                  <div>
+                    <label className="text-xs font-semibold text-stone-700 block mb-2">
+                      Occasion
+                    </label>
+                    <div className="flex flex-wrap gap-2">
+                      {OCCASIONS.map((occ) => (
+                        <button
+                          key={occ}
+                          type="button"
+                          onClick={() => setOccasion(occ)}
+                          className={`px-3 py-1.5 rounded-full text-xs font-medium transition-all ${
+                            occasion === occ
+                              ? "bg-stone-900 text-white shadow-xs"
+                              : "bg-stone-100 text-stone-600 hover:bg-stone-200"
+                          }`}
+                        >
+                          {occ}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div>
+                    <div className="flex items-center justify-between mb-1.5">
+                      <label className="text-xs font-semibold text-stone-700">
+                        Complimentary Card Message
+                      </label>
+                      <span className="text-[10px] text-stone-400">{cardMessage.length}/300 characters</span>
+                    </div>
+                    <textarea
+                      rows={3}
+                      maxLength={300}
+                      value={cardMessage}
+                      onChange={(e) => setCardMessage(e.target.value)}
+                      placeholder="Write your heartfelt note here..."
+                      className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs focus:outline-none focus:border-stone-900 focus:bg-white transition-all resize-none leading-relaxed"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="text-xs font-semibold text-stone-700 block mb-1.5">
+                      Sender Name (as printed on card)
+                    </label>
+                    <input
+                      type="text"
+                      value={senderName}
+                      onChange={(e) => setSenderName(e.target.value)}
+                      placeholder="Your name or Anonymous"
+                      className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs focus:outline-none focus:border-stone-900 focus:bg-white transition-all"
+                    />
+                  </div>
+
+                  {/* Calligraphy Card Live Preview */}
+                  <div className="p-5 rounded-2xl bg-amber-50/50 border border-amber-200/70 shadow-xs relative">
+                    <span className="text-[10px] uppercase font-bold tracking-widest text-amber-800 block mb-2">
+                      Florist Card Live Preview
+                    </span>
+                    <p className="font-display italic text-stone-800 text-sm leading-relaxed">
+                      "{cardMessage || 'Your message will be lovingly scripted on heavy textured linen paper.'}"
+                    </p>
+                    <p className="text-right text-xs font-display font-medium text-stone-600 mt-3">
+                      — {senderName || "With warmest regards"}
+                    </p>
+                  </div>
+                </form>
+              )}
+
+              {/* STEP 3: Payment Method */}
+              {step === 3 && (
+                <div className="space-y-6">
+                  <div>
+                    <label className="text-xs font-semibold text-stone-900 uppercase tracking-wider block mb-3">
+                      Select Payment Option
+                    </label>
+
+                    <div className="space-y-3">
+                      {/* UPI */}
+                      <label 
+                        className={`flex items-start gap-3 p-4 rounded-2xl border cursor-pointer transition-all ${
+                          paymentMethod === "upi" ? "border-stone-900 bg-stone-50 shadow-xs" : "border-stone-200 hover:border-stone-300"
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="payment"
+                          checked={paymentMethod === "upi"}
+                          onChange={() => setPaymentMethod("upi")}
+                          className="mt-1"
+                        />
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-stone-900">Instant UPI (GPay, PhonePe, Paytm)</span>
+                            <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">
+                              Fastest
+                            </span>
+                          </div>
+                          <p className="text-[11px] text-stone-500 mt-0.5">Pay seamlessly with any UPI handle or QR code</p>
+                          {paymentMethod === "upi" && (
+                            <div className="mt-3">
+                              <input
+                                type="text"
+                                value={upiId}
+                                onChange={(e) => setUpiId(e.target.value)}
+                                placeholder="username@okhdfcbank"
+                                className="w-full px-3 py-2 bg-white border border-stone-200 rounded-xl text-xs font-mono focus:outline-none focus:border-stone-900"
+                              />
+                            </div>
+                          )}
+                        </div>
+                      </label>
+
+                      {/* Card */}
+                      <label 
+                        className={`flex items-start gap-3 p-4 rounded-2xl border cursor-pointer transition-all ${
+                          paymentMethod === "card" ? "border-stone-900 bg-stone-50 shadow-xs" : "border-stone-200 hover:border-stone-300"
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="payment"
+                          checked={paymentMethod === "card"}
+                          onChange={() => setPaymentMethod("card")}
+                          className="mt-1"
+                        />
+                        <div className="flex-1">
+                          <span className="text-xs font-bold text-stone-900">Credit / Debit Card</span>
+                          <p className="text-[11px] text-stone-500 mt-0.5">Visa, Mastercard, RuPay, Amex encrypted gateway</p>
+                        </div>
+                      </label>
+
+                      {/* Cash on Delivery */}
+                      <label 
+                        className={`flex items-start gap-3 p-4 rounded-2xl border cursor-pointer transition-all ${
+                          paymentMethod === "cod" ? "border-stone-900 bg-stone-50 shadow-xs" : "border-stone-200 hover:border-stone-300"
+                        }`}
+                      >
+                        <input
+                          type="radio"
+                          name="payment"
+                          checked={paymentMethod === "cod"}
+                          onChange={() => setPaymentMethod("cod")}
+                          className="mt-1"
+                        />
+                        <div className="flex-1">
+                          <span className="text-xs font-bold text-stone-900">Pay on Hand Delivery</span>
+                          <p className="text-[11px] text-stone-500 mt-0.5">Pay via Cash or UPI when the bouquet arrives at the doorstep</p>
+                        </div>
+                      </label>
+                    </div>
+                  </div>
+
+                  {/* Summary Box */}
+                  <div className="p-4 bg-stone-50 rounded-2xl border border-stone-200 space-y-2 text-xs">
+                    <div className="flex justify-between text-stone-600">
+                      <span>Total Floral Creations</span>
+                      <span className="font-mono text-stone-900 font-semibold">{cart.length} items</span>
+                    </div>
+                    <div className="flex justify-between text-stone-600">
+                      <span>Destination</span>
+                      <span className="text-stone-900 font-medium truncate max-w-[220px]">{deliveryAddress || "Standard Address"}, {city}</span>
+                    </div>
+                    <div className="flex justify-between items-baseline pt-2 border-t border-stone-200 font-bold text-sm text-stone-900">
+                      <span>Total Payable</span>
+                      <span className="text-lg font-mono font-bold">₹{finalTotal.toLocaleString()}</span>
+                    </div>
+                  </div>
+
+                  {!auth.currentUser && (
+                    <div className="p-3 bg-amber-50 rounded-xl border border-amber-200 text-[11px] text-amber-900">
+                      💡 Clicking "Place Order" will quickly link your order with your Google Account for real-time tracking.
+                    </div>
+                  )}
+                </div>
+              )}
+
+            </div>
+
+            {/* Modal Footer Controls */}
+            <div className="p-6 bg-stone-50 border-t border-stone-200 flex items-center justify-between">
+              {step > 1 ? (
+                <button
+                  type="button"
+                  onClick={() => setStep((prev) => (prev - 1) as 1 | 2 | 3)}
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-stone-200 bg-white text-stone-700 hover:bg-stone-100 text-xs font-semibold transition-colors"
+                >
+                  <ChevronLeft size={15} />
+                  <span>Back</span>
+                </button>
+              ) : (
+                <div />
+              )}
+
+              {step < 3 ? (
+                <button
+                  type="submit"
+                  form={`step-${step}-form`}
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-stone-900 text-white text-xs font-bold uppercase tracking-wider hover:bg-stone-800 transition-all shadow-md group"
+                >
+                  <span>Continue</span>
+                  <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handlePlaceOrder}
+                  disabled={isSubmitting}
+                  className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-emerald-700 text-white text-xs font-bold uppercase tracking-wider hover:bg-emerald-800 disabled:opacity-50 transition-all shadow-lg"
+                >
+                  {isSubmitting ? (
+                    <>
+                      <Loader2 size={15} className="animate-spin" />
+                      <span>Confirming Order...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Check size={16} />
+                      <span>Place Order (₹{finalTotal.toLocaleString()})</span>
+                    </>
+                  )}
+                </button>
+              )}
+            </div>
+          </>
+        )}
+      </motion.div>
+    </div>
+  );
+}

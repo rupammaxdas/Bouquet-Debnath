@@ -1,0 +1,71 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Default deny
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // Shared Helpers
+    function isSignedIn() { return request.auth != null; }
+    function isVerified() { return isSignedIn() && request.auth.token.email_verified == true; }
+    function isAdmin() { return isVerified() && exists(/databases/$(database)/documents/admins/$(request.auth.uid)); }
+    function isValidId(id) { return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$'); }
+    function incoming() { return request.resource.data; }
+    function existing() { return resource.data; }
+
+    match /test/connection {
+      allow read: if true;
+    }
+
+    // --- Admin Collection ---
+    match /admins/{adminId} {
+      allow read: if isVerified() && request.auth.uid == adminId;
+      // Bootstrapped admin (first setup)
+      allow write: if isVerified() && request.auth.token.email == "rupammaxdas@gmail.com";
+    }
+
+    // --- Product Collection ---
+    function isValidProduct(data) {
+      return data.name is string && data.name.size() <= 100 &&
+             data.category in ['Romantic', 'Seasonal', 'Sympathy', 'Exotic'] &&
+             data.price is string && data.price.size() <= 20 &&
+             data.image is string && data.image.size() <= 500;
+    }
+
+    match /products/{productId} {
+      allow read: if true; // Publicly viewable
+      allow create: if isAdmin() && isValidProduct(incoming()) && isValidId(productId);
+      allow update: if isAdmin() && isValidProduct(incoming()) && 
+                    incoming().diff(existing()).affectedKeys().hasOnly(['name', 'category', 'price', 'image', 'description', 'updatedAt']);
+      allow delete: if isAdmin();
+    }
+
+    // --- Wishlist Collection ---
+    function isValidWishlistItem(data) {
+      return data.productId is string && data.productId.size() <= 100 &&
+             data.name is string && data.name.size() <= 100 &&
+             data.price is string && data.price.size() <= 20 &&
+             data.image is string && data.image.size() <= 500 &&
+             data.addedAt is string; // Simplified for brevity, usually check format
+    }
+
+    match /users/{userId}/wishlist/{productId} {
+      allow read, write: if isVerified() && request.auth.uid == userId;
+      allow create, update: if isValidWishlistItem(incoming()) && isValidId(productId);
+    }
+
+    // --- Cart Collection ---
+    match /users/{userId}/cart/{itemId} {
+      allow read, write: if isSignedIn() && request.auth.uid == userId;
+    }
+
+    // --- Orders Collection ---
+    match /orders/{orderId} {
+      allow create: if isSignedIn() && incoming().userId == request.auth.uid;
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+      allow update: if isAdmin();
+      allow delete: if isAdmin();
+    }
+  }
+}
