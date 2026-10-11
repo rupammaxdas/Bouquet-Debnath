@@ -82,7 +82,7 @@ export function Navbar({ onOpenOrders, searchQuery, setSearchQuery }: NavbarProp
 
         {/* Zone 2: Navigation Links */}
         <div className="hidden md:flex items-center gap-8 text-sm font-medium text-stone-600">
-          {["Collection", "Occasions", "Bespoke", "Our Story"].map((item) => (
+          {["Collection", "Bespoke", "Our Story"].map((item) => (
             <a
               key={item}
               href={`#${item.toLowerCase().replace(' ', '')}`}
@@ -255,7 +255,7 @@ export function Navbar({ onOpenOrders, searchQuery, setSearchQuery }: NavbarProp
           animate={{ opacity: 1, y: 0 }}
           className="md:hidden bg-white border-b border-stone-100 px-6 py-8 flex flex-col gap-6"
         >
-          {["Collection", "Occasions", "Bespoke", "Our Story"].map((item) => (
+          {["Collection", "Bespoke", "Our Story"].map((item) => (
             <a
               key={item}
               href={`#${item.toLowerCase()}`}

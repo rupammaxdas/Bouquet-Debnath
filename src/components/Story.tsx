@@ -4,7 +4,7 @@
  */
 
 import { motion } from "framer-motion";
-import { Instagram, Facebook, Sparkles, Award } from "lucide-react";
+import { Instagram, Facebook, Sparkles } from "lucide-react";
 
 export function Story() {
   return (
@@ -46,17 +46,6 @@ export function Story() {
             
             {/* Background Accent Glow */}
             <div className="absolute -top-12 -left-12 w-56 h-56 bg-amber-100/60 rounded-full -z-10 blur-3xl opacity-60" />
-            
-            {/* Floating Badge */}
-            <div className="absolute -bottom-6 -right-2 sm:right-6 bg-white/95 backdrop-blur-md p-4 rounded-2xl shadow-xl border border-stone-200/80 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-stone-900 text-white flex items-center justify-center">
-                <Award size={18} />
-              </div>
-              <div>
-                <p className="text-[10px] font-bold uppercase tracking-wider text-stone-400">Founder & Owner</p>
-                <p className="text-sm font-display font-bold text-stone-900">Trisha Debnath</p>
-              </div>
-            </div>
           </div>
 
           {/* Editorial Content */}

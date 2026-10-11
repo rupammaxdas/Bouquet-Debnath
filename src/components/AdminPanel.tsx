@@ -126,8 +126,10 @@ export function AdminPanel({ onClose }: { onClose: () => void }) {
                     </thead>
                     <tbody className="divide-y divide-stone-50">
                       {[
-                        { id: 1, name: "The Velvet Rose", price: "₹2,499" },
-                        { id: 2, name: "Meadow Whisper", price: "₹1,599" }
+                        { id: 1, name: "The Velvet Rose", price: "₹699" },
+                        { id: 2, name: "Meadow Whisper", price: "₹799" },
+                        { id: 3, name: "Eternal Grace", price: "₹1,199" },
+                        { id: 4, name: "Tropical Sunrise", price: "₹1,499" }
                       ].map((p) => (
                         <tr key={p.id} className="text-sm">
                           <td className="px-6 py-4 font-medium text-stone-900">{p.name}</td>
