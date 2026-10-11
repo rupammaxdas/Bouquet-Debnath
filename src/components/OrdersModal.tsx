@@ -67,9 +67,29 @@ export function OrdersModal({ isOpen, onClose, highlightOrderId }: OrdersModalPr
   useEffect(() => {
     if (!isOpen) return;
 
+    // Load locally saved orders
+    const getLocalOrders = (): OrderRecord[] => {
+      try {
+        const saved = localStorage.getItem("debnath_orders_history");
+        return saved ? JSON.parse(saved) : [];
+      } catch {
+        return [];
+      }
+    };
+
+    const localOrders = getLocalOrders();
+
     const user = auth.currentUser;
     if (!user) {
+      localOrders.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      setOrders(localOrders);
       setLoading(false);
+
+      if (highlightOrderId) {
+        setSelectedOrderId(highlightOrderId);
+      } else if (localOrders.length > 0 && !selectedOrderId) {
+        setSelectedOrderId(localOrders[0].id);
+      }
       return;
     }
 
@@ -79,25 +99,42 @@ export function OrdersModal({ isOpen, onClose, highlightOrderId }: OrdersModalPr
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
-      const records: OrderRecord[] = snapshot.docs.map((docSnap) => ({
+      const remoteRecords: OrderRecord[] = snapshot.docs.map((docSnap) => ({
         id: docSnap.id,
         ...docSnap.data() as Omit<OrderRecord, "id">,
       }));
 
-      // Sort newest first
-      records.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-      setOrders(records);
+      // Combine remote and local records, deduplicated by id
+      const orderMap = new Map<string, OrderRecord>();
+      [...remoteRecords, ...localOrders].forEach((ord) => {
+        if (!orderMap.has(ord.id)) {
+          orderMap.set(ord.id, ord);
+        }
+      });
+
+      const merged = Array.from(orderMap.values()).sort(
+        (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      );
+
+      setOrders(merged);
       setLoading(false);
 
       if (highlightOrderId) {
         setSelectedOrderId(highlightOrderId);
-      } else if (records.length > 0 && !selectedOrderId) {
-        setSelectedOrderId(records[0].id);
+      } else if (merged.length > 0 && !selectedOrderId) {
+        setSelectedOrderId(merged[0].id);
       }
     }, (err) => {
-      console.error("Orders listener error:", err);
-      handleFirestoreError(err, OperationType.LIST, "orders");
+      console.warn("Orders listener note, using local boutique records:", err);
+      localOrders.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      setOrders(localOrders);
       setLoading(false);
+
+      if (highlightOrderId) {
+        setSelectedOrderId(highlightOrderId);
+      } else if (localOrders.length > 0 && !selectedOrderId) {
+        setSelectedOrderId(localOrders[0].id);
+      }
     });
 
     return unsubscribe;
