@@ -184,11 +184,7 @@ const PRESETS: PresetItem[] = [
 ];
 
 export function BouquetBuilder() {
-  const [selections, setSelections] = useState<Record<string, number>>({
-    rose: 3,
-    peony: 2,
-    eucalyptus: 2,
-  });
+  const [selections, setSelections] = useState<Record<string, number>>({});
   const [selectedWrap, setSelectedWrap] = useState<string>("kraft");
   const [selectedRibbon, setSelectedRibbon] = useState<string>("gold");
   const [arrangementStyle, setArrangementStyle] = useState<string>("dome");
@@ -196,24 +192,29 @@ export function BouquetBuilder() {
   const [activeStemInfo, setActiveStemInfo] = useState<{ id: string; name: string; index: number } | null>(null);
   const [addedToast, setAddedToast] = useState(false);
 
+  const MAX_STEMS = 24;
+
   // Total stem calculations
   const totalStems = useMemo(() => 
     Object.values(selections).reduce((acc, curr) => acc + curr, 0)
   , [selections]);
 
   const totalPrice = useMemo(() => {
+    if (totalStems === 0) return 0;
     const flowerCost = Object.entries(selections).reduce((acc, [id, count]) => {
       const flower = FLOWERS.find((f) => f.id === id);
       return acc + (flower?.price || 0) * count;
     }, 0);
     const wrapCost = WRAPS.find((w) => w.id === selectedWrap)?.price || 0;
     return flowerCost + wrapCost;
-  }, [selections, selectedWrap]);
+  }, [selections, selectedWrap, totalStems]);
 
   const updateCount = (id: string, delta: number) => {
     setSelections((prev) => {
       const current = prev[id] || 0;
-      const next = Math.max(0, current + delta);
+      const otherStems = Object.entries(prev).reduce((sum, [k, v]) => k === id ? sum : sum + v, 0);
+      const maxAllowed = Math.max(0, MAX_STEMS - otherStems);
+      const next = Math.max(0, Math.min(maxAllowed, current + delta));
       if (next === 0) {
         const { [id]: _, ...rest } = prev;
         return rest;
@@ -222,13 +223,10 @@ export function BouquetBuilder() {
     });
   };
 
-  const setExactCount = (id: string, count: number) => {
+  const clearFlowerStems = (id: string) => {
     setSelections((prev) => {
-      if (count <= 0) {
-        const { [id]: _, ...rest } = prev;
-        return rest;
-      }
-      return { ...prev, [id]: count };
+      const { [id]: _, ...rest } = prev;
+      return rest;
     });
   };
 
@@ -303,81 +301,91 @@ export function BouquetBuilder() {
     const stemsList: StemData[] = [];
     let stemCounter = 0;
 
-    // Separate items by role for natural florist botanical layering
+    // Botanical layering order: Greenery at the back, cloud base, radiant focal blooms, delicate accents in front
     const roleOrder: FlowerItem["role"][] = ["greenery", "cloud", "focal", "accent"];
 
     roleOrder.forEach((role) => {
-      Object.entries(selections).forEach(([flowerId, count]) => {
-        const flower = FLOWERS.find((f) => f.id === flowerId);
-        if (!flower || flower.role !== role || count <= 0) return;
+      // Gather and interleave all stems belonging to this role
+      const roleStems: { flower: FlowerItem; stemIndex: number }[] = [];
+      const flowersInRole = FLOWERS.filter(f => f.role === role && (selections[f.id] || 0) > 0);
+      const maxStemsForRole = Math.max(0, ...flowersInRole.map(f => selections[f.id] || 0));
 
-        for (let i = 0; i < count; i++) {
-          stemCounter++;
-          const t = count === 1 ? 0.5 : i / (count - 1);
-          
-          let angleRange = 40;
-          let baseRadius = 140;
-          let yFactor = 1;
-
-          if (arrangementStyle === "cascade") {
-            angleRange = role === "greenery" ? 56 : 32;
-            baseRadius = role === "greenery" ? 175 : 135;
-            yFactor = 1.25;
-          } else if (arrangementStyle === "wild") {
-            angleRange = 60;
-            baseRadius = 160 + ((i % 3) * 15);
-            yFactor = 0.95;
-          } else {
-            // Classic Dome
-            angleRange = 44;
-            baseRadius = 135;
-            yFactor = 0.98;
+      for (let s = 0; s < maxStemsForRole; s++) {
+        flowersInRole.forEach((flower) => {
+          const count = selections[flower.id] || 0;
+          if (s < count) {
+            roleStems.push({ flower, stemIndex: s + 1 });
           }
+        });
+      }
 
-          // Greenery spreads wider to frame
-          if (role === "greenery") {
-            angleRange += 16;
-          }
+      const totalRoleStems = roleStems.length;
+      if (totalRoleStems === 0) return;
 
-          const spreadAngle = (t - 0.5) * angleRange * 2;
-          const wobble = Math.sin((stemCounter * 1.9)) * 8;
-          const finalAngle = spreadAngle + wobble;
+      roleStems.forEach(({ flower, stemIndex }, idx) => {
+        stemCounter++;
+        const t = totalRoleStems === 1 ? 0.5 : idx / (totalRoleStems - 1);
+        
+        let angleRange = 42;
+        let baseRadius = 140;
+        let yFactor = 1;
 
-          const rad = (finalAngle * Math.PI) / 180;
-          // Coordinates relative to tie point (center X: 0, tie Y: 150)
-          const stemRadius = baseRadius + (Math.cos(rad) * 20) - (Math.abs(spreadAngle) * 0.4);
-          
-          const x = Math.sin(rad) * stemRadius;
-          const y = -Math.cos(rad) * (stemRadius * yFactor) + 60;
-
-          // Stem Bezier path to tie point (0, 160)
-          const tieX = 0;
-          const tieY = 160;
-          const ctrlX = x * 0.45;
-          const ctrlY = y + (tieY - y) * 0.55;
-          const stemCurve = `M ${tieX} ${tieY} Q ${ctrlX} ${ctrlY} ${x} ${y + 35}`;
-
-          // Scale and z-index determination
-          let zIndex = 20;
-          if (role === "greenery") zIndex = 12 + (i % 3);
-          else if (role === "cloud") zIndex = 16 + (i % 2);
-          else if (role === "focal") zIndex = 22 + (i % 4);
-          else zIndex = 26 + (i % 3);
-
-          const scale = 0.85 + (Math.sin(stemCounter) * 0.1) + (flower.bloomSize / 150) * 0.2;
-
-          stemsList.push({
-            key: `${flower.id}-${i}-${stemCounter}`,
-            flower,
-            index: i + 1,
-            x,
-            y,
-            rotate: finalAngle * 0.75,
-            scale,
-            zIndex,
-            stemCurve,
-          });
+        if (arrangementStyle === "cascade") {
+          angleRange = role === "greenery" ? 58 : 34;
+          baseRadius = role === "greenery" ? 175 : 138;
+          yFactor = 1.25;
+        } else if (arrangementStyle === "wild") {
+          angleRange = 60;
+          baseRadius = 155 + ((idx % 3) * 14);
+          yFactor = 0.95;
+        } else {
+          // Classic Dome
+          angleRange = 45;
+          baseRadius = 135 + ((idx % 2) * 10);
+          yFactor = 0.98;
         }
+
+        // Greenery spreads wider to frame arrangement
+        if (role === "greenery") {
+          angleRange += 16;
+        }
+
+        const spreadAngle = (t - 0.5) * angleRange * 2;
+        const wobble = Math.sin((stemCounter * 1.7) + idx) * 6;
+        const finalAngle = spreadAngle + wobble;
+
+        const rad = (finalAngle * Math.PI) / 180;
+        const stemRadius = baseRadius + (Math.cos(rad) * 18) - (Math.abs(spreadAngle) * 0.35);
+
+        const x = Math.sin(rad) * stemRadius;
+        const y = -Math.cos(rad) * (stemRadius * yFactor) + 60;
+
+        // Stem Bezier path to knot tie point (0, 160)
+        const tieX = 0;
+        const tieY = 160;
+        const ctrlX = x * 0.45;
+        const ctrlY = y + (tieY - y) * 0.55;
+        const stemCurve = `M ${tieX} ${tieY} Q ${ctrlX} ${ctrlY} ${x} ${y + 35}`;
+
+        let zIndex = 20;
+        if (role === "greenery") zIndex = 12 + (idx % 3);
+        else if (role === "cloud") zIndex = 16 + (idx % 2);
+        else if (role === "focal") zIndex = 22 + (idx % 4);
+        else zIndex = 26 + (idx % 3);
+
+        const scale = 0.85 + (Math.sin(stemCounter) * 0.08) + (flower.bloomSize / 150) * 0.2;
+
+        stemsList.push({
+          key: `${flower.id}-${stemIndex}-${stemCounter}`,
+          flower,
+          index: stemIndex,
+          x,
+          y,
+          rotate: finalAngle * 0.72,
+          scale,
+          zIndex,
+          stemCurve,
+        });
       });
     });
 
@@ -458,104 +466,171 @@ export function BouquetBuilder() {
 
             {/* 1. Flowers Selection Matrix */}
             <div className="space-y-4">
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                 <div>
                   <h3 className="text-sm font-semibold uppercase tracking-widest text-stone-900 flex items-center gap-2">
                     <span className="w-5 h-5 rounded-full bg-stone-900 text-white flex items-center justify-center text-[10px]">1</span>
                     Choose Blooms & Stem Counts
                   </h3>
-                  <p className="text-xs text-stone-500 mt-1">Tap + or - to see blooms bloom instantly in the bouquet preview</p>
+                  <p className="text-xs text-stone-500 mt-0.5">
+                    Select bloom quantities to see your arrangement bloom dynamically in real time
+                  </p>
                 </div>
-                <span className="text-xs font-mono font-semibold px-2.5 py-1 bg-stone-200/80 rounded-lg text-stone-800">
-                  {totalStems} Total Stems
-                </span>
+
+                <div className="flex flex-col items-end gap-1">
+                  <div className="flex items-center gap-2">
+                    <span className="text-[11px] text-stone-500 font-medium">Arrangement Capacity:</span>
+                    <span className={`text-xs font-mono font-bold px-2.5 py-0.5 rounded-lg border ${
+                      totalStems >= MAX_STEMS 
+                        ? "bg-amber-100 text-amber-900 border-amber-300" 
+                        : "bg-stone-200/80 text-stone-800 border-stone-300/60"
+                    }`}>
+                      {totalStems} / {MAX_STEMS} Stems
+                    </span>
+                  </div>
+                  {/* Subtle capacity bar */}
+                  <div className="w-32 bg-stone-200 h-1.5 rounded-full overflow-hidden">
+                    <div 
+                      className={`h-full rounded-full transition-all duration-300 ${
+                        totalStems >= MAX_STEMS ? "bg-amber-600" : "bg-stone-900"
+                      }`}
+                      style={{ width: `${Math.min(100, (totalStems / MAX_STEMS) * 100)}%` }}
+                    />
+                  </div>
+                </div>
               </div>
+
+              {totalStems >= MAX_STEMS && (
+                <div className="p-2.5 rounded-xl bg-amber-50 border border-amber-200/80 text-amber-900 text-xs flex items-center justify-between">
+                  <span>✨ Bouquet is at maximum recommended volume ({MAX_STEMS} stems) for optimal botanical balance.</span>
+                  <button 
+                    onClick={handleReset}
+                    className="text-[11px] underline font-semibold hover:text-amber-950 ml-2 shrink-0"
+                  >
+                    Reset All
+                  </button>
+                </div>
+              )}
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                 {FLOWERS.map((flower) => {
                   const count = selections[flower.id] || 0;
                   const isSelected = count > 0;
                   const isHovered = hoveredFlower === flower.id;
+                  const isAtMax = totalStems >= MAX_STEMS;
 
                   return (
                     <div
                       key={flower.id}
                       onMouseEnter={() => setHoveredFlower(flower.id)}
                       onMouseLeave={() => setHoveredFlower(null)}
-                      className={`relative p-3.5 rounded-2xl border transition-all duration-200 flex items-center gap-3.5 bg-white ${
+                      className={`relative p-3.5 rounded-2xl border transition-all duration-200 flex flex-col justify-between bg-white gap-3 ${
                         isSelected 
                           ? "border-stone-900 shadow-md ring-1 ring-stone-900/10" 
                           : "border-stone-200/90 hover:border-stone-300"
                       } ${isHovered ? "bg-amber-50/20" : ""}`}
                     >
-                      {/* Image Thumbnail with Color Tag */}
-                      <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-stone-100 shrink-0 border border-stone-200/60">
-                        <img 
-                          src={flower.image} 
-                          alt={flower.name} 
-                          className="w-full h-full object-cover mix-blend-multiply"
-                        />
-                        <span 
-                          className="absolute bottom-1 right-1 w-2.5 h-2.5 rounded-full border border-white shadow-xs"
-                          style={{ backgroundColor: flower.color }}
-                          title={`Color tone: ${flower.color}`}
-                        />
-                      </div>
-
-                      {/* Flower details */}
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-1.5">
-                          <h4 className="text-sm font-semibold text-stone-900 truncate">
-                            {flower.name}
-                          </h4>
+                      {/* Top Row: Thumbnail & Info */}
+                      <div className="flex items-center gap-3.5">
+                        {/* Image Thumbnail with Color Tag */}
+                        <div className="relative w-16 h-16 rounded-xl overflow-hidden bg-stone-100 shrink-0 border border-stone-200/60">
+                          <img 
+                            src={flower.image} 
+                            alt={flower.name} 
+                            className="w-full h-full object-cover mix-blend-multiply"
+                          />
+                          <span 
+                            className="absolute bottom-1 right-1 w-2.5 h-2.5 rounded-full border border-white shadow-xs"
+                            style={{ backgroundColor: flower.color }}
+                            title={`Color tone: ${flower.color}`}
+                          />
                         </div>
-                        <p className="text-[11px] text-stone-400 truncate mt-0.5">{flower.category}</p>
-                        <div className="flex items-center gap-2 mt-1">
-                          <span className="text-xs font-mono font-medium text-stone-900">₹{flower.price}</span>
-                          <span className="text-[10px] text-stone-400">• per stem</span>
-                        </div>
-                      </div>
 
-                      {/* Stepper Controls */}
-                      <div className="flex flex-col items-end gap-1.5">
-                        <div className="flex items-center gap-1 bg-stone-100 p-1 rounded-xl border border-stone-200/60">
+                        {/* Flower details */}
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center justify-between gap-1">
+                            <h4 className="text-sm font-semibold text-stone-900 truncate">
+                              {flower.name}
+                            </h4>
+                          </div>
+                          <p className="text-[11px] text-stone-400 truncate mt-0.5">{flower.category}</p>
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="text-xs font-mono font-medium text-stone-900">₹{flower.price}</span>
+                            <span className="text-[10px] text-stone-400">• per stem</span>
+                          </div>
+                        </div>
+
+                        {/* Stepper Controls */}
+                        <div className="flex items-center gap-1 bg-stone-100 p-1 rounded-xl border border-stone-200/60 shrink-0">
                           <button
                             type="button"
                             onClick={() => updateCount(flower.id, -1)}
                             disabled={count === 0}
                             className="w-7 h-7 rounded-lg bg-white disabled:opacity-30 disabled:hover:bg-white flex items-center justify-center text-stone-700 hover:bg-stone-200 transition-all shadow-xs"
-                            title="Decrease stem"
+                            title="Remove stem"
+                            aria-label={`Remove one stem of ${flower.name}`}
                           >
                             <Minus size={13} />
                           </button>
-                          <span className="w-7 text-center font-mono text-xs font-semibold text-stone-900">
+                          <span className="w-7 text-center font-mono text-xs font-bold text-stone-900">
                             {count}
                           </span>
                           <button
                             type="button"
                             onClick={() => updateCount(flower.id, 1)}
-                            className="w-7 h-7 rounded-lg bg-stone-900 text-white flex items-center justify-center hover:bg-stone-800 transition-all shadow-xs"
+                            disabled={isAtMax}
+                            className="w-7 h-7 rounded-lg bg-stone-900 text-white disabled:opacity-30 disabled:hover:bg-stone-900 flex items-center justify-center hover:bg-stone-800 transition-all shadow-xs"
                             title="Add stem"
+                            aria-label={`Add one stem of ${flower.name}`}
                           >
                             <Plus size={13} />
                           </button>
                         </div>
+                      </div>
 
-                        {/* Quick count chips */}
-                        <div className="flex gap-1">
-                          {[3, 6].map((qCount) => (
+                      {/* Bottom Row: Subtotal & Quick Count Chips */}
+                      <div className="flex items-center justify-between pt-2 border-t border-stone-100 text-xs">
+                        {/* Subtotal badge */}
+                        <div>
+                          {isSelected ? (
+                            <span className="font-mono text-[11px] font-semibold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-md border border-emerald-200/60">
+                              {count} {count === 1 ? 'stem' : 'stems'} • ₹{(flower.price * count).toLocaleString()}
+                            </span>
+                          ) : (
+                            <span className="text-[11px] text-stone-400">
+                              0 stems selected
+                            </span>
+                          )}
+                        </div>
+
+                        {/* Action Chips */}
+                        <div className="flex items-center gap-1.5">
+                          {[1, 3, 5].map((addNum) => {
+                            const canAdd = totalStems + addNum <= MAX_STEMS;
+                            return (
+                              <button
+                                key={addNum}
+                                type="button"
+                                onClick={() => updateCount(flower.id, addNum)}
+                                disabled={!canAdd}
+                                className="text-[10px] px-2 py-0.5 rounded-md font-mono transition-all border border-stone-200 bg-stone-50 hover:bg-stone-900 hover:text-white hover:border-stone-900 disabled:opacity-30 disabled:hover:bg-stone-50 disabled:hover:text-stone-400 disabled:cursor-not-allowed font-medium text-stone-700"
+                                title={`Add ${addNum} stems`}
+                              >
+                                +{addNum}
+                              </button>
+                            );
+                          })}
+
+                          {isSelected && (
                             <button
-                              key={qCount}
-                              onClick={() => setExactCount(flower.id, count === qCount ? 0 : qCount)}
-                              className={`text-[9px] px-1.5 py-0.5 rounded font-mono transition-colors ${
-                                count === qCount
-                                  ? "bg-stone-800 text-white font-bold"
-                                  : "text-stone-400 hover:text-stone-700 bg-stone-50"
-                              }`}
+                              type="button"
+                              onClick={() => clearFlowerStems(flower.id)}
+                              className="text-[10px] px-2 py-0.5 rounded-md text-stone-400 hover:text-red-600 hover:bg-red-50 border border-transparent hover:border-red-200 transition-colors font-medium"
+                              title="Clear this flower"
                             >
-                              +{qCount}
+                              ✕ Clear
                             </button>
-                          ))}
+                          )}
                         </div>
                       </div>
                     </div>
