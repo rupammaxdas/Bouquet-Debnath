@@ -20,7 +20,8 @@ import {
   Sparkles,
   Loader2,
   PackageCheck,
-  AlertCircle
+  AlertCircle,
+  Mail
 } from "lucide-react";
 import { useCart } from "../lib/CartContext";
 import { auth, db, login, loginAnonymously, handleFirestoreError, OperationType } from "../lib/firebase";
@@ -211,30 +212,113 @@ export function CheckoutModal({ isOpen, onClose, onOrderSuccess }: CheckoutModal
             </div>
 
             {/* Receipt Summary Card */}
-            <div className="w-full max-w-md p-5 bg-stone-50 rounded-2xl border border-stone-200 text-left space-y-3">
+            <div className="w-full max-w-lg p-5 bg-stone-50 rounded-2xl border border-stone-200 text-left space-y-3.5">
               <div className="flex justify-between items-baseline border-b border-stone-200 pb-2.5">
-                <span className="text-xs text-stone-500 font-semibold uppercase tracking-wider">Order ID</span>
-                <span className="font-mono text-sm font-bold text-stone-900">{createdOrderId}</span>
+                <div>
+                  <span className="text-[10px] text-stone-400 font-semibold uppercase tracking-wider block">Official Receipt</span>
+                  <span className="font-mono text-base font-bold text-stone-900">{createdOrderId}</span>
+                </div>
+                <span className="text-[11px] font-semibold px-2.5 py-0.5 rounded-full bg-emerald-100 text-emerald-800">
+                  {paymentMethod === "cod" ? "Pay on Hand Delivery" : `Paid via ${paymentMethod.toUpperCase()}`}
+                </span>
               </div>
-              <div className="flex justify-between text-xs text-stone-600">
-                <span>Recipient:</span>
-                <strong className="text-stone-900">{recipientName}</strong>
+
+              {/* Customer Name, Phone & Delivery Address */}
+              <div className="space-y-1.5 text-xs text-stone-600 bg-white p-3 rounded-xl border border-stone-200/70">
+                <div className="flex justify-between">
+                  <span className="text-stone-400">Customer Name:</span>
+                  <strong className="text-stone-900">{recipientName}</strong>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-stone-400">Contact Phone:</span>
+                  <span className="font-mono font-medium text-stone-900">{recipientPhone}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-stone-400">Delivery Address:</span>
+                  <span className="text-stone-900 font-medium text-right max-w-[240px] truncate">{deliveryAddress}, {city} - {pincode}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span className="text-stone-400">Scheduled Delivery:</span>
+                  <span className="text-stone-800">{deliveryDate} • {deliverySlot.toUpperCase()}</span>
+                </div>
               </div>
-              <div className="flex justify-between text-xs text-stone-600">
-                <span>Hand Delivery:</span>
-                <strong className="text-stone-900">{deliveryDate} ({deliverySlot})</strong>
+
+              {/* Product Catalogue & Cart Items */}
+              <div className="space-y-1 text-xs bg-white p-3 rounded-xl border border-stone-200/70">
+                <span className="text-[10px] uppercase font-bold text-stone-400 tracking-wider block mb-1">
+                  Product Catalogue & Items ({cart.length})
+                </span>
+                <div className="divide-y divide-stone-100">
+                  {cart.map((item, idx) => (
+                    <div key={idx} className="flex justify-between py-1 text-stone-700">
+                      <span className="truncate max-w-[240px]">
+                        {item.name} <span className="text-stone-400 font-mono">×{item.quantity}</span>
+                      </span>
+                      <span className="font-mono font-medium text-stone-900">
+                        ₹{(item.price * item.quantity).toLocaleString()}
+                      </span>
+                    </div>
+                  ))}
+                </div>
               </div>
-              <div className="flex justify-between text-xs text-stone-600">
-                <span>Delivery Address:</span>
-                <span className="text-stone-900 text-right truncate max-w-[200px] font-medium">{deliveryAddress}, {city}</span>
-              </div>
-              <div className="flex justify-between items-baseline border-t border-stone-200 pt-2.5 text-sm font-semibold text-stone-900">
-                <span>Paid via {paymentMethod.toUpperCase()}</span>
-                <span className="text-base font-bold font-mono">₹{finalTotal.toLocaleString()}</span>
+
+              {/* Automatic Order Total Calculation */}
+              <div className="space-y-1.5 text-xs border-t border-stone-200 pt-2.5">
+                <div className="flex justify-between text-stone-500">
+                  <span>Catalogue Subtotal</span>
+                  <span className="font-mono text-stone-800 font-medium">₹{subtotal.toLocaleString()}</span>
+                </div>
+                {discount > 0 && (
+                  <div className="flex justify-between text-emerald-600">
+                    <span>Loyalty / Promo Discount</span>
+                    <span className="font-mono font-medium">-₹{discount.toLocaleString()}</span>
+                  </div>
+                )}
+                <div className="flex justify-between text-stone-500">
+                  <span>Climate-Controlled Delivery</span>
+                  <span className="font-mono font-medium">{deliveryFee === 0 ? "FREE" : `₹${deliveryFee}`}</span>
+                </div>
+                <div className="flex justify-between items-baseline font-bold text-sm text-stone-900 pt-1.5 border-t border-stone-200">
+                  <span>Total Order Investment</span>
+                  <span className="text-lg font-mono font-bold text-stone-950">₹{finalTotal.toLocaleString()}</span>
+                </div>
               </div>
             </div>
 
-            <div className="flex flex-col sm:flex-row gap-3 w-full max-w-md">
+            {/* Gmail Inbox Order Info Action */}
+            <div className="w-full max-w-lg space-y-2">
+              <a
+                href={`https://mail.google.com/mail/?view=cm&fs=1&to=rupammaxdas@gmail.com&su=${encodeURIComponent(`New Order Confirmed: ${createdOrderId} - ${recipientName}`)}&body=${encodeURIComponent(
+                  `DEBNATH FLOWER BOUTIQUE - NEW ORDER\n\n` +
+                  `Order ID: ${createdOrderId}\n` +
+                  `Payment Method: Pay on Hand Delivery (Cash/UPI)\n\n` +
+                  `CUSTOMER & DELIVERY DETAILS:\n` +
+                  `Customer Name: ${recipientName}\n` +
+                  `Contact Phone: ${recipientPhone}\n` +
+                  `Delivery Address: ${deliveryAddress}, ${city} - ${pincode}\n` +
+                  `Scheduled Delivery Slot: ${deliveryDate} (${deliverySlot.toUpperCase()})\n` +
+                  `Occasion: ${occasion}\n` +
+                  `Card Message: "${cardMessage}"\n` +
+                  `Sender: ${senderName || "Anonymous"}\n\n` +
+                  `PRODUCT CATALOGUE ITEMS:\n` +
+                  cart.map(item => `- ${item.name} × ${item.quantity}: ₹${(item.price * item.quantity).toLocaleString()}`).join('\n') + '\n\n' +
+                  `AUTOMATIC TOTAL CALCULATION:\n` +
+                  `Subtotal: ₹${subtotal.toLocaleString()}\n` +
+                  (discount > 0 ? `Discount: -₹${discount.toLocaleString()}\n` : '') +
+                  `Delivery Fee: ₹${deliveryFee}\n` +
+                  `Final Total Payable: ₹${finalTotal.toLocaleString()}\n\n` +
+                  `Handcrafted under the creative direction of Trisha Debnath at Debnath Flower Boutique.`
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full py-3 px-4 rounded-xl bg-red-50 border border-red-200 text-red-700 hover:bg-red-100 hover:text-red-900 text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-xs"
+              >
+                <Mail size={15} className="text-red-600" />
+                <span>Send Order Info to Admin Gmail Inbox (rupammaxdas@gmail.com)</span>
+              </a>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-3 w-full max-w-lg">
               <button
                 onClick={() => {
                   onClose();
