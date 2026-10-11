@@ -36,6 +36,8 @@ jobs:
         run: npm install
 
       - name: Build site
+        env:
+          VITE_BASE_PATH: /Bouquet-Debnath/
         run: npm run build
 
       - name: Upload Pages artifact
