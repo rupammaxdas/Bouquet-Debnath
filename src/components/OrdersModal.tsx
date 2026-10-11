@@ -16,10 +16,12 @@ import {
   HeartHandshake, 
   ExternalLink,
   Loader2,
-  AlertCircle
+  AlertCircle,
+  Search,
+  ArrowRight
 } from "lucide-react";
 import { auth, db, login, handleFirestoreError, OperationType } from "../lib/firebase";
-import { collection, query, where, onSnapshot, orderBy } from "firebase/firestore";
+import { collection, query, where, onSnapshot, doc, getDoc } from "firebase/firestore";
 
 interface OrderItem {
   id: string;
@@ -63,6 +65,43 @@ export function OrdersModal({ isOpen, onClose, highlightOrderId }: OrdersModalPr
   const [orders, setOrders] = useState<OrderRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
+  const [searchOrderId, setSearchOrderId] = useState("");
+  const [searchError, setSearchError] = useState<string | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
+
+  const handleLookupOrder = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSearchError(null);
+    const code = searchOrderId.trim().toUpperCase();
+    if (!code) return;
+
+    // Check if in local list
+    const found = orders.find(o => o.id.toUpperCase() === code);
+    if (found) {
+      setSelectedOrderId(found.id);
+      return;
+    }
+
+    setIsSearching(true);
+    try {
+      const docSnap = await getDoc(doc(db, "orders", code));
+      if (docSnap.exists()) {
+        const orderData = { id: docSnap.id, ...docSnap.data() } as OrderRecord;
+        setOrders(prev => [orderData, ...prev]);
+        setSelectedOrderId(orderData.id);
+        try {
+          const saved = JSON.parse(localStorage.getItem("debnath_orders_history") || "[]");
+          localStorage.setItem("debnath_orders_history", JSON.stringify([orderData, ...saved]));
+        } catch {}
+      } else {
+        setSearchError(`No order found matching "${code}". Please check your order receipt code.`);
+      }
+    } catch {
+      setSearchError("Unable to locate order. Please check the code and try again.");
+    } finally {
+      setIsSearching(false);
+    }
+  };
 
   useEffect(() => {
     if (!isOpen) return;
@@ -195,45 +234,76 @@ export function OrdersModal({ isOpen, onClose, highlightOrderId }: OrdersModalPr
 
         {/* Body */}
         <div className="flex-1 overflow-y-auto p-6 sm:p-8">
-          {!auth.currentUser ? (
-            <div className="text-center py-12 space-y-4">
-              <div className="w-16 h-16 rounded-full bg-stone-100 flex items-center justify-center mx-auto text-stone-400">
-                <AlertCircle size={28} />
-              </div>
-              <h3 className="font-display font-medium text-lg text-stone-900">Sign in to view your orders</h3>
-              <p className="text-xs text-stone-500 max-w-sm mx-auto">
-                Sign in with your Google account to track live arrangements, view receipts, and monitor delivery status.
-              </p>
-              <button
-                onClick={login}
-                className="px-6 py-2.5 rounded-full bg-stone-900 text-white text-xs font-semibold uppercase tracking-wider hover:bg-stone-800 transition-colors shadow-sm"
-              >
-                Sign In with Google
-              </button>
-            </div>
-          ) : loading ? (
+          {loading ? (
             <div className="py-20 flex flex-col items-center justify-center text-stone-400 gap-3">
               <Loader2 size={32} className="animate-spin text-stone-900" />
-              <p className="text-xs font-medium">Fetching your orders...</p>
+              <p className="text-xs font-medium">Loading your orders...</p>
             </div>
           ) : orders.length === 0 ? (
-            <div className="text-center py-14 space-y-4">
+            <div className="text-center py-12 space-y-6 max-w-md mx-auto">
               <div className="w-16 h-16 rounded-full bg-stone-50 flex items-center justify-center mx-auto text-stone-300 border border-stone-100">
                 <Package size={30} />
               </div>
-              <h3 className="font-display font-medium text-lg text-stone-900">No Orders Placed Yet</h3>
-              <p className="text-xs text-stone-500 max-w-sm mx-auto leading-relaxed">
-                When you purchase a floral arrangement or custom bouquet, you can trace its creation step-by-step right here.
-              </p>
-              <button
-                onClick={onClose}
-                className="px-6 py-2.5 rounded-full bg-stone-900 text-white text-xs font-semibold uppercase tracking-wider hover:bg-stone-800 transition-colors shadow-sm"
-              >
-                Explore Collection
-              </button>
+              <div>
+                <h3 className="font-display font-medium text-xl text-stone-900">Track Your Bouquet Order</h3>
+                <p className="text-xs text-stone-500 mt-1.5 leading-relaxed">
+                  Enter your order receipt number (e.g. <strong>DNF-123456</strong>) to trace live floral crafting and hand delivery status.
+                </p>
+              </div>
+
+              {/* Order Search Bar */}
+              <form onSubmit={handleLookupOrder} className="flex gap-2">
+                <input
+                  type="text"
+                  value={searchOrderId}
+                  onChange={(e) => setSearchOrderId(e.target.value)}
+                  placeholder="Enter Order Code (e.g. DNF-482910)"
+                  className="flex-1 px-4 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs font-mono focus:outline-none focus:border-stone-900 uppercase"
+                />
+                <button
+                  type="submit"
+                  disabled={isSearching || !searchOrderId.trim()}
+                  className="px-5 py-2.5 rounded-xl bg-stone-900 text-white text-xs font-semibold hover:bg-stone-800 disabled:opacity-40 transition-colors shrink-0 flex items-center gap-1.5"
+                >
+                  {isSearching ? <Loader2 size={13} className="animate-spin" /> : <Search size={13} />}
+                  <span>Track</span>
+                </button>
+              </form>
+
+              {searchError && (
+                <p className="text-xs text-red-600 bg-red-50 p-2.5 rounded-xl border border-red-200">{searchError}</p>
+              )}
+
+              {!auth.currentUser && (
+                <div className="pt-4 border-t border-stone-100 space-y-2">
+                  <p className="text-[11px] text-stone-400">Placed an order while signed into Google?</p>
+                  <button
+                    onClick={login}
+                    className="px-5 py-2 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold transition-colors"
+                  >
+                    Sign In with Google to Sync
+                  </button>
+                </div>
+              )}
             </div>
           ) : (
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+            <div>
+              {/* Optional guest sync hint banner */}
+              {!auth.currentUser && (
+                <div className="mb-6 p-3 bg-stone-50 border border-stone-200/80 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-stone-600">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                    <span>Tracking active orders on this device. Sign in with Google to sync across devices.</span>
+                  </div>
+                  <button
+                    onClick={login}
+                    className="px-4 py-1.5 rounded-full bg-stone-900 text-white font-semibold hover:bg-stone-800 transition-colors shrink-0 text-[11px]"
+                  >
+                    Sign In with Google
+                  </button>
+                </div>
+              )}
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               {/* Order Select Sidebar */}
               <div className="space-y-3 lg:border-r lg:border-stone-100 lg:pr-6">
                 <span className="text-[10px] font-bold uppercase tracking-wider text-stone-400 block mb-2">
@@ -413,9 +483,9 @@ export function OrdersModal({ isOpen, onClose, highlightOrderId }: OrdersModalPr
                       })()}
                     </div>
                   </div>
-
                 </div>
               )}
+              </div>
             </div>
           )}
         </div>
