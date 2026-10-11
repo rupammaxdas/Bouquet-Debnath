@@ -4,16 +4,19 @@
  */
 
 import { useState, useEffect } from "react";
-import { auth, db, login, logout, handleFirestoreError, OperationType } from "../lib/firebase";
+import { auth, db, login, logout, parseAuthError, AuthErrorInfo, handleFirestoreError, OperationType } from "../lib/firebase";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { doc, getDoc, setDoc, collection, onSnapshot, query } from "firebase/firestore";
 import { motion, AnimatePresence } from "framer-motion";
-import { LayoutDashboard, Plus, Trash2, LogOut, Loader2, ShieldCheck, X, Mail, Inbox, Package } from "lucide-react";
+import { LayoutDashboard, Plus, Trash2, LogOut, Loader2, ShieldCheck, X, Mail, Inbox, Package, AlertTriangle, Copy, Check, ExternalLink } from "lucide-react";
 
 export function AdminPanel({ onClose }: { onClose: () => void }) {
   const [user, setUser] = useState<User | null>(null);
   const [isAdmin, setIsAdmin] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [isSigningIn, setIsSigningIn] = useState(false);
+  const [authError, setAuthError] = useState<AuthErrorInfo | null>(null);
+  const [copiedDomain, setCopiedDomain] = useState(false);
   const [activeTab, setActiveTab] = useState<"orders" | "products">("orders");
   const [orders, setOrders] = useState<any[]>([]);
 
@@ -110,20 +113,95 @@ export function AdminPanel({ onClose }: { onClose: () => void }) {
           </div>
 
           {!user ? (
-            <div className="text-center py-20 bg-stone-50 rounded-2xl border border-dashed border-stone-200">
-              <ShieldCheck className="mx-auto mb-4 text-stone-300" size={48} />
-              <p className="text-stone-600 mb-8">Access restricted to authorized personnel.</p>
+            <div className="text-center py-16 px-6 bg-stone-50 rounded-3xl border border-dashed border-stone-200 max-w-md mx-auto space-y-6">
+              <ShieldCheck className="mx-auto text-stone-300" size={48} />
+              <div>
+                <h3 className="font-display font-semibold text-lg text-stone-900">Debnath Studio Admin</h3>
+                <p className="text-stone-500 text-xs mt-1">Authorized access for studio administration.</p>
+                <p className="text-[11px] text-stone-400 mt-0.5">Admin Account: rupammaxdas@gmail.com</p>
+              </div>
+
               <button
-                onClick={login}
-                className="px-8 py-3 bg-stone-900 text-white rounded-full font-medium hover:bg-stone-800 transition-colors"
+                onClick={async () => {
+                  setIsSigningIn(true);
+                  setAuthError(null);
+                  try {
+                    await login();
+                  } catch (err) {
+                    const parsed = parseAuthError(err);
+                    setAuthError(parsed);
+                  } finally {
+                    setIsSigningIn(false);
+                  }
+                }}
+                disabled={isSigningIn}
+                className="w-full px-8 py-3.5 bg-stone-900 text-white rounded-full font-medium text-xs hover:bg-stone-800 transition-colors flex items-center justify-center gap-2 shadow-sm disabled:opacity-50"
               >
-                Sign in with Google
+                {isSigningIn ? (
+                  <>
+                    <Loader2 size={16} className="animate-spin" />
+                    <span>Connecting to Google...</span>
+                  </>
+                ) : (
+                  <span>Sign in with Google</span>
+                )}
               </button>
+
+              {authError && (
+                <div className="text-left p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 space-y-2.5">
+                  <div className="flex items-start gap-2">
+                    <AlertTriangle size={16} className="text-amber-600 shrink-0 mt-0.5" />
+                    <div className="text-xs">
+                      <span className="font-semibold block">
+                        {authError.code === "auth/unauthorized-domain"
+                          ? "Domain Authorization Required"
+                          : "Sign-In Alert"}
+                      </span>
+                      <span className="text-[11px] text-amber-800 leading-relaxed block mt-1">
+                        {authError.message}
+                      </span>
+                    </div>
+                  </div>
+
+                  {authError.code === "auth/unauthorized-domain" && authError.domain && (
+                    <div className="space-y-2 pt-2 border-t border-amber-200/60">
+                      <div className="flex items-center gap-1.5">
+                        <code className="text-[10px] bg-white p-1.5 rounded flex-1 font-mono break-all text-stone-800 border border-amber-200">
+                          {authError.domain}
+                        </code>
+                        <button
+                          type="button"
+                          onClick={() => {
+                            navigator.clipboard.writeText(authError.domain || "");
+                            setCopiedDomain(true);
+                            setTimeout(() => setCopiedDomain(false), 2000);
+                          }}
+                          className="px-2.5 py-1.5 rounded bg-stone-900 text-white text-[10px] font-semibold hover:bg-stone-800 shrink-0 flex items-center gap-1"
+                        >
+                          {copiedDomain ? <Check size={11} /> : <Copy size={11} />}
+                          <span>{copiedDomain ? "Copied" : "Copy"}</span>
+                        </button>
+                      </div>
+                      {authError.consoleUrl && (
+                        <a
+                          href={authError.consoleUrl}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center gap-1 text-[11px] font-semibold text-amber-900 hover:underline"
+                        >
+                          <span>Open Firebase Authorized Domains</span>
+                          <ExternalLink size={11} />
+                        </a>
+                      )}
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
           ) : !isAdmin ? (
             <div className="text-center py-20">
               <p className="text-stone-900 font-medium mb-2">Access Denied</p>
-              <p className="text-stone-500 text-sm mb-8">Your account ({user.email}) does not have admin privileges.</p>
+              <p className="text-stone-500 text-sm mb-8">Your account ({user.email}) does not have admin privileges. Only rupammaxdas@gmail.com is authorized.</p>
               <button onClick={logout} className="text-stone-900 font-semibold border-b border-stone-900 pb-1">
                 Sign out
               </button>

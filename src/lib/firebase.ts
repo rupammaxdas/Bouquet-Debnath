@@ -18,8 +18,77 @@ export const db = initializeFirestore(
 );
 export const auth = getAuth();
 export const googleProvider = new GoogleAuthProvider();
+googleProvider.setCustomParameters({
+  prompt: 'select_account',
+});
 
-export const login = () => signInWithPopup(auth, googleProvider);
+export interface AuthErrorInfo {
+  code: string;
+  message: string;
+  domain?: string;
+  consoleUrl?: string;
+}
+
+export const parseAuthError = (err: unknown): AuthErrorInfo => {
+  const errorObj = err as { code?: string; message?: string };
+  const code = errorObj?.code || 'unknown';
+  const currentHost = typeof window !== 'undefined' ? window.location.hostname : '';
+  const projectId = firebaseConfig.projectId;
+  const consoleUrl = `https://console.firebase.google.com/project/${projectId}/authentication/settings`;
+
+  if (code === 'auth/unauthorized-domain') {
+    return {
+      code,
+      domain: currentHost,
+      consoleUrl,
+      message: `The domain "${currentHost}" is not authorized in Firebase Authentication. Add it under Firebase Console ➔ Authentication ➔ Settings ➔ Authorized Domains.`,
+    };
+  }
+
+  if (code === 'auth/popup-blocked') {
+    return {
+      code,
+      message: 'The sign-in popup window was blocked by your browser or iframe. Please allow popups for this page and try again.',
+    };
+  }
+
+  if (code === 'auth/popup-closed-by-user') {
+    return {
+      code,
+      message: 'Sign-in was cancelled before completion. Please try again.',
+    };
+  }
+
+  if (code === 'auth/cancelled-popup-request') {
+    return {
+      code,
+      message: 'A previous sign-in window was open. Please try again.',
+    };
+  }
+
+  if (code === 'auth/operation-not-allowed') {
+    return {
+      code,
+      consoleUrl: `https://console.firebase.google.com/project/${projectId}/authentication/providers`,
+      message: 'Google Sign-In provider is disabled in your Firebase console. Please enable Google under Authentication ➔ Sign-in method.',
+    };
+  }
+
+  return {
+    code,
+    message: errorObj?.message || 'An unexpected error occurred during sign in. Please try again.',
+  };
+};
+
+export const login = async () => {
+  try {
+    return await signInWithPopup(auth, googleProvider);
+  } catch (err) {
+    const parsed = parseAuthError(err);
+    console.warn('Firebase Auth Login Issue:', parsed);
+    throw err;
+  }
+};
 export const loginAnonymously = () => signInAnonymously(auth);
 export const logout = () => signOut(auth);
 

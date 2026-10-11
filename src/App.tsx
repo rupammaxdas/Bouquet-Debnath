@@ -16,6 +16,7 @@ import { AdminPanel } from "./components/AdminPanel";
 import { CartDrawer } from "./components/CartDrawer";
 import { CheckoutModal } from "./components/CheckoutModal";
 import { OrdersModal } from "./components/OrdersModal";
+import { AuthModal } from "./components/AuthModal";
 import { WishlistProvider } from "./lib/WishlistContext";
 import { CartProvider } from "./lib/CartContext";
 
@@ -23,6 +24,7 @@ export default function App() {
   const [isAdminOpen, setIsAdminOpen] = useState(false);
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isOrdersOpen, setIsOrdersOpen] = useState(false);
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
   const [highlightOrderId, setHighlightOrderId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
 
@@ -37,6 +39,7 @@ export default function App() {
         <div className="min-h-screen bg-white font-sans text-stone-900 selection:bg-stone-200">
           <Navbar 
             onOpenOrders={() => setIsOrdersOpen(true)}
+            onOpenAuth={() => setIsAuthOpen(true)}
             searchQuery={searchQuery}
             setSearchQuery={setSearchQuery}
           />
@@ -62,6 +65,12 @@ export default function App() {
             isOpen={isOrdersOpen}
             onClose={() => setIsOrdersOpen(false)}
             highlightOrderId={highlightOrderId}
+            onOpenAuth={() => setIsAuthOpen(true)}
+          />
+
+          <AuthModal
+            isOpen={isAuthOpen}
+            onClose={() => setIsAuthOpen(false)}
           />
 
           {/* Admin Toggle (Internal/Hidden-ish) */}

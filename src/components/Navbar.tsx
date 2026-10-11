@@ -25,11 +25,12 @@ import { WishlistDrawer } from "./WishlistDrawer";
 
 interface NavbarProps {
   onOpenOrders: () => void;
+  onOpenAuth: () => void;
   searchQuery: string;
   setSearchQuery: (q: string) => void;
 }
 
-export function Navbar({ onOpenOrders, searchQuery, setSearchQuery }: NavbarProps) {
+export function Navbar({ onOpenOrders, onOpenAuth, searchQuery, setSearchQuery }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -216,6 +217,15 @@ export function Navbar({ onOpenOrders, searchQuery, setSearchQuery }: NavbarProp
                   <button
                     onClick={() => {
                       setIsUserMenuOpen(false);
+                      onOpenAuth();
+                    }}
+                    className="w-full px-4 py-2 text-left text-stone-700 hover:bg-stone-50 flex items-center gap-2"
+                  >
+                    <UserIcon size={14} /> My Profile & Account
+                  </button>
+                  <button
+                    onClick={() => {
+                      setIsUserMenuOpen(false);
                       logout();
                     }}
                     className="w-full px-4 py-2 text-left text-red-600 hover:bg-red-50 flex items-center gap-2 border-t border-stone-100"
@@ -227,7 +237,7 @@ export function Navbar({ onOpenOrders, searchQuery, setSearchQuery }: NavbarProp
             </div>
           ) : (
             <button
-              onClick={login}
+              onClick={onOpenAuth}
               className="hidden sm:inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full border border-stone-300 text-stone-800 text-xs font-medium hover:border-stone-900 transition-colors"
             >
               <UserIcon size={14} />
@@ -282,12 +292,12 @@ export function Navbar({ onOpenOrders, searchQuery, setSearchQuery }: NavbarProp
               <button
                 onClick={() => {
                   setIsOpen(false);
-                  login();
+                  onOpenAuth();
                 }}
                 className="flex items-center gap-2 text-sm font-medium text-stone-800"
               >
                 <UserIcon size={18} />
-                <span>Sign In with Google</span>
+                <span>Sign In / My Account</span>
               </button>
             ) : (
               <button

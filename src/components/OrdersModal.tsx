@@ -52,6 +52,7 @@ interface OrdersModalProps {
   isOpen: boolean;
   onClose: () => void;
   highlightOrderId?: string | null;
+  onOpenAuth?: () => void;
 }
 
 const STATUS_STEPS = [
@@ -61,7 +62,7 @@ const STATUS_STEPS = [
   { key: "delivered", label: "Delivered with Care", desc: "Handed to recipient" },
 ];
 
-export function OrdersModal({ isOpen, onClose, highlightOrderId }: OrdersModalProps) {
+export function OrdersModal({ isOpen, onClose, highlightOrderId, onOpenAuth }: OrdersModalProps) {
   const [orders, setOrders] = useState<OrderRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
@@ -278,7 +279,10 @@ export function OrdersModal({ isOpen, onClose, highlightOrderId }: OrdersModalPr
                 <div className="pt-4 border-t border-stone-100 space-y-2">
                   <p className="text-[11px] text-stone-400">Placed an order while signed into Google?</p>
                   <button
-                    onClick={login}
+                    onClick={() => {
+                      if (onOpenAuth) onOpenAuth();
+                      else login();
+                    }}
                     className="px-5 py-2 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold transition-colors"
                   >
                     Sign In with Google to Sync
@@ -296,7 +300,10 @@ export function OrdersModal({ isOpen, onClose, highlightOrderId }: OrdersModalPr
                     <span>Tracking active orders on this device. Sign in with Google to sync across devices.</span>
                   </div>
                   <button
-                    onClick={login}
+                    onClick={() => {
+                      if (onOpenAuth) onOpenAuth();
+                      else login();
+                    }}
                     className="px-4 py-1.5 rounded-full bg-stone-900 text-white font-semibold hover:bg-stone-800 transition-colors shrink-0 text-[11px]"
                   >
                     Sign In with Google
