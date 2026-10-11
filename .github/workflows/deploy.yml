@@ -30,15 +30,17 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
 
       - name: Install dependencies
-        run: npm install
+        run: npm ci || npm install --legacy-peer-deps
 
       - name: Build site
         env:
           VITE_BASE_PATH: /Bouquet-Debnath/
         run: npm run build
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
