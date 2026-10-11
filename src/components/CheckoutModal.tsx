@@ -510,63 +510,30 @@ export function CheckoutModal({ isOpen, onClose, onOrderSuccess }: CheckoutModal
                         </div>
                       </label>
 
-                      {/* Card */}
-                      <label 
-                        className={`flex items-start gap-3 p-4 rounded-2xl border cursor-pointer transition-all ${
-                          paymentMethod === "card" ? "border-stone-900 bg-stone-50 shadow-xs" : "border-stone-200 hover:border-stone-300"
-                        }`}
-                      >
-                        <input
-                          type="radio"
-                          name="payment"
-                          checked={paymentMethod === "card"}
-                          onChange={() => setPaymentMethod("card")}
-                          className="mt-1"
-                        />
-                        <div className="flex-1">
-                          <span className="text-xs font-bold text-stone-900">Credit / Debit Card</span>
-                          <p className="text-[11px] text-stone-500 mt-0.5">Visa, Mastercard, RuPay, Amex encrypted gateway</p>
-                        </div>
-                      </label>
-
                       {/* Cash on Delivery / Hand Delivery */}
                       <label 
-                        className={`flex flex-col gap-2 p-4 rounded-2xl border cursor-pointer transition-all ${
+                        className={`flex items-start gap-3 p-4 rounded-2xl border cursor-pointer transition-all ${
                           paymentMethod === "cod" 
                             ? "border-stone-900 bg-stone-50 shadow-xs ring-1 ring-stone-900/10" 
                             : "border-stone-200 hover:border-stone-300"
                         }`}
                       >
-                        <div className="flex items-start gap-3">
-                          <input
-                            type="radio"
-                            name="payment"
-                            checked={paymentMethod === "cod"}
-                            onChange={() => setPaymentMethod("cod")}
-                            className="mt-1"
-                          />
-                          <div className="flex-1">
-                            <div className="flex items-center justify-between">
-                              <span className="text-xs font-bold text-stone-900">Pay on Hand Delivery (Cash or UPI)</span>
-                              <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">
-                                Instant Confirmation
-                              </span>
-                            </div>
-                            <p className="text-[11px] text-stone-500 mt-0.5">Pay via Cash or scan our courier's UPI QR code when blooms arrive at your doorstep</p>
+                        <input
+                          type="radio"
+                          name="payment"
+                          checked={paymentMethod === "cod"}
+                          onChange={() => setPaymentMethod("cod")}
+                          className="mt-1"
+                        />
+                        <div className="flex-1">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-bold text-stone-900">Pay on Hand Delivery (Cash or UPI)</span>
+                            <span className="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2 py-0.5 rounded-full">
+                              Instant Confirmation
+                            </span>
                           </div>
+                          <p className="text-[11px] text-stone-500 mt-0.5">Pay via Cash or scan our courier's UPI QR code when blooms arrive at your doorstep</p>
                         </div>
-
-                        {paymentMethod === "cod" && (
-                          <div className="mt-2 p-3 bg-white rounded-xl border border-stone-200/90 text-[11px] text-stone-600 space-y-1">
-                            <div className="font-semibold text-stone-900 flex items-center gap-1.5">
-                              <Check size={14} className="text-emerald-600" />
-                              <span>Zero Advance Payment Needed</span>
-                            </div>
-                            <p className="text-stone-500 leading-relaxed">
-                              Your arrangement will be handcrafted fresh for your scheduled time slot ({deliverySlot.toUpperCase()}). You only pay ₹{finalTotal.toLocaleString()} once you receive and inspect your flowers.
-                            </p>
-                          </div>
-                        )}
                       </label>
                     </div>
                   </div>
