@@ -17,6 +17,7 @@ import { CartDrawer } from "./components/CartDrawer";
 import { CheckoutModal } from "./components/CheckoutModal";
 import { OrdersModal } from "./components/OrdersModal";
 import { AuthModal } from "./components/AuthModal";
+import { AuthProvider } from "./lib/AuthContext";
 import { WishlistProvider } from "./lib/WishlistContext";
 import { CartProvider } from "./lib/CartContext";
 
@@ -34,9 +35,10 @@ export default function App() {
   };
 
   return (
-    <WishlistProvider>
-      <CartProvider>
-        <div className="min-h-screen bg-white font-sans text-stone-900 selection:bg-stone-200">
+    <AuthProvider>
+      <WishlistProvider>
+        <CartProvider>
+          <div className="min-h-screen bg-white font-sans text-stone-900 selection:bg-stone-200">
           <Navbar 
             onOpenOrders={() => setIsOrdersOpen(true)}
             onOpenAuth={() => setIsAuthOpen(true)}
@@ -73,10 +75,10 @@ export default function App() {
             onClose={() => setIsAuthOpen(false)}
           />
 
-          {/* Admin Toggle (Internal/Hidden-ish) */}
+          {/* Admin Toggle (Hidden per user focus request) */}
           <button 
             onClick={() => setIsAdminOpen(true)}
-            className="fixed bottom-6 right-6 p-4 bg-white/90 backdrop-blur-md border border-stone-200 rounded-full shadow-lg hover:bg-stone-50 transition-all z-40 group"
+            className="hidden"
             title="Admin Panel"
             aria-label="Admin Studio Panel"
           >
@@ -87,5 +89,6 @@ export default function App() {
         </div>
       </CartProvider>
     </WishlistProvider>
+    </AuthProvider>
   );
 }

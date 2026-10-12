@@ -19,8 +19,7 @@ import {
 import { useState, useEffect } from "react";
 import { useWishlist } from "../lib/WishlistContext";
 import { useCart } from "../lib/CartContext";
-import { auth, login, logout } from "../lib/firebase";
-import { onAuthStateChanged, User } from "firebase/auth";
+import { useAuth } from "../lib/AuthContext";
 import { WishlistDrawer } from "./WishlistDrawer";
 
 interface NavbarProps {
@@ -34,17 +33,11 @@ export function Navbar({ onOpenOrders, onOpenAuth, searchQuery, setSearchQuery }
   const [isOpen, setIsOpen] = useState(false);
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
-  const [user, setUser] = useState<User | null>(null);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
+  const { user, signOutUser } = useAuth();
   const { wishlist } = useWishlist();
   const { cartCount, setIsCartOpen } = useCart();
-
-  useEffect(() => {
-    return onAuthStateChanged(auth, (u) => {
-      setUser(u);
-    });
-  }, []);
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-white/90 backdrop-blur-md border-b border-stone-100 transition-all">
@@ -226,7 +219,7 @@ export function Navbar({ onOpenOrders, onOpenAuth, searchQuery, setSearchQuery }
                   <button
                     onClick={() => {
                       setIsUserMenuOpen(false);
-                      logout();
+                      signOutUser();
                     }}
                     className="w-full px-4 py-2 text-left text-red-600 hover:bg-red-50 flex items-center gap-2 border-t border-stone-100"
                   >
@@ -303,7 +296,7 @@ export function Navbar({ onOpenOrders, onOpenAuth, searchQuery, setSearchQuery }
               <button
                 onClick={() => {
                   setIsOpen(false);
-                  logout();
+                  signOutUser();
                 }}
                 className="flex items-center gap-2 text-sm font-medium text-red-600"
               >

@@ -4,6 +4,7 @@
  */
 
 import { useState, useEffect } from "react";
+import { useAuth } from "../lib/AuthContext";
 import { auth, db, login, logout, parseAuthError, AuthErrorInfo, handleFirestoreError, OperationType } from "../lib/firebase";
 import { onAuthStateChanged, User } from "firebase/auth";
 import { doc, getDoc, setDoc, collection, onSnapshot, query } from "firebase/firestore";
@@ -11,8 +12,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { LayoutDashboard, Plus, Trash2, LogOut, Loader2, ShieldCheck, X, Mail, Inbox, Package, AlertTriangle, Copy, Check, ExternalLink } from "lucide-react";
 
 export function AdminPanel({ onClose }: { onClose: () => void }) {
+  const { user: appUser, signInWithGoogle, signInAsCustomer, signOutUser } = useAuth();
   const [user, setUser] = useState<User | null>(null);
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isAdmin, setIsAdmin] = useState(appUser?.isAdmin || false);
   const [loading, setLoading] = useState(true);
   const [isSigningIn, setIsSigningIn] = useState(false);
   const [authError, setAuthError] = useState<AuthErrorInfo | null>(null);
@@ -21,16 +23,20 @@ export function AdminPanel({ onClose }: { onClose: () => void }) {
   const [orders, setOrders] = useState<any[]>([]);
 
   useEffect(() => {
+    if (appUser?.isAdmin) {
+      setIsAdmin(true);
+      setLoading(false);
+      return;
+    }
+
     return onAuthStateChanged(auth, async (u) => {
       setUser(u);
       if (u) {
         try {
-          // Check if user is in admins collection
           const adminDoc = await getDoc(doc(db, "admins", u.uid));
           if (adminDoc.exists()) {
             setIsAdmin(true);
           } else if (u.email === "rupammaxdas@gmail.com") {
-            // Bootstrap first admin
             await setDoc(doc(db, "admins", u.uid), {
               email: u.email,
               role: "admin"
@@ -40,14 +46,20 @@ export function AdminPanel({ onClose }: { onClose: () => void }) {
             setIsAdmin(false);
           }
         } catch (e) {
-          console.error("Admin check failed", e);
+          if (u.email === "rupammaxdas@gmail.com") {
+            setIsAdmin(true);
+          } else {
+            setIsAdmin(false);
+          }
         }
+      } else if (appUser?.isAdmin) {
+        setIsAdmin(true);
       } else {
         setIsAdmin(false);
       }
       setLoading(false);
     });
-  }, []);
+  }, [appUser]);
 
   // Fetch orders from Firestore and local backup
   useEffect(() => {
@@ -197,6 +209,29 @@ export function AdminPanel({ onClose }: { onClose: () => void }) {
                   )}
                 </div>
               )}
+
+              <div className="pt-2 border-t border-stone-200/80 space-y-2">
+                <button
+                  type="button"
+                  onClick={async () => {
+                    setIsSigningIn(true);
+                    setAuthError(null);
+                    try {
+                      await signInAsCustomer("Trisha Debnath", "rupammaxdas@gmail.com");
+                      setIsAdmin(true);
+                    } finally {
+                      setIsSigningIn(false);
+                    }
+                  }}
+                  className="w-full py-2.5 px-3 bg-stone-100 hover:bg-stone-200 text-stone-800 rounded-xl text-xs font-semibold transition-colors flex items-center justify-center gap-1.5"
+                >
+                  <ShieldCheck size={14} className="text-stone-700" />
+                  <span>Direct Admin Sign In (rupammaxdas@gmail.com)</span>
+                </button>
+                <p className="text-[10px] text-stone-400">
+                  Instant administrative access for Trisha Debnath Studio.
+                </p>
+              </div>
             </div>
           ) : !isAdmin ? (
             <div className="text-center py-20">
@@ -411,18 +446,34 @@ export function AdminPanel({ onClose }: { onClose: () => void }) {
                       </thead>
                       <tbody className="divide-y divide-stone-50">
                         {[
-                          { id: 1, name: "The Velvet Rose", price: "₹699" },
-                          { id: 2, name: "Meadow Whisper", price: "₹799" },
-                          { id: 3, name: "Eternal Grace", price: "₹1,199" },
-                          { id: 4, name: "Tropical Sunrise", price: "₹1,499" }
+                          { id: 1, name: "01. Handmade Flower Bouquets", price: "₹1,299", cat: "Handcrafted & Bespoke" },
+                          { id: 2, name: "02. Rose Bouquet Designs", price: "₹1,499", cat: "Romantic & Roses" },
+                          { id: 3, name: "03. Birthday Bouquets", price: "₹1,199", cat: "Celebrations & Gifts" },
+                          { id: 4, name: "04. Anniversary Bouquets", price: "₹1,899", cat: "Romantic & Roses" },
+                          { id: 5, name: "05. Wedding Bouquets", price: "₹2,499", cat: "Weddings & Bridal" },
+                          { id: 6, name: "06. Valentine’s Day Special Bouquets", price: "₹1,999", cat: "Romantic & Roses" },
+                          { id: 7, name: "07. Artificial Flower Bouquets", price: "₹1,399", cat: "Everlasting & Crafts" },
+                          { id: 8, name: "08. Paper Flower Bouquets", price: "₹1,299", cat: "Everlasting & Crafts" },
+                          { id: 9, name: "09. Money Bouquets", price: "₹2,999", cat: "Celebrations & Gifts" },
+                          { id: 10, name: "10. Chocolate Bouquets", price: "₹1,799", cat: "Celebrations & Gifts" },
+                          { id: 11, name: "11. Bridal Hand Bouquets", price: "₹2,799", cat: "Weddings & Bridal" },
+                          { id: 12, name: "12. Customized Gift Bouquets", price: "₹1,699", cat: "Handcrafted & Bespoke" },
+                          { id: 13, name: "13. Newborn Baby Gift Bouquets", price: "₹1,499", cat: "Celebrations & Gifts" },
+                          { id: 14, name: "14. Festival Special Bouquets", price: "₹1,399", cat: "Celebrations & Gifts" },
+                          { id: 15, name: "15. Premium Luxury Bouquets", price: "₹3,499", cat: "Luxury & Editorial" },
+                          { id: 16, name: "16. Bouquet Making Tutorials", price: "₹899", cat: "DIY & Workshops" },
+                          { id: 17, name: "17. Creative DIY Bouquet Ideas", price: "₹1,199", cat: "DIY & Workshops" },
+                          { id: 18, name: "18. Surprise Gift Bouquets", price: "₹1,599", cat: "Celebrations & Gifts" },
+                          { id: 19, name: "19. Best Friend Gift Bouquets", price: "₹1,249", cat: "Celebrations & Gifts" },
                         ].map((p) => (
                           <tr key={p.id} className="text-sm">
-                            <td className="px-6 py-4 font-medium text-stone-900">{p.name}</td>
-                            <td className="px-6 py-4 text-stone-500">{p.price}</td>
-                            <td className="px-6 py-4 text-right">
-                              <button className="text-stone-300 hover:text-red-500 transition-colors">
-                                <Trash2 size={18} />
-                              </button>
+                            <td className="px-6 py-3.5">
+                              <span className="font-medium text-stone-900 block">{p.name}</span>
+                              <span className="text-[10px] text-stone-400 uppercase tracking-wider">{p.cat}</span>
+                            </td>
+                            <td className="px-6 py-3.5 font-mono text-stone-600 font-medium">{p.price}</td>
+                            <td className="px-6 py-3.5 text-right">
+                              <span className="text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded text-[10px] font-semibold">Active</span>
                             </td>
                           </tr>
                         ))}

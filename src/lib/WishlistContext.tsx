@@ -42,7 +42,12 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     return onAuthStateChanged(auth, (user) => {
       setUserId(user?.uid || null);
       if (!user) {
-        setWishlist([]);
+        try {
+          const saved = JSON.parse(localStorage.getItem('debnath_wishlist') || '[]');
+          setWishlist(saved);
+        } catch {
+          setWishlist([]);
+        }
         setIsLoading(false);
       }
     });
@@ -59,7 +64,11 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
       setWishlist(items);
       setIsLoading(false);
     }, (error) => {
-      handleFirestoreError(error, OperationType.LIST, `users/${userId}/wishlist`);
+      console.warn("Wishlist remote sync note (using local cache):", error);
+      try {
+        const saved = JSON.parse(localStorage.getItem('debnath_wishlist') || '[]');
+        setWishlist(saved);
+      } catch {}
       setIsLoading(false);
     });
 
@@ -67,31 +76,39 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
   }, [userId]);
 
   const toggleWishlist = useCallback(async (product: any) => {
-    if (!userId) {
-      // Prompt for login could be handled here or by UI
-      return;
-    }
-
     const productId = product.id.toString();
-    const itemRef = doc(db, 'users', userId, 'wishlist', productId);
-    
     const exists = wishlist.some(item => item.productId === productId);
 
+    let updatedList: WishlistItem[];
+    if (exists) {
+      updatedList = wishlist.filter(item => item.productId !== productId);
+    } else {
+      const newItem: WishlistItem = {
+        productId,
+        name: product.name,
+        price: typeof product.price === "number" ? product.price.toString() : product.price,
+        image: product.image,
+        addedAt: new Date().toISOString()
+      };
+      updatedList = [newItem, ...wishlist];
+    }
+
+    setWishlist(updatedList);
     try {
-      if (exists) {
-        await deleteDoc(itemRef);
-      } else {
-        const newItem: WishlistItem = {
-          productId,
-          name: product.name,
-          price: product.price,
-          image: product.image,
-          addedAt: new Date().toISOString()
-        };
-        await setDoc(itemRef, newItem);
+      localStorage.setItem('debnath_wishlist', JSON.stringify(updatedList));
+    } catch {}
+
+    if (userId) {
+      const itemRef = doc(db, 'users', userId, 'wishlist', productId);
+      try {
+        if (exists) {
+          await deleteDoc(itemRef);
+        } else {
+          await setDoc(itemRef, updatedList[0]);
+        }
+      } catch (error) {
+        console.warn("Wishlist cloud sync note:", error);
       }
-    } catch (error) {
-      handleFirestoreError(error, OperationType.WRITE, `users/${userId}/wishlist/${productId}`);
     }
   }, [userId, wishlist]);
 

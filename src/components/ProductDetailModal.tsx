@@ -24,11 +24,21 @@ import { auth, login } from "../lib/firebase";
 
 export interface ProductType {
   id: number | string;
+  itemNumber?: string;
   name: string;
   category: string;
   price: string | number;
   image: string;
   description?: string;
+  tag?: string;
+  specs?: {
+    lifespan?: string;
+    fragrance?: string;
+    height?: string;
+    composition?: string;
+    careTips?: string;
+    inclusions?: string;
+  };
 }
 
 interface ProductDetailModalProps {
@@ -68,10 +78,6 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
 
   const handleWishlistToggle = (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (!auth.currentUser) {
-      login();
-      return;
-    }
     toggleWishlist(product);
   };
 
@@ -127,9 +133,21 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
         <div className="md:w-1/2 p-6 sm:p-8 flex flex-col justify-between overflow-y-auto">
           <div className="space-y-4">
             <div>
-              <span className="text-[10px] font-bold uppercase tracking-widest text-stone-400 block mb-1">
-                {product.category} Collection
-              </span>
+              <div className="flex items-center gap-2 mb-1.5 flex-wrap">
+                {product.itemNumber && (
+                  <span className="px-2 py-0.5 rounded-md bg-stone-900 text-white font-mono text-[10px] font-bold tracking-wider">
+                    № {product.itemNumber}
+                  </span>
+                )}
+                <span className="text-[10px] font-bold uppercase tracking-widest text-stone-500">
+                  {product.category}
+                </span>
+                {product.tag && (
+                  <span className="px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200 text-[10px] font-semibold">
+                    {product.tag}
+                  </span>
+                )}
+              </div>
               <h2 className="text-2xl sm:text-3xl font-display font-medium text-stone-900">
                 {product.name}
               </h2>
@@ -137,7 +155,7 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
                 <span className="text-xl font-display font-bold text-stone-900">
                   ₹{numericPrice.toLocaleString()}
                 </span>
-                <span className="text-xs text-stone-500">Includes decorative wrapping & card</span>
+                <span className="text-xs text-stone-500">Includes decorative wrapping & personalized greeting card</span>
               </div>
             </div>
 
@@ -147,23 +165,23 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
               }
             </p>
 
-            {/* Botanist Specifications */}
+            {/* Botanist Specifications & Craft Details */}
             <div className="grid grid-cols-2 gap-2.5 p-3 rounded-2xl bg-stone-50 text-[11px] text-stone-600 border border-stone-200/60">
               <div>
-                <span className="text-stone-400 block text-[9px] uppercase tracking-wider">Stem Lifespan</span>
-                <strong className="text-stone-900">7 to 10 Days</strong>
+                <span className="text-stone-400 block text-[9px] uppercase tracking-wider">Lifespan / Durability</span>
+                <strong className="text-stone-900">{product.specs?.lifespan || "7 to 10 Days Fresh"}</strong>
               </div>
               <div>
-                <span className="text-stone-400 block text-[9px] uppercase tracking-wider">Fragrance Profile</span>
-                <strong className="text-stone-900">Warm Floral Sweetness</strong>
+                <span className="text-stone-400 block text-[9px] uppercase tracking-wider">Aroma Profile</span>
+                <strong className="text-stone-900">{product.specs?.fragrance || "Subtle Floral Perfume"}</strong>
               </div>
               <div>
-                <span className="text-stone-400 block text-[9px] uppercase tracking-wider">Arrangement Height</span>
-                <strong className="text-stone-900">Approx. 40–45 cm</strong>
+                <span className="text-stone-400 block text-[9px] uppercase tracking-wider">Scale & Height</span>
+                <strong className="text-stone-900">{product.specs?.height || "Approx. 40–45 cm"}</strong>
               </div>
               <div>
-                <span className="text-stone-400 block text-[9px] uppercase tracking-wider">Stem Composition</span>
-                <strong className="text-stone-900">12+ Fresh Blooms</strong>
+                <span className="text-stone-400 block text-[9px] uppercase tracking-wider">Craft Composition</span>
+                <strong className="text-stone-900">{product.specs?.composition || "Hand-tied Artisan Selection"}</strong>
               </div>
             </div>
 

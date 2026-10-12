@@ -6,7 +6,7 @@
       "type": "object",
       "properties": {
         "name": { "type": "string", "maxLength": 100 },
-        "category": { "type": "string", "enum": ["Romantic", "Seasonal", "Sympathy", "Exotic"] },
+        "category": { "type": "string", "maxLength": 50 },
         "price": { "type": "string", "maxLength": 20 },
         "image": { "type": "string", "maxLength": 500 },
         "description": { "type": "string", "maxLength": 1000 },

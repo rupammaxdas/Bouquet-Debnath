@@ -20,6 +20,7 @@ import {
   Search,
   ArrowRight
 } from "lucide-react";
+import { useAuth } from "../lib/AuthContext";
 import { auth, db, login, handleFirestoreError, OperationType } from "../lib/firebase";
 import { collection, query, where, onSnapshot, doc, getDoc } from "firebase/firestore";
 
@@ -46,6 +47,8 @@ interface OrderRecord {
   paymentMethod: string;
   status: "placed" | "crafting" | "out_for_delivery" | "delivered" | "cancelled";
   createdAt: string;
+  userId?: string;
+  userEmail?: string;
 }
 
 interface OrdersModalProps {
@@ -63,6 +66,7 @@ const STATUS_STEPS = [
 ];
 
 export function OrdersModal({ isOpen, onClose, highlightOrderId, onOpenAuth }: OrdersModalProps) {
+  const { user } = useAuth();
   const [orders, setOrders] = useState<OrderRecord[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedOrderId, setSelectedOrderId] = useState<string | null>(null);
@@ -118,24 +122,29 @@ export function OrdersModal({ isOpen, onClose, highlightOrderId, onOpenAuth }: O
     };
 
     const localOrders = getLocalOrders();
+    const fbUser = auth.currentUser;
 
-    const user = auth.currentUser;
-    if (!user) {
-      localOrders.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
-      setOrders(localOrders);
+    if (!fbUser) {
+      const matchingLocal = user?.email
+        ? localOrders.filter(o => o.userEmail?.toLowerCase() === user.email?.toLowerCase() || o.userId === user.uid)
+        : localOrders;
+
+      const displayOrders = matchingLocal.length > 0 ? matchingLocal : localOrders;
+      displayOrders.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime());
+      setOrders(displayOrders);
       setLoading(false);
 
       if (highlightOrderId) {
         setSelectedOrderId(highlightOrderId);
-      } else if (localOrders.length > 0 && !selectedOrderId) {
-        setSelectedOrderId(localOrders[0].id);
+      } else if (displayOrders.length > 0 && !selectedOrderId) {
+        setSelectedOrderId(displayOrders[0].id);
       }
       return;
     }
 
     const q = query(
       collection(db, "orders"),
-      where("userId", "==", user.uid)
+      where("userId", "==", fbUser.uid)
     );
 
     const unsubscribe = onSnapshot(q, (snapshot) => {
@@ -275,29 +284,35 @@ export function OrdersModal({ isOpen, onClose, highlightOrderId, onOpenAuth }: O
                 <p className="text-xs text-red-600 bg-red-50 p-2.5 rounded-xl border border-red-200">{searchError}</p>
               )}
 
-              {!auth.currentUser && (
+              {!user ? (
                 <div className="pt-4 border-t border-stone-100 space-y-2">
-                  <p className="text-[11px] text-stone-400">Placed an order while signed into Google?</p>
+                  <p className="text-[11px] text-stone-400">Placed an order while signed into Google or Customer account?</p>
                   <button
                     onClick={() => {
                       if (onOpenAuth) onOpenAuth();
                       else login();
                     }}
-                    className="px-5 py-2 rounded-full bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold transition-colors"
+                    className="px-5 py-2 rounded-full bg-stone-900 text-white text-xs font-semibold hover:bg-stone-800 transition-colors"
                   >
-                    Sign In with Google to Sync
+                    Sign In to View All Orders
                   </button>
+                </div>
+              ) : (
+                <div className="pt-4 border-t border-stone-100 space-y-1 text-center">
+                  <p className="text-[11px] text-stone-500 font-medium">
+                    Signed in as <strong>{user.displayName || user.email}</strong>
+                  </p>
                 </div>
               )}
             </div>
           ) : (
             <div>
-              {/* Optional guest sync hint banner */}
-              {!auth.currentUser && (
+              {/* Sync hint banner or user status */}
+              {!user ? (
                 <div className="mb-6 p-3 bg-stone-50 border border-stone-200/80 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-stone-600">
                   <div className="flex items-center gap-2">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    <span>Tracking active orders on this device. Sign in with Google to sync across devices.</span>
+                    <span>Tracking active orders on this device. Sign in to sync across devices.</span>
                   </div>
                   <button
                     onClick={() => {
@@ -306,7 +321,20 @@ export function OrdersModal({ isOpen, onClose, highlightOrderId, onOpenAuth }: O
                     }}
                     className="px-4 py-1.5 rounded-full bg-stone-900 text-white font-semibold hover:bg-stone-800 transition-colors shrink-0 text-[11px]"
                   >
-                    Sign In with Google
+                    Sign In (Google or Customer)
+                  </button>
+                </div>
+              ) : (
+                <div className="mb-6 p-3 bg-stone-50 border border-stone-200/80 rounded-2xl flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-stone-600">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-emerald-500" />
+                    <span>Viewing orders for <strong>{user.displayName || user.email}</strong></span>
+                  </div>
+                  <button
+                    onClick={() => onOpenAuth?.()}
+                    className="px-3.5 py-1 rounded-full bg-stone-200 hover:bg-stone-300 text-stone-800 font-semibold transition-colors shrink-0 text-[11px]"
+                  >
+                    Manage Account
                   </button>
                 </div>
               )}

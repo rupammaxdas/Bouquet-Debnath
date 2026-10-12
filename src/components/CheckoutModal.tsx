@@ -3,7 +3,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   X, 
@@ -24,6 +24,7 @@ import {
   Mail
 } from "lucide-react";
 import { useCart } from "../lib/CartContext";
+import { useAuth } from "../lib/AuthContext";
 import { auth, db, login, loginAnonymously, handleFirestoreError, OperationType } from "../lib/firebase";
 import { doc, setDoc } from "firebase/firestore";
 
@@ -51,6 +52,7 @@ const TIME_SLOTS = [
 
 export function CheckoutModal({ isOpen, onClose, onOrderSuccess }: CheckoutModalProps) {
   const { cart, finalTotal, subtotal, discount, deliveryFee, clearCart } = useCart();
+  const { user } = useAuth();
   
   const [step, setStep] = useState<1 | 2 | 3>(1);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -58,12 +60,20 @@ export function CheckoutModal({ isOpen, onClose, onOrderSuccess }: CheckoutModal
   const [validationError, setValidationError] = useState<string | null>(null);
 
   // Form states
-  const [recipientName, setRecipientName] = useState("");
-  const [recipientPhone, setRecipientPhone] = useState("");
-  const [senderName, setSenderName] = useState(auth.currentUser?.displayName || "");
+  const [recipientName, setRecipientName] = useState(user?.displayName || "");
+  const [recipientPhone, setRecipientPhone] = useState(user?.phone || "");
+  const [senderName, setSenderName] = useState(user?.displayName || "");
   const [deliveryAddress, setDeliveryAddress] = useState("");
   const [city, setCity] = useState("Kolkata");
   const [pincode, setPincode] = useState("700001");
+
+  useEffect(() => {
+    if (isOpen && user) {
+      if (!recipientName && user.displayName) setRecipientName(user.displayName);
+      if (!senderName && user.displayName) setSenderName(user.displayName);
+      if (!recipientPhone && user.phone) setRecipientPhone(user.phone);
+    }
+  }, [isOpen, user]);
   const [deliveryDate, setDeliveryDate] = useState(() => {
     const today = new Date();
     return today.toISOString().split('T')[0];
