@@ -50,12 +50,13 @@ export function Footer() {
               Handcrafting botanical elegance under the creative direction of Rupam Max Das since 2026. Bespoke floral arrangements and luxury gifts for those who appreciate the finer details of nature.
             </p>
 
-            <div className="flex items-center gap-3 pt-1">
+            <div className="hidden" aria-hidden="true">
               <a 
                 href="https://www.instagram.com/rupammaxdas" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="w-9 h-9 rounded-full bg-purple-900/60 border border-purple-700/60 flex items-center justify-center text-amber-400 hover:text-amber-300 hover:border-amber-400 hover:bg-purple-900 transition-all"
+                className="hidden"
+                aria-hidden="true"
                 title="Instagram @rupammaxdas"
               >
                 <Instagram size={17} />
@@ -64,7 +65,8 @@ export function Footer() {
                 href="https://www.facebook.com/share/1YFvXyHpju/" 
                 target="_blank" 
                 rel="noopener noreferrer"
-                className="w-9 h-9 rounded-full bg-purple-900/60 border border-purple-700/60 flex items-center justify-center text-amber-400 hover:text-amber-300 hover:border-amber-400 hover:bg-purple-900 transition-all"
+                className="hidden"
+                aria-hidden="true"
                 title="Facebook Profile"
               >
                 <Facebook size={17} />
