@@ -8,6 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Heart, ShoppingBag, Eye, SlidersHorizontal, Check } from "lucide-react";
 import { useWishlist } from "../lib/WishlistContext";
 import { useCart } from "../lib/CartContext";
+import { useTheme } from "../lib/ThemeContext";
 import { auth, login, db } from "../lib/firebase";
 import { collection, onSnapshot } from "firebase/firestore";
 import { ProductDetailModal, ProductType } from "./ProductDetailModal";
@@ -36,7 +37,7 @@ const DEFAULT_PRODUCTS: ProductType[] = [
     category: "Romantic & Roses",
     price: "1,499",
     image: "./assets/images/bouquet_romantic_roses_1790272159677.jpg",
-    description: "Exquisite signature design of velvety Dutch Red Naomi roses layered with silver dollar eucalyptus in Debnath gold-embossed wrapping.",
+    description: "Exquisite signature design of velvety Dutch Red Naomi roses layered with silver dollar eucalyptus in Gift Hub World gold-embossed wrapping.",
     tag: "Bestseller",
     specs: {
       lifespan: "8 to 12 Days Fresh",
@@ -100,7 +101,7 @@ const DEFAULT_PRODUCTS: ProductType[] = [
     category: "Romantic & Roses",
     price: "1,999",
     image: "./assets/images/bouquet_romantic_roses_1790272159677.jpg",
-    description: "The quintessential expression of passion. Two dozen velvety crimson roses in signature Debnath gold-stamped luxury packaging.",
+    description: "The quintessential expression of passion. Two dozen velvety crimson roses in signature Gift Hub World gold-stamped luxury packaging.",
     tag: "Valentine Exclusive",
     specs: {
       lifespan: "8 to 12 Days Fresh",
@@ -260,7 +261,7 @@ const DEFAULT_PRODUCTS: ProductType[] = [
     category: "DIY & Workshops",
     price: "899",
     image: "./assets/images/bouquet_diy_1791794818629.jpg",
-    description: "Comprehensive masterclass video guide and recipe booklet teaching spiral hand-tied bouquet techniques by master florist Trisha Debnath.",
+    description: "Comprehensive masterclass video guide and recipe booklet teaching spiral hand-tied bouquet techniques by master florist Rupam Max Das.",
     tag: "Masterclass Video",
     specs: {
       lifespan: "Lifetime On-Demand Video Access",
@@ -332,14 +333,24 @@ const CATEGORIES = [
 
 interface ProductGridProps {
   searchQuery?: string;
+  selectedCategory?: string;
+  onSelectCategory?: (category: string) => void;
 }
 
-export function ProductGrid({ searchQuery = "" }: ProductGridProps) {
+export function ProductGrid({ 
+  searchQuery = "", 
+  selectedCategory: propCategory, 
+  onSelectCategory: propSetCategory 
+}: ProductGridProps) {
   const { toggleWishlist, isInWishlist } = useWishlist();
   const { addToCart } = useCart();
+  const { currentTheme } = useTheme();
   
   const [products, setProducts] = useState<ProductType[]>(DEFAULT_PRODUCTS);
-  const [selectedCategory, setSelectedCategory] = useState("All");
+  const [internalCategory, setInternalCategory] = useState("All");
+  const selectedCategory = propCategory !== undefined ? propCategory : internalCategory;
+  const setSelectedCategory = propSetCategory || setInternalCategory;
+
   const [sortBy, setSortBy] = useState<"featured" | "number-asc" | "price-asc" | "price-desc">("number-asc");
   const [selectedProduct, setSelectedProduct] = useState<ProductType | null>(null);
   const [quickAddedId, setQuickAddedId] = useState<string | number | null>(null);
@@ -432,7 +443,7 @@ export function ProductGrid({ searchQuery = "" }: ProductGridProps) {
   }, [products, selectedCategory, searchQuery, sortBy]);
 
   return (
-    <section id="collection" className="py-24 bg-stone-50 border-t border-stone-100">
+    <section id="collection" className="py-24 bg-gradient-to-b from-sky-50/60 via-blue-50/30 to-sky-50/50 border-t border-sky-100/70">
       <div className="max-w-7xl mx-auto px-6">
         
         {/* Section Header */}
@@ -473,15 +484,19 @@ export function ProductGrid({ searchQuery = "" }: ProductGridProps) {
         </div>
 
         {/* Category Pills Bar */}
-        <div className="flex flex-wrap items-center gap-2 mb-12 border-b border-stone-200/70 pb-4">
+        <div className="flex flex-wrap items-center gap-2 mb-10 border-b border-stone-200/70 pb-4">
           {CATEGORIES.map((cat) => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              className={`px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition-all ${
+              style={{
+                backgroundColor: selectedCategory === cat ? currentTheme.primaryPurple : undefined,
+                color: selectedCategory === cat ? "#ffffff" : undefined
+              }}
+              className={`px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition-all min-h-[38px] ${
                 selectedCategory === cat
-                  ? "bg-stone-900 text-white shadow-sm"
-                  : "bg-white text-stone-600 border border-stone-200 hover:border-stone-400 hover:text-stone-950"
+                  ? "shadow-sm"
+                  : "bg-white text-stone-600 border border-stone-200 hover:border-purple-300 hover:text-purple-900"
               }`}
             >
               {cat === "All" ? "All 19 Bouquets" : cat}
@@ -492,20 +507,21 @@ export function ProductGrid({ searchQuery = "" }: ProductGridProps) {
           </span>
         </div>
 
-        {/* Product Cards Grid */}
+        {/* Product Cards Grid: White backgrounds, clear product images, readable prices and purple Add to Cart buttons */}
         {filteredProducts.length === 0 ? (
-          <div className="py-20 text-center space-y-3 bg-white rounded-3xl border border-stone-200/60 p-8">
+          <div className="py-20 text-center space-y-3 bg-white rounded-3xl border border-stone-200/60 p-8 shadow-sm">
             <p className="text-stone-400 font-display italic text-lg">No arrangements found</p>
             <p className="text-stone-500 text-xs">Try selecting another category or clear your search query.</p>
             <button
               onClick={() => { setSelectedCategory("All"); }}
-              className="mt-4 px-5 py-2 rounded-full bg-stone-900 text-white text-xs font-semibold uppercase tracking-wider"
+              style={{ backgroundColor: currentTheme.primaryPurple }}
+              className="mt-4 px-6 py-2.5 rounded-full text-white text-xs font-semibold uppercase tracking-wider transition-colors hover:brightness-110"
             >
               Reset Filters
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
             {filteredProducts.map((product, index) => {
               const isFav = isInWishlist(product.id.toString());
               const isAdded = quickAddedId === product.id;
@@ -517,93 +533,116 @@ export function ProductGrid({ searchQuery = "" }: ProductGridProps) {
                   initial={{ opacity: 0, y: 20 }}
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
-                  transition={{ delay: index * 0.04 }}
-                  onClick={() => setSelectedProduct(product)}
-                  className="group cursor-pointer flex flex-col justify-between"
+                  transition={{ delay: (index % 4) * 0.05 }}
+                  className="bg-white/95 backdrop-blur-xs rounded-2xl p-4 sm:p-5 border border-sky-100/80 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between group hover:border-sky-300"
                 >
-                  <div className="relative aspect-[4/5] overflow-hidden rounded-2xl bg-stone-200 mb-5 shadow-sm border border-stone-200/60">
-                    <img
-                      src={product.image}
-                      alt={product.name}
-                      className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-108"
-                      referrerPolicy="no-referrer"
-                    />
-                    
-                    <div className="absolute inset-0 bg-stone-950/0 group-hover:bg-stone-950/20 transition-colors duration-300" />
-
-                    {/* Item Number & Tag Badges */}
-                    <div className="absolute top-3.5 left-3.5 flex items-center gap-1.5 z-10 flex-wrap">
-                      <span className="px-2.5 py-1 rounded-full bg-stone-900/90 text-white backdrop-blur-md text-[10px] font-mono font-bold tracking-wider shadow-sm border border-white/20">
-                        № {displayNum}
-                      </span>
-                      {product.tag && (
-                        <span className="hidden sm:inline-block px-2 py-0.5 rounded-full bg-white/95 text-stone-800 backdrop-blur-md text-[9px] font-semibold tracking-wide shadow-sm">
-                          {product.tag}
-                        </span>
-                      )}
-                    </div>
-                    
-                    {/* Wishlist Toggle */}
-                    <button 
-                      onClick={(e) => handleWishlistClick(e, product)}
-                      className="absolute top-3.5 right-3.5 p-2.5 bg-white/90 backdrop-blur-md rounded-full shadow-md transition-all hover:scale-110 z-10"
-                      title={isFav ? "Saved in Wishlist" : "Save to Wishlist"}
+                  <div>
+                    {/* Clear Product Image Container */}
+                    <div 
+                      onClick={() => setSelectedProduct(product)}
+                      className="relative aspect-[4/5] overflow-hidden rounded-xl bg-stone-100 mb-4 cursor-pointer border border-stone-100"
                     >
-                      <Heart 
-                        size={16} 
-                        className={`transition-colors ${isFav ? "fill-red-500 text-red-500" : "text-stone-400"}`} 
+                      <img
+                        src={product.image}
+                        alt={product.name}
+                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        referrerPolicy="no-referrer"
+                        loading="lazy"
                       />
-                    </button>
+                      <div className="absolute inset-0 bg-stone-900/0 group-hover:bg-stone-900/10 transition-colors duration-300" />
 
-                    {/* Quick View Pill */}
-                    <div className="absolute bottom-16 left-3.5 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/90 backdrop-blur-md text-[10px] font-semibold tracking-wider uppercase text-stone-800 shadow-sm">
-                        <Eye size={12} /> Inspect
+                      {/* Catalog Number Badge & Tag */}
+                      <div className="absolute top-3 left-3 flex items-center gap-1.5 z-10 flex-wrap">
+                        <span className="px-2.5 py-1 rounded-full bg-stone-900/90 text-white backdrop-blur-md text-[10px] font-mono font-bold tracking-wider shadow-sm">
+                          № {displayNum}
+                        </span>
+                        {product.tag && (
+                          <span className="px-2 py-0.5 rounded-full bg-white/95 text-purple-950 backdrop-blur-md text-[9px] font-semibold tracking-wide shadow-xs border border-purple-100">
+                            {product.tag}
+                          </span>
+                        )}
+                      </div>
+
+                      {/* Wishlist Toggle (Touch friendly) */}
+                      <button 
+                        onClick={(e) => handleWishlistClick(e, product)}
+                        className="absolute top-3 right-3 p-2.5 bg-white/95 backdrop-blur-md rounded-full shadow-md transition-all hover:scale-110 z-10 min-w-[36px] min-h-[36px] flex items-center justify-center"
+                        title={isFav ? "Saved in Wishlist" : "Save to Wishlist"}
+                        aria-label="Toggle Wishlist"
+                      >
+                        <Heart 
+                          size={16} 
+                          className={`transition-colors ${isFav ? "fill-red-500 text-red-500" : "text-stone-400 hover:text-stone-700"}`} 
+                        />
+                      </button>
+
+                      {/* Quick View Prompt */}
+                      <div className="absolute bottom-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity z-10">
+                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-md text-[10px] font-semibold tracking-wider uppercase text-stone-800 shadow-xs">
+                          <Eye size={12} /> Inspect
+                        </span>
+                      </div>
+                    </div>
+
+                    {/* Product Meta */}
+                    <div className="space-y-1.5">
+                      <div className="flex items-center justify-between text-stone-500 text-[11px] uppercase tracking-wider font-semibold">
+                        <span className="truncate">{product.category}</span>
+                        <span className="text-[10px] font-mono text-emerald-700 shrink-0 font-medium">● In Studio</span>
+                      </div>
+                      
+                      <h3 
+                        onClick={() => setSelectedProduct(product)}
+                        className="text-base sm:text-lg font-display font-semibold text-stone-900 group-hover:text-purple-900 transition-colors line-clamp-1 cursor-pointer"
+                      >
+                        {product.name}
+                      </h3>
+
+                      <p className="text-xs text-stone-500 line-clamp-2 leading-relaxed">
+                        {product.description}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Bottom Row: Readable Price & Purple Add to Cart Button */}
+                  <div className="pt-4 mt-3 border-t border-stone-100 space-y-3">
+                    <div className="flex items-baseline justify-between">
+                      <div className="flex items-baseline gap-1.5">
+                        <span className="text-xs text-stone-400 uppercase font-medium">Price</span>
+                        <span className="text-xl sm:text-2xl font-bold font-mono text-stone-900 tracking-tight tabular-nums">
+                          ₹{typeof product.price === "number" ? product.price.toLocaleString() : product.price}
+                        </span>
+                      </div>
+                      <span className="text-[10px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md font-medium">
+                        Handcrafted
                       </span>
                     </div>
 
-                    {/* Quick Add Button */}
-                    <button 
+                    {/* Purple Add to Cart Button (Adheres to theme palette) */}
+                    <button
                       onClick={(e) => handleQuickAdd(e, product)}
                       disabled={isAdded}
-                      className={`absolute bottom-3 left-3 right-3 py-3 rounded-xl text-xs font-semibold tracking-wider uppercase shadow-md backdrop-blur-md transition-all duration-300 flex items-center justify-center gap-1.5 ${
-                        isAdded 
-                          ? "bg-emerald-700 text-white opacity-100 translate-y-0"
-                          : "bg-white/95 text-stone-900 opacity-0 translate-y-2 group-hover:opacity-100 group-hover:translate-y-0 hover:bg-stone-900 hover:text-white"
+                      style={{
+                        backgroundColor: isAdded ? undefined : currentTheme.primaryPurple
+                      }}
+                      className={`w-full py-3 px-4 rounded-xl text-xs sm:text-sm font-semibold tracking-wide transition-all duration-200 flex items-center justify-center gap-2 min-h-[44px] shadow-sm active:scale-95 touch-manipulation text-white ${
+                        isAdded
+                          ? "bg-emerald-700 text-white cursor-default"
+                          : "hover:brightness-110 active:brightness-95 hover:shadow-md"
                       }`}
                     >
                       {isAdded ? (
                         <>
-                          <Check size={14} />
+                          <Check size={16} />
                           <span>Added to Bag</span>
                         </>
                       ) : (
                         <>
-                          <ShoppingBag size={14} />
-                          <span>Quick Add</span>
+                          <ShoppingBag size={16} />
+                          <span>Add to Cart</span>
                         </>
                       )}
                     </button>
-                  </div>
-
-                  <div className="space-y-1">
-                    <div className="flex items-center justify-between text-stone-400 text-[11px] uppercase tracking-wider font-semibold">
-                      <div className="flex items-center gap-1.5 truncate">
-                        <span className="font-mono text-stone-900 font-bold">#{displayNum}</span>
-                        <span>•</span>
-                        <span className="truncate">{product.category}</span>
-                      </div>
-                      <span className="text-[10px] font-mono text-emerald-700 shrink-0">● In Studio</span>
-                    </div>
-                    <h3 className="text-base font-display font-medium text-stone-900 group-hover:text-stone-600 transition-colors truncate">
-                      {product.name}
-                    </h3>
-                    <div className="flex items-center justify-between pt-0.5">
-                      <p className="text-stone-900 font-mono text-sm font-semibold tabular-nums">
-                        ₹{typeof product.price === "number" ? product.price.toLocaleString() : product.price}
-                      </p>
-                      <span className="text-[10px] text-stone-400">Handcrafted</span>
-                    </div>
                   </div>
                 </motion.div>
               );

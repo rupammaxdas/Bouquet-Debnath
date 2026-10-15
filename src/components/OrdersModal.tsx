@@ -95,8 +95,8 @@ export function OrdersModal({ isOpen, onClose, highlightOrderId, onOpenAuth }: O
         setOrders(prev => [orderData, ...prev]);
         setSelectedOrderId(orderData.id);
         try {
-          const saved = JSON.parse(localStorage.getItem("debnath_orders_history") || "[]");
-          localStorage.setItem("debnath_orders_history", JSON.stringify([orderData, ...saved]));
+          const saved = JSON.parse(localStorage.getItem("gifthubworld_orders_history") || localStorage.getItem("debnath_orders_history") || "[]");
+          localStorage.setItem("gifthubworld_orders_history", JSON.stringify([orderData, ...saved]));
         } catch {}
       } else {
         setSearchError(`No order found matching "${code}". Please check your order receipt code.`);
@@ -114,7 +114,7 @@ export function OrdersModal({ isOpen, onClose, highlightOrderId, onOpenAuth }: O
     // Load locally saved orders
     const getLocalOrders = (): OrderRecord[] => {
       try {
-        const saved = localStorage.getItem("debnath_orders_history");
+        const saved = localStorage.getItem("gifthubworld_orders_history") || localStorage.getItem("debnath_orders_history");
         return saved ? JSON.parse(saved) : [];
       } catch {
         return [];
@@ -534,7 +534,7 @@ export function OrdersModal({ isOpen, onClose, highlightOrderId, onOpenAuth }: O
             rel="noopener noreferrer"
             className="text-stone-900 font-semibold hover:underline"
           >
-            Contact Debnath Concierge
+            Contact Gift Hub World Concierge
           </a>
         </div>
       </motion.div>

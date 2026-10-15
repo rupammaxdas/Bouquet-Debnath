@@ -223,10 +223,10 @@ export function ProductDetailModal({ product, onClose }: ProductDetailModalProps
             <button
               onClick={handleAddToCart}
               disabled={addedNotice}
-              className={`w-full py-4 rounded-full text-xs font-bold uppercase tracking-widest transition-all shadow-md flex items-center justify-center gap-2 ${
+              className={`w-full py-4 rounded-xl text-xs font-extrabold uppercase tracking-widest transition-all shadow-md flex items-center justify-center gap-2 min-h-[46px] ${
                 addedNotice 
                   ? "bg-emerald-700 text-white" 
-                  : "bg-stone-900 text-white hover:bg-stone-800"
+                  : "bg-gradient-to-r from-[#38e8ff] via-[#6f7dff] to-[#ff39d4] text-[#26152c] hover:brightness-110 active:scale-95"
               }`}
             >
               {addedNotice ? (

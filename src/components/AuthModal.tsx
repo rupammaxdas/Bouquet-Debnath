@@ -67,7 +67,7 @@ export function AuthModal({ isOpen, onClose, onSuccess, initialMessage }: AuthMo
         setCustPhone(user.phone || "");
       } else {
         try {
-          const saved = JSON.parse(localStorage.getItem("debnath_customer_profile") || "{}");
+          const saved = JSON.parse(localStorage.getItem("gifthubworld_customer_profile") || localStorage.getItem("debnath_customer_profile") || "{}");
           if (saved.name) setCustName(saved.name);
           if (saved.email) {
             setCustEmail(saved.email);
@@ -149,7 +149,7 @@ export function AuthModal({ isOpen, onClose, onSuccess, initialMessage }: AuthMo
               </div>
               <div>
                 <h3 className="font-display font-medium text-lg text-stone-900 leading-tight">
-                  Debnath Boutique
+                  Gift Hub World Boutique
                 </h3>
                 <p className="text-[11px] text-stone-500">
                   Customer Sign In & Account Management
@@ -390,7 +390,7 @@ export function AuthModal({ isOpen, onClose, onSuccess, initialMessage }: AuthMo
                 {activeTab === "customer" && (
                   <form onSubmit={handleCustomerSubmit} className="space-y-3.5">
                     <p className="text-[11px] text-stone-500">
-                      Sign in directly as a Debnath customer to manage orders, arrange hand-delivery, and access your profile:
+                      Sign in directly as a Gift Hub World customer to manage orders, arrange hand-delivery, and access your profile:
                     </p>
 
                     <div className="space-y-2.5">

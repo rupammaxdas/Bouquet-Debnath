@@ -3,134 +3,219 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Instagram, Twitter, Facebook } from "lucide-react";
+import { Instagram, Facebook, Sparkles, Send, Palette } from "lucide-react";
+import { useState } from "react";
+import { useTheme } from "../lib/ThemeContext";
 
 export function Footer() {
+  const [email, setEmail] = useState("");
+  const [isSubscribed, setIsSubscribed] = useState(false);
+  const { currentTheme, setIsThemeModalOpen } = useTheme();
+
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (email.trim()) {
+      setIsSubscribed(true);
+      setTimeout(() => {
+        setEmail("");
+      }, 2000);
+    }
+  };
+
   return (
-    <footer className="bg-stone-900 text-stone-300 py-20">
+    <footer 
+      className="text-white py-16 sm:py-20 border-t border-purple-950 transition-colors"
+      style={{ backgroundColor: currentTheme.footerBg }}
+    >
       <div className="max-w-7xl mx-auto px-6">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-20">
-          <div className="space-y-6">
+        
+        {/* Main Footer Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12 mb-16">
+          
+          {/* Column 1: Brand & Founder */}
+          <div className="space-y-5">
             <div>
-              <h3 className="text-white text-2xl font-display font-semibold tracking-tight">
-                Debnath
-              </h3>
-              <p className="text-[11px] text-stone-400 font-medium tracking-wider uppercase mt-1">
-                Owner & Founder: <strong className="text-stone-200">Trisha Debnath</strong>
+              <div className="flex items-baseline gap-1.5">
+                <h3 className="text-white text-2xl sm:text-3xl font-display font-semibold tracking-tight">
+                  Gift Hub World
+                </h3>
+                <span className="text-amber-400 text-2xl font-serif">.</span>
+              </div>
+              <p className="text-[11px] text-amber-300/90 font-medium tracking-wider uppercase mt-1.5 font-mono">
+                FOUNDER & CREATIVE DIRECTOR: <strong className="text-amber-300 font-bold">RUPAM MAX DAS</strong>
               </p>
             </div>
-            <p className="text-sm leading-relaxed max-w-xs text-stone-400">
-              Handcrafting botanical elegance under the creative direction of Trisha Debnath since 2026. Bespoke floral arrangements for those who appreciate the finer details of nature.
+            
+            <p className="text-xs sm:text-sm leading-relaxed max-w-xs text-purple-100/85">
+              Handcrafting botanical elegance under the creative direction of Rupam Max Das since 2026. Bespoke floral arrangements and luxury gifts for those who appreciate the finer details of nature.
             </p>
-            <div className="space-y-3 pt-2">
-              <h4 className="text-white text-xs font-semibold uppercase tracking-widest">
-                Follow & Connect
-              </h4>
-              <div className="flex flex-col gap-2.5">
-                <a
-                  href="https://www.facebook.com/share/1YFvXyHpju/"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Facebook Profile"
-                  className="group flex items-center justify-between gap-3 px-4 py-2.5 rounded-xl bg-stone-800/80 border border-stone-800 hover:border-stone-700 hover:bg-stone-800 text-stone-200 hover:text-white transition-all text-xs font-medium"
-                >
-                  <div className="flex items-center gap-2.5 truncate">
-                    <Facebook size={16} className="text-blue-400 shrink-0" />
-                    <span className="truncate">facebook.com/share/1YFvXyHpju/</span>
-                  </div>
-                  <span className="text-[10px] text-stone-400 group-hover:text-stone-200 uppercase tracking-wider shrink-0 font-semibold">
-                    Visit ↗
-                  </span>
-                </a>
 
-                <a
-                  href="https://www.instagram.com/trisha_dbnth?stkn=MTMyZWl2OXVjNmVqdg=="
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  aria-label="Instagram Profile @trisha_dbnth"
-                  className="group flex items-center justify-between gap-3 px-4 py-2.5 rounded-xl bg-stone-800/80 border border-stone-800 hover:border-stone-700 hover:bg-stone-800 text-stone-200 hover:text-white transition-all text-xs font-medium"
-                >
-                  <div className="flex items-center gap-2.5 truncate">
-                    <Instagram size={16} className="text-pink-400 shrink-0" />
-                    <span className="truncate">instagram.com/trisha_dbnth</span>
-                  </div>
-                  <span className="text-[10px] text-stone-400 group-hover:text-stone-200 uppercase tracking-wider shrink-0 font-semibold">
-                    Visit ↗
-                  </span>
-                </a>
-              </div>
+            <div className="flex items-center gap-3 pt-1">
+              <a 
+                href="https://www.instagram.com/rupammaxdas" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="w-9 h-9 rounded-full bg-purple-900/60 border border-purple-700/60 flex items-center justify-center text-amber-400 hover:text-amber-300 hover:border-amber-400 hover:bg-purple-900 transition-all"
+                title="Instagram @rupammaxdas"
+              >
+                <Instagram size={17} />
+              </a>
+              <a 
+                href="https://www.facebook.com/share/1YFvXyHpju/" 
+                target="_blank" 
+                rel="noopener noreferrer"
+                className="w-9 h-9 rounded-full bg-purple-900/60 border border-purple-700/60 flex items-center justify-center text-amber-400 hover:text-amber-300 hover:border-amber-400 hover:bg-purple-900 transition-all"
+                title="Facebook Profile"
+              >
+                <Facebook size={17} />
+              </a>
             </div>
           </div>
 
+          {/* Column 2: Curated Collections (Gold Links) */}
           <div>
-            <h4 className="text-white text-sm font-semibold uppercase tracking-widest mb-6">
-              Shop
+            <h4 className="text-white text-xs font-bold uppercase tracking-widest mb-5 flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-amber-400" />
+              <span>Catalog Collections</span>
             </h4>
-            <ul className="space-y-4 text-sm">
-              <li><a href="#" className="hover:text-white transition-colors">Best Sellers</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">New Arrivals</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Seasonal Specials</a></li>
-              <li><a href="#" className="hover:text-white transition-colors">Gift Cards</a></li>
+            <ul className="space-y-3 text-xs sm:text-sm">
+              <li>
+                <a href="#collection" className="text-amber-400 hover:text-amber-300 transition-colors font-medium">
+                  Romantic & Rose Bouquets
+                </a>
+              </li>
+              <li>
+                <a href="#collection" className="text-amber-400 hover:text-amber-300 transition-colors font-medium">
+                  Handmade Seasonal Wildflowers
+                </a>
+              </li>
+              <li>
+                <a href="#collection" className="text-amber-400 hover:text-amber-300 transition-colors font-medium">
+                  Celebration & Birthday Stems
+                </a>
+              </li>
+              <li>
+                <a href="#collection" className="text-amber-400 hover:text-amber-300 transition-colors font-medium">
+                  Everlasting Paper & Silk Crafts
+                </a>
+              </li>
+              <li>
+                <a href="#collection" className="text-amber-400 hover:text-amber-300 transition-colors font-medium">
+                  Money & Chocolate Arrangements
+                </a>
+              </li>
             </ul>
           </div>
 
+          {/* Column 3: Atelier Assistance & Social (Gold Links) */}
           <div>
-            <h4 className="text-white text-sm font-semibold uppercase tracking-widest mb-6">
-              Assistance
+            <h4 className="text-white text-xs font-bold uppercase tracking-widest mb-5 flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-amber-400" />
+              <span>Atelier Assistance</span>
             </h4>
-            <ul className="space-y-4 text-sm">
-              <li><a href="#collection" className="hover:text-white transition-colors">Browse Catalog</a></li>
-              <li><a href="#bespoke" className="hover:text-white transition-colors">Custom Arrangements</a></li>
+            <ul className="space-y-3 text-xs sm:text-sm">
+              <li className="hidden" aria-hidden="true">
+                <a href="#bespoke" className="hidden text-amber-400 hover:text-amber-300 transition-colors font-medium">
+                  Design Bespoke with AI Studio
+                </a>
+              </li>
+              <li className="hidden" aria-hidden="true">
+                <button 
+                  onClick={() => setIsThemeModalOpen(true)}
+                  className="hidden text-amber-400 hover:text-amber-300 transition-colors font-medium flex items-center gap-1.5 text-left"
+                >
+                  <Palette size={14} className="shrink-0" />
+                  <span>Update Themes ({currentTheme.name})</span>
+                </button>
+              </li>
               <li>
+                <a href="#offers" className="text-amber-400 hover:text-amber-300 transition-colors font-medium">
+                  Promotions & Privileges
+                </a>
+              </li>
+              <li className="hidden" aria-hidden="true">
                 <a 
                   href="https://www.facebook.com/share/1YFvXyHpju/" 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="hover:text-white transition-colors flex items-center gap-1.5"
+                  className="hidden text-amber-400 hover:text-amber-300 transition-colors font-medium flex items-center gap-1.5"
                 >
-                  <span>Contact on Facebook</span>
+                  <span>Founder Facebook Support</span>
                 </a>
               </li>
-              <li>
+              <li className="hidden" aria-hidden="true">
                 <a 
-                  href="https://www.instagram.com/trisha_dbnth?stkn=MTMyZWl2OXVjNmVqdg==" 
+                  href="https://www.instagram.com/rupammaxdas" 
                   target="_blank" 
                   rel="noopener noreferrer" 
-                  className="hover:text-white transition-colors flex items-center gap-1.5"
+                  className="text-amber-400 hover:text-amber-300 transition-colors font-medium flex items-center gap-1.5"
                 >
-                  <span>DM on Instagram</span>
+                  <span>DM on Instagram (@rupammaxdas)</span>
+                </a>
+              </li>
+              <li className="hidden" aria-hidden="true">
+                <a href="mailto:rupammaxdas@gmail.com" className="text-amber-400 hover:text-amber-300 transition-colors font-medium">
+                  rupammaxdas@gmail.com
                 </a>
               </li>
             </ul>
           </div>
 
+          {/* Column 4: The Bloom Journal */}
           <div>
-            <h4 className="text-white text-sm font-semibold uppercase tracking-widest mb-6">
-              The Bloom Journal
+            <h4 className="text-white text-xs font-bold uppercase tracking-widest mb-5 flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-amber-400" />
+              <span>The Bloom Journal</span>
             </h4>
-            <p className="text-sm mb-6">
-              Join our mailing list for floral inspiration and seasonal updates.
+            <p className="text-xs sm:text-sm mb-5 text-purple-100/85 leading-relaxed">
+              Receive secret seasonal bouquet releases, masterclasses, and floral care guides directly from Rupam's desk.
             </p>
-            <form className="relative">
-              <input 
-                type="email" 
-                placeholder="email@example.com"
-                className="w-full bg-transparent border-b border-stone-700 pb-3 text-sm focus:outline-none focus:border-stone-400 transition-colors"
-              />
-              <button className="absolute right-0 bottom-3 text-xs font-bold uppercase tracking-widest text-white hover:text-stone-400 transition-colors">
-                Join
+            
+            <form onSubmit={handleSubscribe} className="space-y-3">
+              <div className="relative">
+                <input 
+                  type="email" 
+                  required
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="Enter your email..."
+                  className="w-full bg-purple-950/70 border border-purple-800/80 rounded-xl px-4 py-3 text-xs text-white placeholder-purple-300/60 focus:outline-none focus:border-amber-400 transition-colors"
+                />
+              </div>
+              <button 
+                type="submit"
+                className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-500 text-purple-950 font-bold text-xs uppercase tracking-wider hover:from-amber-300 hover:to-yellow-400 transition-all flex items-center justify-center gap-1.5 shadow-md active:scale-95"
+              >
+                {isSubscribed ? (
+                  <span>✓ Subscribed to Journal</span>
+                ) : (
+                  <>
+                    <span>Join Atelier List</span>
+                    <Send size={13} />
+                  </>
+                )}
               </button>
             </form>
           </div>
+
         </div>
 
-        <div className="flex flex-col md:flex-row justify-between items-center gap-6 pt-10 border-t border-stone-800 text-[10px] uppercase tracking-widest font-medium">
-          <p>© 2026 DEBNATH FLOWER BOUTIQUE • FOUNDED & OWNED BY TRISHA DEBNATH. ALL RIGHTS RESERVED.</p>
-          <div className="flex gap-8">
-            <a href="#" className="hover:text-white transition-colors">Privacy Policy</a>
-            <a href="#" className="hover:text-white transition-colors">Terms of Service</a>
+        {/* Bottom Bar: Copyright & Legal (White text & Gold Links) */}
+        <div className="flex flex-col md:flex-row justify-between items-center gap-4 pt-8 border-t border-purple-900/60 text-[10px] uppercase tracking-widest text-purple-200/90 font-medium">
+          <p>© 2026 GIFT HUB WORLD FLOWER BOUTIQUE • FOUNDED & OWNED BY RUPAM MAX DAS. ALL RIGHTS RESERVED.</p>
+          <div className="flex gap-6 sm:gap-8">
+            <a href="#collection" className="text-amber-400 hover:text-amber-300 transition-colors">
+              Privacy Policy
+            </a>
+            <a href="#collection" className="text-amber-400 hover:text-amber-300 transition-colors">
+              Terms of Service
+            </a>
+            <a href="#collection" className="text-amber-400 hover:text-amber-300 transition-colors">
+              Security & Guarantees
+            </a>
           </div>
         </div>
+
       </div>
     </footer>
   );

@@ -32,6 +32,7 @@ export interface CartItem {
     stems?: Record<string, number>;
     totalStems?: number;
     summary?: string;
+    aiPreview?: boolean;
   };
   addedAt: string;
 }
@@ -55,13 +56,13 @@ interface CartContextType {
   isLoading: boolean;
 }
 
-const LOCAL_STORAGE_KEY = 'debnath_floral_cart_v1';
+const LOCAL_STORAGE_KEY = 'gifthubworld_floral_cart_v1';
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 export function CartProvider({ children }: { children: React.ReactNode }) {
   const [cart, setCart] = useState<CartItem[]>(() => {
     try {
-      const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+      const saved = localStorage.getItem(LOCAL_STORAGE_KEY) || localStorage.getItem('debnath_floral_cart_v1');
       return saved ? JSON.parse(saved) : [];
     } catch {
       return [];

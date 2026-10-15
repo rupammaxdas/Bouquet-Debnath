@@ -4,7 +4,7 @@
  */
 
 import { motion } from "framer-motion";
-import { Instagram, Facebook, ArrowUpRight } from "lucide-react";
+import { Instagram, Facebook } from "lucide-react";
 
 const MOMENTS = [
   {
@@ -31,43 +31,25 @@ const MOMENTS = [
 
 export function SocialShowcase() {
   return (
-    <section className="py-24 bg-stone-100/60 border-t border-stone-200/60 overflow-hidden">
+    <section className="py-24 bg-gradient-to-b from-sky-50/60 via-sky-100/40 to-blue-50/60 border-t border-sky-100/70 overflow-hidden">
       <div className="max-w-7xl mx-auto px-6">
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
           <div>
-            <span className="text-xs font-semibold tracking-widest text-stone-400 uppercase mb-3 block">
-              Follow & Connect
-            </span>
+            <div className="flex items-center gap-2 mb-2">
+              <span className="w-6 h-px bg-sky-600" />
+              <span className="text-xs font-semibold tracking-widest text-sky-800 uppercase">
+                Follow & Connect
+              </span>
+            </div>
             <h2 className="text-3xl lg:text-4xl font-display font-medium text-stone-900">
               Join Our Floral Community
             </h2>
             <p className="text-xs text-stone-500 mt-2">
-              Follow Founder Trisha Debnath (@trisha_dbnth) for seasonal bouquet arrivals, custom designs, and daily studio updates.
+              Follow Founder Rupam Max Das / Team (@rupammaxdas) for seasonal bouquet arrivals, custom designs, and daily studio updates.
             </p>
           </div>
 
-          <div className="flex flex-wrap items-center gap-3">
-            <a
-              href="https://www.facebook.com/share/1YFvXyHpju/"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-stone-900 text-white hover:bg-stone-800 transition-all text-xs font-semibold tracking-wide shadow-sm"
-            >
-              <Facebook size={15} />
-              <span>Facebook Profile</span>
-              <ArrowUpRight size={14} />
-            </a>
-            <a
-              href="https://www.instagram.com/trisha_dbnth?stkn=MTMyZWl2OXVjNmVqdg=="
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white border border-stone-300 text-stone-800 hover:border-stone-900 hover:text-stone-950 transition-all text-xs font-semibold tracking-wide shadow-sm"
-            >
-              <Instagram size={15} />
-              <span>@trisha_dbnth</span>
-              <ArrowUpRight size={14} />
-            </a>
-          </div>
+
         </div>
 
         {/* Visual moments grid */}
@@ -75,7 +57,7 @@ export function SocialShowcase() {
           {MOMENTS.map((item, idx) => {
             const isInsta = item.platform === "instagram";
             const targetUrl = isInsta
-              ? "https://www.instagram.com/trisha_dbnth?stkn=MTMyZWl2OXVjNmVqdg=="
+              ? "https://www.instagram.com/rupammaxdas"
               : "https://www.facebook.com/share/1YFvXyHpju/";
 
             return (
@@ -105,7 +87,7 @@ export function SocialShowcase() {
                       {item.caption}
                     </p>
                     <span className="text-[10px] font-semibold tracking-wider uppercase text-white/80 mt-2 block">
-                      {isInsta ? "@trisha_dbnth" : "Debnath Floral"} ↗
+                      {isInsta ? "@rupammaxdas" : "Gift Hub World"} ↗
                     </span>
                   </div>
                 </div>

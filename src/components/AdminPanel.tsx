@@ -65,7 +65,7 @@ export function AdminPanel({ onClose }: { onClose: () => void }) {
   useEffect(() => {
     const getLocalOrders = () => {
       try {
-        const saved = localStorage.getItem("debnath_orders_history");
+        const saved = localStorage.getItem("gifthubworld_orders_history") || localStorage.getItem("debnath_orders_history");
         return saved ? JSON.parse(saved) : [];
       } catch {
         return [];
@@ -128,7 +128,7 @@ export function AdminPanel({ onClose }: { onClose: () => void }) {
             <div className="text-center py-16 px-6 bg-stone-50 rounded-3xl border border-dashed border-stone-200 max-w-md mx-auto space-y-6">
               <ShieldCheck className="mx-auto text-stone-300" size={48} />
               <div>
-                <h3 className="font-display font-semibold text-lg text-stone-900">Debnath Studio Admin</h3>
+                <h3 className="font-display font-semibold text-lg text-stone-900">Gift Hub World Studio Admin</h3>
                 <p className="text-stone-500 text-xs mt-1">Authorized access for studio administration.</p>
                 <p className="text-[11px] text-stone-400 mt-0.5">Admin Account: rupammaxdas@gmail.com</p>
               </div>
@@ -217,7 +217,7 @@ export function AdminPanel({ onClose }: { onClose: () => void }) {
                     setIsSigningIn(true);
                     setAuthError(null);
                     try {
-                      await signInAsCustomer("Trisha Debnath", "rupammaxdas@gmail.com");
+                      await signInAsCustomer("Rupam Max Das", "rupammaxdas@gmail.com");
                       setIsAdmin(true);
                     } finally {
                       setIsSigningIn(false);
@@ -229,7 +229,7 @@ export function AdminPanel({ onClose }: { onClose: () => void }) {
                   <span>Direct Admin Sign In (rupammaxdas@gmail.com)</span>
                 </button>
                 <p className="text-[10px] text-stone-400">
-                  Instant administrative access for Trisha Debnath Studio.
+                  Instant administrative access for Rupam Max Das Studio.
                 </p>
               </div>
             </div>
@@ -316,7 +316,7 @@ export function AdminPanel({ onClose }: { onClose: () => void }) {
                         }
 
                         const mailtoBody = encodeURIComponent(
-                          `DEBNATH FLOWER BOUTIQUE - ORDER DETAILS\n\n` +
+                          `GIFT HUB WORLD FLOWER BOUTIQUE - ORDER DETAILS\n\n` +
                           `Order ID: ${ord.id}\n` +
                           `Placed: ${new Date(ord.createdAt || Date.now()).toLocaleString()}\n` +
                           `Payment: ${ord.paymentMethod === "cod" ? "Pay on Hand Delivery" : ord.paymentMethod}\n\n` +
@@ -334,7 +334,7 @@ export function AdminPanel({ onClose }: { onClose: () => void }) {
                           (ord.discount ? `Discount: -₹${ord.discount.toLocaleString()}\n` : '') +
                           `Delivery Fee: ₹${ord.deliveryFee || 0}\n` +
                           `Final Total: ₹${(ord.totalAmount || 0).toLocaleString()}\n\n` +
-                          `Owner & Founder: Trisha Debnath • Debnath Flower Boutique`
+                          `Owner & Founder: Rupam Max Das • Gift Hub World Flower Boutique`
                         );
 
                         const gmailHref = `https://mail.google.com/mail/?view=cm&fs=1&to=rupammaxdas@gmail.com&su=${encodeURIComponent(`Order Info: ${ord.id} - ${ord.recipientName || 'Customer'}`)}&body=${mailtoBody}`;

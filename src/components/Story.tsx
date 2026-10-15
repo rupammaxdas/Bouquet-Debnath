@@ -4,11 +4,11 @@
  */
 
 import { motion } from "framer-motion";
-import { Instagram, Facebook, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 
 export function Story() {
   return (
-    <section id="ourstory" className="py-24 bg-stone-50/50 border-t border-stone-100 overflow-hidden">
+    <section id="ourstory" className="py-24 bg-gradient-to-b from-white/90 via-sky-50/50 to-sky-100/40 border-t border-sky-100/70 overflow-hidden">
       <div className="max-w-7xl mx-auto px-6">
         <div className="grid lg:grid-cols-2 gap-16 lg:gap-20 items-center">
           
@@ -23,7 +23,7 @@ export function Story() {
               >
                 <img 
                   src="./assets/images/hero_floral_bouquet_1790272143558.jpg" 
-                  alt="Trisha Debnath Studio Artistry" 
+                  alt="Rupam Max Das Studio Artistry" 
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
                 />
@@ -37,15 +37,15 @@ export function Story() {
               >
                 <img 
                   src="./assets/images/bouquet_romantic_roses_1790272159677.jpg" 
-                  alt="Debnath Bespoke Floral Craftsmanship" 
+                  alt="Gift Hub World Bespoke Floral Craftsmanship" 
                   className="w-full h-full object-cover"
                   referrerPolicy="no-referrer"
                 />
               </motion.div>
             </div>
             
-            {/* Background Accent Glow */}
-            <div className="absolute -top-12 -left-12 w-56 h-56 bg-amber-100/60 rounded-full -z-10 blur-3xl opacity-60" />
+            {/* Background Sky Accent Glow */}
+            <div className="absolute -top-12 -left-12 w-56 h-56 bg-sky-200/50 rounded-full -z-10 blur-3xl opacity-70" />
           </div>
 
           {/* Editorial Content */}
@@ -56,22 +56,22 @@ export function Story() {
             transition={{ duration: 0.8 }}
             className="space-y-6"
           >
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-stone-200/70 text-stone-700 text-xs font-semibold tracking-wider uppercase">
-              <Sparkles size={13} className="text-amber-600" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-900/10 border border-purple-900/20 text-purple-950 text-xs font-semibold tracking-wider uppercase">
+              <Sparkles size={13} className="text-amber-500" />
               <span>Founder's Atelier</span>
             </div>
 
             <h2 className="text-4xl lg:text-5xl font-display font-medium text-stone-900 leading-tight">
               A Symphony of Petals, <br />
-              <span className="italic font-normal">Founded by Trisha Debnath.</span>
+              <span className="italic font-normal">Founded by Rupam Max Das.</span>
             </h2>
 
             <p className="text-stone-600 text-sm sm:text-base leading-relaxed">
-              Founded by <strong>Trisha Debnath</strong> in 2026, Debnath Flower Boutique emerged from an intimate love for classical botanical design and modern aesthetic luxury. With a keen eye for delicate color palettes and architectural foliage, Trisha curates each arrangement as living poetry for life's most momentous occasions.
+              Founded by <strong>Rupam Max Das</strong> in 2026, Gift Hub World Flower Boutique emerged from an intimate love for classical botanical design and modern aesthetic luxury. With a keen eye for delicate color palettes and architectural foliage, Rupam curates each arrangement as living poetry for life's most momentous occasions.
             </p>
 
             <p className="text-stone-600 text-sm sm:text-base leading-relaxed">
-              Every petal, stem, and ribbon that graces our studio is personally hand-inspected by Trisha and her team. We partner with ethical growers to bring you resilient, farm-fresh blooms delivered in temperature-preserved elegance.
+              Every petal, stem, and ribbon that graces our studio is personally hand-inspected by Rupam and the team. We partner with ethical growers to bring you resilient, farm-fresh blooms delivered in temperature-preserved elegance.
             </p>
 
             {/* Founder Quote Card */}
@@ -79,43 +79,19 @@ export function Story() {
               <p className="font-display italic text-stone-800 text-base leading-relaxed">
                 "Flowers are nature's most sincere language. When words fall short, an artfully composed bouquet speaks directly to the soul."
               </p>
-              <div className="flex items-center justify-between mt-4 pt-3 border-t border-stone-100">
-                <div>
-                  <span className="text-xs font-display font-bold text-stone-900 block">Trisha Debnath</span>
-                  <span className="text-[10px] uppercase tracking-wider text-stone-400">Owner & Creative Director</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <a
-                    href="https://www.instagram.com/trisha_dbnth?stkn=MTMyZWl2OXVjNmVqdg=="
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-2 rounded-full bg-stone-100 text-stone-600 hover:text-stone-950 hover:bg-stone-200 transition-colors"
-                    aria-label="Instagram @trisha_dbnth"
-                    title="Instagram @trisha_dbnth"
-                  >
-                    <Instagram size={15} />
-                  </a>
-                  <a
-                    href="https://www.facebook.com/share/1YFvXyHpju/"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="p-2 rounded-full bg-stone-100 text-stone-600 hover:text-stone-950 hover:bg-stone-200 transition-colors"
-                    aria-label="Facebook Profile"
-                    title="Facebook Profile"
-                  >
-                    <Facebook size={15} />
-                  </a>
-                </div>
+              <div className="mt-4 pt-3 border-t border-stone-100 flex items-center justify-between">
+                <span className="text-[10px] uppercase tracking-wider text-purple-900/70 font-semibold">Founder & Creative Director</span>
+                <span className="text-xs font-display font-semibold text-stone-900">Rupam Max Das</span>
               </div>
             </div>
 
             <div className="pt-2">
               <a
                 href="#bespoke"
-                className="inline-flex items-center gap-2 text-stone-900 font-semibold border-b-2 border-stone-900 pb-1.5 hover:text-stone-600 hover:border-stone-600 transition-all text-sm tracking-wide"
+                className="inline-flex items-center gap-2 text-purple-950 font-semibold border-b-2 border-purple-900 pb-1.5 hover:text-amber-600 hover:border-amber-500 transition-all text-sm tracking-wide"
               >
-                <span>Design a Bespoke Bouquet with Trisha's Palette</span>
-                <span>↗</span>
+                <span>Design a Bespoke Bouquet with Rupam Palette</span>
+                <span className="text-amber-500 font-bold">↗</span>
               </a>
             </div>
           </motion.div>

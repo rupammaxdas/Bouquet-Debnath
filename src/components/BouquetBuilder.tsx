@@ -17,7 +17,14 @@ import {
   Palette, 
   Heart,
   ChevronRight,
-  Eye
+  Eye,
+  Camera,
+  RefreshCw,
+  Download,
+  AlertCircle,
+  ZoomIn,
+  X,
+  Wand2
 } from "lucide-react";
 import { useCart } from "../lib/CartContext";
 
@@ -192,6 +199,14 @@ export function BouquetBuilder() {
   const [activeStemInfo, setActiveStemInfo] = useState<{ id: string; name: string; index: number } | null>(null);
   const [addedToast, setAddedToast] = useState(false);
 
+  // AI Image Preview States
+  const [aiGeneratedImage, setAiGeneratedImage] = useState<string | null>(null);
+  const [isGeneratingImage, setIsGeneratingImage] = useState<boolean>(false);
+  const [generateError, setGenerateError] = useState<string | null>(null);
+  const [previewMode, setPreviewMode] = useState<"blueprint" | "ai">("blueprint");
+  const [loadingStep, setLoadingStep] = useState<string>("Analyzing selected botanicals...");
+  const [isFullscreenModalOpen, setIsFullscreenModalOpen] = useState(false);
+
   const MAX_STEMS = 24;
 
   // Total stem calculations
@@ -233,6 +248,9 @@ export function BouquetBuilder() {
   const handleReset = () => {
     setSelections({});
     setActiveStemInfo(null);
+    setAiGeneratedImage(null);
+    setPreviewMode("blueprint");
+    setGenerateError(null);
   };
 
   const handleRandomize = () => {
@@ -241,6 +259,7 @@ export function BouquetBuilder() {
     setSelectedWrap(randomPreset.wrap);
     setSelectedRibbon(randomPreset.ribbon);
     setArrangementStyle(randomPreset.style);
+    setAiGeneratedImage(null);
   };
 
   const handleApplyPreset = (preset: typeof PRESETS[0]) => {
@@ -248,9 +267,76 @@ export function BouquetBuilder() {
     setSelectedWrap(preset.wrap);
     setSelectedRibbon(preset.ribbon);
     setArrangementStyle(preset.style);
+    setAiGeneratedImage(null);
   };
 
   const { addToCart } = useCart();
+
+  const handleGeneratePreview = async () => {
+    if (totalStems === 0) {
+      setGenerateError("Please select at least 1 flower stem to generate a realistic studio preview.");
+      setPreviewMode("ai");
+      return;
+    }
+
+    setIsGeneratingImage(true);
+    setGenerateError(null);
+    setPreviewMode("ai");
+
+    const flowersList = Object.entries(selections).map(([id, count]) => {
+      const f = FLOWERS.find((item) => item.id === id);
+      return {
+        name: f?.name || id,
+        count,
+        color: f?.color,
+        role: f?.role,
+      };
+    });
+
+    const stemsSummary = flowersList.map(f => `${f.count} stems of ${f.name}`).join(", ");
+
+    const steps = [
+      "Composing botanical harmony & natural heights...",
+      "Styling luxury wrapping & silk ribbon tails...",
+      "Simulating soft diffused morning atelier sunlight...",
+      "Finalizing high-resolution editorial preview..."
+    ];
+    let stepIdx = 0;
+    setLoadingStep(steps[0]);
+    const stepInterval = setInterval(() => {
+      stepIdx = (stepIdx + 1) % steps.length;
+      setLoadingStep(steps[stepIdx]);
+    }, 2800);
+
+    try {
+      const res = await fetch("/api/generate-bouquet-preview", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          stemsSummary,
+          flowersList,
+          wrap: { name: activeWrapObj.name, description: activeWrapObj.description },
+          ribbon: { name: activeRibbonObj.name, color: activeRibbonObj.color },
+          style: arrangementStyle,
+          totalStems,
+        }),
+      });
+
+      clearInterval(stepInterval);
+      const data = await res.json();
+
+      if (data.success && data.imageUrl) {
+        setAiGeneratedImage(data.imageUrl);
+      } else {
+        setGenerateError(data.error || "Unable to render photo preview right now. Please try again.");
+      }
+    } catch (err: any) {
+      clearInterval(stepInterval);
+      setGenerateError(err?.message || "Failed to connect to the Image Generation service.");
+    } finally {
+      setIsGeneratingImage(false);
+    }
+  };
 
   const handleAddToBag = async () => {
     if (totalStems === 0) return;
@@ -259,7 +345,7 @@ export function BouquetBuilder() {
       name: `Bespoke ${activeWrapObj.name} Bouquet`,
       price: totalPrice,
       quantity: 1,
-      image: activeWrapObj.image,
+      image: aiGeneratedImage || activeWrapObj.image,
       type: "bespoke",
       details: {
         wrap: activeWrapObj.name,
@@ -268,6 +354,7 @@ export function BouquetBuilder() {
         stems: selections,
         totalStems,
         summary: `${totalStems} stems wrapped in ${activeWrapObj.name} with ${activeRibbonObj.name} ribbon`,
+        aiPreview: !!aiGeneratedImage,
       },
     });
 
@@ -396,14 +483,14 @@ export function BouquetBuilder() {
   const activeRibbonObj = RIBBONS.find((r) => r.id === selectedRibbon) || RIBBONS[0];
 
   return (
-    <section id="bespoke" className="py-24 bg-stone-50/70 border-y border-stone-200/80 overflow-hidden relative">
+    <section id="bespoke" className="py-24 bg-gradient-to-b from-sky-50/50 via-blue-50/30 to-sky-100/40 border-y border-sky-100/80 overflow-hidden relative">
       <div className="max-w-7xl mx-auto px-6">
         
         {/* Section Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14">
           <div>
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-stone-200/70 text-stone-700 text-xs font-semibold tracking-wider uppercase mb-3">
-              <Sparkles size={13} className="text-amber-600" />
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-900/10 border border-purple-900/20 text-purple-950 text-xs font-semibold tracking-wider uppercase mb-3">
+              <Sparkles size={13} className="text-amber-500" />
               <span>Interactive Atelier</span>
             </div>
             <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-medium text-stone-900 tracking-tight">
@@ -748,16 +835,71 @@ export function BouquetBuilder() {
           </div>
 
           {/* Dynamic Visualizer (Right Sticky Column) */}
-          <div className="w-full lg:w-[480px] shrink-0 sticky top-28 space-y-6">
+          <div className="w-full lg:w-[480px] shrink-0 sticky top-28 space-y-4">
             
+            {/* View Mode Switcher & Generate Action Bar */}
+            <div className="flex items-center justify-between bg-white/95 backdrop-blur-md p-1.5 rounded-2xl border border-stone-200/80 shadow-sm">
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  onClick={() => setPreviewMode("blueprint")}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                    previewMode === "blueprint"
+                      ? "bg-stone-900 text-white shadow-sm"
+                      : "text-stone-600 hover:text-stone-900 hover:bg-stone-100"
+                  }`}
+                >
+                  <Layers size={13} />
+                  <span>2D Atelier</span>
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPreviewMode("ai")}
+                  className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
+                    previewMode === "ai"
+                      ? "bg-stone-900 text-white shadow-sm"
+                      : "text-stone-600 hover:text-stone-900 hover:bg-stone-100"
+                  }`}
+                >
+                  <Sparkles size={13} className="text-amber-500" />
+                  <span>AI Realistic Photo</span>
+                  {aiGeneratedImage && (
+                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  )}
+                </button>
+              </div>
+
+              <button
+                type="button"
+                onClick={handleGeneratePreview}
+                disabled={isGeneratingImage || totalStems === 0}
+                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-600 hover:bg-amber-700 text-white text-xs font-bold transition-all shadow-sm disabled:opacity-40 disabled:cursor-not-allowed"
+                title="Generate realistic studio photo with AI"
+              >
+                {isGeneratingImage ? (
+                  <>
+                    <RefreshCw size={13} className="animate-spin" />
+                    <span>Rendering...</span>
+                  </>
+                ) : (
+                  <>
+                    <Camera size={13} />
+                    <span>{aiGeneratedImage ? "Regenerate" : "Generate Photo"}</span>
+                  </>
+                )}
+              </button>
+            </div>
+
             {/* Visualizer Frame */}
             <div className="relative aspect-[3/4] rounded-3xl overflow-hidden bg-gradient-to-b from-stone-100 via-stone-50 to-stone-200/90 border border-stone-200 shadow-2xl flex flex-col justify-between p-6">
               
               {/* Studio Canvas Status Header */}
               <div className="relative z-30 flex items-center justify-between">
                 <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/90 backdrop-blur-md border border-stone-200 shadow-sm text-xs">
-                  <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="font-semibold text-stone-800">Live Floral Studio</span>
+                  <span className={`w-2 h-2 rounded-full ${previewMode === "ai" ? "bg-amber-500" : "bg-emerald-500"} animate-pulse`} />
+                  <span className="font-semibold text-stone-800">
+                    {previewMode === "ai" ? "AI Studio Photo Preview" : "Live Floral Atelier"}
+                  </span>
                 </div>
 
                 <div className="flex items-center gap-2">
@@ -767,160 +909,300 @@ export function BouquetBuilder() {
                 </div>
               </div>
 
-              {/* Dynamic Arrangement Core */}
+              {/* CORE PREVIEW DISPLAY AREA */}
               <div className="relative flex-1 flex items-center justify-center my-2 overflow-hidden select-none">
                 
-                {/* SVG STEM LINES (Connecting all flowers to tie point) */}
-                <svg className="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="-200 -180 400 400">
-                  {bouquetStems.map((stem) => (
-                    <path
-                      key={`stem-line-${stem.key}`}
-                      d={stem.stemCurve}
-                      stroke="#27272a"
-                      strokeWidth="2.2"
-                      strokeLinecap="round"
-                      opacity={hoveredFlower === stem.flower.id ? "0.9" : "0.55"}
-                      fill="none"
-                    />
-                  ))}
-                </svg>
-
-                {/* BACK WRAPPING PAPER LAYER (Behind stems & flowers) */}
-                <div 
-                  className="absolute bottom-6 w-72 h-80 pointer-events-none z-0 transition-all duration-700"
-                  style={{
-                    backgroundImage: `url(${activeWrapObj.image})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    clipPath: "polygon(50% 100%, 0% 25%, 20% 0%, 80% 0%, 100% 25%)",
-                    filter: "drop-shadow(0 15px 25px rgba(0,0,0,0.15)) contrast(0.95)",
-                    opacity: totalStems > 0 ? 0.95 : 0.4,
-                  }}
-                />
-
-                {/* EMPTY CANVAS PLACEHOLDER */}
-                <AnimatePresence>
-                  {totalStems === 0 && (
-                    <motion.div
-                      initial={{ opacity: 0, scale: 0.9 }}
-                      animate={{ opacity: 1, scale: 1 }}
-                      exit={{ opacity: 0, scale: 0.8 }}
-                      className="relative z-20 text-center p-8 max-w-xs bg-white/80 backdrop-blur-md rounded-2xl border border-stone-200/80 shadow-lg"
-                    >
-                      <div className="w-14 h-14 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center mx-auto mb-4 border border-amber-100">
-                        <Sparkles size={24} />
-                      </div>
-                      <h4 className="font-display font-medium text-stone-900 text-lg">Your Canvas is Ready</h4>
-                      <p className="text-xs text-stone-500 mt-2 leading-relaxed">
-                        Add roses, peonies, lilies, or eucalyptus from the list to see your bouquet take form bloom by bloom.
-                      </p>
-                      <button
-                        onClick={handleRandomize}
-                        className="mt-4 px-4 py-2 bg-stone-900 text-white text-xs font-semibold rounded-full hover:bg-stone-800 transition-all shadow-sm"
+                {/* 1. REALISTIC AI PREVIEW MODE */}
+                {previewMode === "ai" ? (
+                  <div className="relative w-full h-full flex items-center justify-center">
+                    {isGeneratingImage ? (
+                      /* Generation In Progress Loading View */
+                      <motion.div 
+                        initial={{ opacity: 0 }}
+                        animate={{ opacity: 1 }}
+                        className="text-center p-6 rounded-3xl bg-white/90 backdrop-blur-md border border-stone-200/80 shadow-xl max-w-xs space-y-4"
                       >
-                        Auto-Fill Surprise Bouquet
-                      </button>
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-
-                {/* DYNAMIC STEMS & BLOOMS LAYER */}
-                {totalStems > 0 && (
-                  <div className="relative w-full h-full flex items-center justify-center pointer-events-auto">
-                    {bouquetStems.map((stem) => {
-                      const isHighlighted = hoveredFlower === stem.flower.id;
-                      const isSelectedFlower = activeStemInfo?.id === stem.key;
-
-                      return (
-                        <motion.div
-                          key={stem.key}
-                          layout
-                          initial={{ opacity: 0, scale: 0, y: 120, rotate: stem.rotate }}
-                          animate={{ 
-                            opacity: 1, 
-                            scale: isHighlighted ? stem.scale * 1.12 : stem.scale,
-                            x: stem.x, 
-                            y: stem.y, 
-                            rotate: stem.rotate,
-                          }}
-                          exit={{ opacity: 0, scale: 0, y: 80 }}
-                          transition={{ 
-                            type: "spring", 
-                            stiffness: 260, 
-                            damping: 24,
-                            mass: 0.8
-                          }}
-                          onClick={() => setActiveStemInfo({ id: stem.key, name: stem.flower.name, index: stem.index })}
-                          className="absolute cursor-pointer transition-shadow"
-                          style={{ 
-                            zIndex: isHighlighted ? 60 : stem.zIndex,
-                            transformOrigin: "center 85%",
-                          }}
-                        >
-                          <div className={`relative group ${isHighlighted ? "filter drop-shadow(0 0 14px rgba(251,191,36,0.85))" : "drop-shadow-lg"}`}>
-                            {/* Bloom Image */}
-                            <img
-                              src={stem.flower.image}
-                              alt={stem.flower.name}
-                              className="w-36 h-36 object-contain pointer-events-none select-none mix-blend-multiply"
-                              style={{
-                                filter: isHighlighted ? "brightness(1.08)" : "none"
-                              }}
-                            />
-
-                            {/* Hover / Click indicator dot */}
-                            <span 
-                              className={`absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-white shadow-md transition-transform ${
-                                isHighlighted ? "scale-125 ring-2 ring-amber-400" : "opacity-0 group-hover:opacity-100"
-                              }`}
-                              style={{ backgroundColor: stem.flower.color }}
-                            />
+                        <div className="relative w-16 h-16 mx-auto">
+                          <div className="absolute inset-0 rounded-full border-4 border-amber-200 border-t-amber-600 animate-spin" />
+                          <div className="absolute inset-2 rounded-full bg-amber-50 flex items-center justify-center text-amber-700">
+                            <Sparkles size={20} className="animate-pulse" />
                           </div>
-                        </motion.div>
-                      );
-                    })}
+                        </div>
+                        <div>
+                          <h4 className="font-display font-medium text-stone-900 text-base">
+                            Rendering Realistic Studio Preview
+                          </h4>
+                          <p className="text-xs text-stone-500 mt-1.5 font-mono leading-relaxed min-h-[36px]">
+                            {loadingStep}
+                          </p>
+                        </div>
+                        <div className="pt-2 border-t border-stone-100 flex items-center justify-center gap-2 text-[11px] text-stone-400">
+                          <span>Crafting {totalStems} stems</span>
+                          <span>•</span>
+                          <span>{activeWrapObj.name}</span>
+                        </div>
+                      </motion.div>
+                    ) : aiGeneratedImage ? (
+                      /* Generated Realistic Photo View */
+                      <motion.div 
+                        initial={{ opacity: 0, scale: 0.96 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        className="relative w-full h-full rounded-2xl overflow-hidden shadow-xl border border-stone-200/60 group"
+                      >
+                        <img 
+                          src={aiGeneratedImage} 
+                          alt="AI Realistic Custom Bouquet Preview" 
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                          referrerPolicy="no-referrer"
+                        />
+                        <div className="absolute inset-0 bg-stone-950/0 group-hover:bg-stone-950/20 transition-colors" />
+
+                        {/* Top Overlay Badge */}
+                        <div className="absolute top-3 left-3 z-20">
+                          <span className="px-2.5 py-1 rounded-full bg-stone-900/85 backdrop-blur-md text-white text-[10px] font-bold tracking-wider uppercase shadow-sm flex items-center gap-1.5">
+                            <Sparkles size={11} className="text-amber-400" /> Realistic Preview
+                          </span>
+                        </div>
+
+                        {/* Image Action Overlay Buttons */}
+                        <div className="absolute top-3 right-3 flex items-center gap-1.5 z-20">
+                          <button
+                            type="button"
+                            onClick={() => setIsFullscreenModalOpen(true)}
+                            className="p-2 rounded-full bg-white/90 hover:bg-white text-stone-800 shadow-md backdrop-blur-md transition-all hover:scale-110"
+                            title="Expand full screen"
+                          >
+                            <ZoomIn size={14} />
+                          </button>
+                          <a
+                            href={aiGeneratedImage}
+                            download="bespoke-bouquet-preview.png"
+                            className="p-2 rounded-full bg-white/90 hover:bg-white text-stone-800 shadow-md backdrop-blur-md transition-all hover:scale-110"
+                            title="Download realistic preview"
+                          >
+                            <Download size={14} />
+                          </a>
+                        </div>
+
+                        {/* Bottom Tag */}
+                        <div className="absolute bottom-3 left-3 right-3 p-2.5 rounded-xl bg-stone-950/70 backdrop-blur-md text-white flex items-center justify-between text-[10px] z-20">
+                          <div className="truncate">
+                            <span className="text-stone-300">Attached to your order: </span>
+                            <span className="font-semibold">{totalStems} stems bespoke</span>
+                          </div>
+                          <button
+                            type="button"
+                            onClick={handleGeneratePreview}
+                            className="text-amber-400 hover:text-amber-300 font-bold ml-2 shrink-0 flex items-center gap-1"
+                          >
+                            <RefreshCw size={11} /> Redo
+                          </button>
+                        </div>
+                      </motion.div>
+                    ) : (
+                      /* Prompt to Generate Realistic Preview Card */
+                      <motion.div 
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="text-center p-6 rounded-3xl bg-white/90 backdrop-blur-md border border-stone-200/80 shadow-xl max-w-xs space-y-4"
+                      >
+                        <div className="w-14 h-14 rounded-full bg-amber-50 text-amber-700 flex items-center justify-center mx-auto border border-amber-200/60 shadow-inner">
+                          <Camera size={26} />
+                        </div>
+                        <div>
+                          <h4 className="font-display font-medium text-stone-900 text-lg">
+                            Photorealistic Preview
+                          </h4>
+                          <p className="text-xs text-stone-500 mt-2 leading-relaxed">
+                            Transform your {totalStems > 0 ? `${totalStems} selected stems` : 'chosen recipe'} into a true-to-life editorial florist studio photograph.
+                          </p>
+                        </div>
+
+                        {generateError && (
+                          <div className="p-2.5 rounded-xl bg-red-50 text-red-700 border border-red-200 text-[11px] flex items-center gap-2 text-left">
+                            <AlertCircle size={14} className="shrink-0" />
+                            <span>{generateError}</span>
+                          </div>
+                        )}
+
+                        <button
+                          type="button"
+                          onClick={handleGeneratePreview}
+                          disabled={totalStems === 0}
+                          className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-600 to-amber-800 hover:from-amber-700 hover:to-amber-900 text-white text-xs font-bold uppercase tracking-wider transition-all shadow-md flex items-center justify-center gap-2 disabled:opacity-40 disabled:cursor-not-allowed"
+                        >
+                          <Sparkles size={14} />
+                          <span>Generate Realistic Preview</span>
+                        </button>
+                      </motion.div>
+                    )}
                   </div>
-                )}
+                ) : (
+                  /* 2. 2D ATELIER BLUEPRINT CANVAS */
+                  <div className="relative w-full h-full flex items-center justify-center">
+                    {/* SVG STEM LINES */}
+                    <svg className="absolute inset-0 w-full h-full pointer-events-none z-10" viewBox="-200 -180 400 400">
+                      {bouquetStems.map((stem) => (
+                        <path
+                          key={`stem-line-${stem.key}`}
+                          d={stem.stemCurve}
+                          stroke="#27272a"
+                          strokeWidth="2.2"
+                          strokeLinecap="round"
+                          opacity={hoveredFlower === stem.flower.id ? "0.9" : "0.55"}
+                          fill="none"
+                        />
+                      ))}
+                    </svg>
 
-                {/* FRONT WRAPPING COLLAR & TIE RIBBON (Overlapping lower stems) */}
-                <div 
-                  className="absolute bottom-2 w-64 h-48 pointer-events-none z-30 transition-all duration-700"
-                  style={{
-                    backgroundImage: `url(${activeWrapObj.image})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "bottom center",
-                    clipPath: "polygon(50% 100%, 8% 0%, 92% 0%)",
-                    filter: "drop-shadow(0 -8px 16px rgba(0,0,0,0.18))",
-                    opacity: totalStems > 0 ? 0.98 : 0.6,
-                  }}
-                />
-
-                {/* HAND-TIED SILK RIBBON & BOW */}
-                {totalStems > 0 && (
-                  <motion.div
-                    initial={{ scale: 0 }}
-                    animate={{ scale: 1 }}
-                    className="absolute bottom-16 z-40 flex flex-col items-center pointer-events-none"
-                  >
-                    {/* Ribbon knot and loops */}
+                    {/* BACK WRAPPING PAPER LAYER */}
                     <div 
-                      className="w-12 h-6 rounded-full shadow-lg border border-white/30 flex items-center justify-center"
-                      style={{ backgroundColor: activeRibbonObj.color }}
-                    >
-                      <div className="w-3 h-3 rounded-full bg-white/40" />
-                    </div>
-                    {/* Ribbon trailing tails */}
-                    <div className="flex gap-2 -mt-1">
-                      <div 
-                        className="w-2.5 h-14 rounded-b-md shadow-md transform -rotate-12 origin-top"
-                        style={{ backgroundColor: activeRibbonObj.color }}
-                      />
-                      <div 
-                        className="w-2.5 h-16 rounded-b-md shadow-md transform rotate-12 origin-top"
-                        style={{ backgroundColor: activeRibbonObj.color }}
-                      />
-                    </div>
-                  </motion.div>
+                      className="absolute bottom-6 w-72 h-80 pointer-events-none z-0 transition-all duration-700"
+                      style={{
+                        backgroundImage: `url(${activeWrapObj.image})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "center",
+                        clipPath: "polygon(50% 100%, 0% 25%, 20% 0%, 80% 0%, 100% 25%)",
+                        filter: "drop-shadow(0 15px 25px rgba(0,0,0,0.15)) contrast(0.95)",
+                        opacity: totalStems > 0 ? 0.95 : 0.4,
+                      }}
+                    />
+
+                    {/* EMPTY CANVAS PLACEHOLDER */}
+                    <AnimatePresence>
+                      {totalStems === 0 && (
+                        <motion.div
+                          initial={{ opacity: 0, scale: 0.9 }}
+                          animate={{ opacity: 1, scale: 1 }}
+                          exit={{ opacity: 0, scale: 0.8 }}
+                          className="relative z-20 text-center p-8 max-w-xs bg-white/80 backdrop-blur-md rounded-2xl border border-stone-200/80 shadow-lg"
+                        >
+                          <div className="w-14 h-14 rounded-full bg-amber-50 text-amber-600 flex items-center justify-center mx-auto mb-4 border border-amber-100">
+                            <Sparkles size={24} />
+                          </div>
+                          <h4 className="font-display font-medium text-stone-900 text-lg">Your Canvas is Ready</h4>
+                          <p className="text-xs text-stone-500 mt-2 leading-relaxed">
+                            Add roses, peonies, lilies, or eucalyptus from the list to see your bouquet take form bloom by bloom.
+                          </p>
+                          <button
+                            onClick={handleRandomize}
+                            className="mt-4 px-4 py-2 bg-stone-900 text-white text-xs font-semibold rounded-full hover:bg-stone-800 transition-all shadow-sm"
+                          >
+                            Auto-Fill Surprise Bouquet
+                          </button>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+
+                    {/* DYNAMIC STEMS & BLOOMS LAYER */}
+                    {totalStems > 0 && (
+                      <div className="relative w-full h-full flex items-center justify-center pointer-events-auto">
+                        {bouquetStems.map((stem) => {
+                          const isHighlighted = hoveredFlower === stem.flower.id;
+
+                          return (
+                            <motion.div
+                              key={stem.key}
+                              layout
+                              initial={{ opacity: 0, scale: 0, y: 120, rotate: stem.rotate }}
+                              animate={{ 
+                                opacity: 1, 
+                                scale: isHighlighted ? stem.scale * 1.12 : stem.scale,
+                                x: stem.x, 
+                                y: stem.y, 
+                                rotate: stem.rotate,
+                              }}
+                              exit={{ opacity: 0, scale: 0, y: 80 }}
+                              transition={{ 
+                                type: "spring", 
+                                stiffness: 260, 
+                                damping: 24,
+                                mass: 0.8
+                              }}
+                              onClick={() => setActiveStemInfo({ id: stem.key, name: stem.flower.name, index: stem.index })}
+                              className="absolute cursor-pointer transition-shadow"
+                              style={{ 
+                                zIndex: isHighlighted ? 60 : stem.zIndex,
+                                transformOrigin: "center 85%",
+                              }}
+                            >
+                              <div className={`relative group ${isHighlighted ? "filter drop-shadow(0 0 14px rgba(251,191,36,0.85))" : "drop-shadow-lg"}`}>
+                                <img
+                                  src={stem.flower.image}
+                                  alt={stem.flower.name}
+                                  className="w-36 h-36 object-contain pointer-events-none select-none mix-blend-multiply"
+                                  style={{
+                                    filter: isHighlighted ? "brightness(1.08)" : "none"
+                                  }}
+                                />
+
+                                <span 
+                                  className={`absolute -top-1 -right-1 w-3 h-3 rounded-full border-2 border-white shadow-md transition-transform ${
+                                    isHighlighted ? "scale-125 ring-2 ring-amber-400" : "opacity-0 group-hover:opacity-100"
+                                  }`}
+                                  style={{ backgroundColor: stem.flower.color }}
+                                />
+                              </div>
+                            </motion.div>
+                          );
+                        })}
+                      </div>
+                    )}
+
+                    {/* FRONT WRAPPING COLLAR & TIE RIBBON */}
+                    <div 
+                      className="absolute bottom-2 w-64 h-48 pointer-events-none z-30 transition-all duration-700"
+                      style={{
+                        backgroundImage: `url(${activeWrapObj.image})`,
+                        backgroundSize: "cover",
+                        backgroundPosition: "bottom center",
+                        clipPath: "polygon(50% 100%, 8% 0%, 92% 0%)",
+                        filter: "drop-shadow(0 -8px 16px rgba(0,0,0,0.18))",
+                        opacity: totalStems > 0 ? 0.98 : 0.6,
+                      }}
+                    />
+
+                    {/* HAND-TIED SILK RIBBON & BOW */}
+                    {totalStems > 0 && (
+                      <motion.div
+                        initial={{ scale: 0 }}
+                        animate={{ scale: 1 }}
+                        className="absolute bottom-16 z-40 flex flex-col items-center pointer-events-none"
+                      >
+                        <div 
+                          className="w-12 h-6 rounded-full shadow-lg border border-white/30 flex items-center justify-center"
+                          style={{ backgroundColor: activeRibbonObj.color }}
+                        >
+                          <div className="w-3 h-3 rounded-full bg-white/40" />
+                        </div>
+                        <div className="flex gap-2 -mt-1">
+                          <div 
+                            className="w-2.5 h-14 rounded-b-md shadow-md transform -rotate-12 origin-top"
+                            style={{ backgroundColor: activeRibbonObj.color }}
+                          />
+                          <div 
+                            className="w-2.5 h-16 rounded-b-md shadow-md transform rotate-12 origin-top"
+                            style={{ backgroundColor: activeRibbonObj.color }}
+                          />
+                        </div>
+                      </motion.div>
+                    )}
+
+                    {/* Floating Switch To AI Preview Callout (When stems are selected) */}
+                    {totalStems > 0 && !aiGeneratedImage && (
+                      <motion.button
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        type="button"
+                        onClick={handleGeneratePreview}
+                        disabled={isGeneratingImage}
+                        className="absolute bottom-4 z-40 px-3.5 py-1.5 rounded-full bg-stone-900/90 hover:bg-stone-950 text-white text-[11px] font-semibold tracking-wide backdrop-blur-md shadow-lg border border-amber-500/40 flex items-center gap-1.5 transition-all hover:scale-105"
+                      >
+                        <Sparkles size={12} className="text-amber-400" />
+                        <span>View Realistic Photo Preview ↗</span>
+                      </motion.button>
+                    )}
+                  </div>
                 )}
 
               </div>
@@ -953,11 +1235,11 @@ export function BouquetBuilder() {
                   type="button"
                   onClick={handleAddToBag}
                   disabled={totalStems === 0}
-                  className="w-full py-3.5 px-4 rounded-xl bg-stone-900 text-white text-xs font-bold uppercase tracking-widest hover:bg-stone-800 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md flex items-center justify-center gap-2 group"
+                  className="w-full py-3.5 px-4 rounded-xl bg-purple-900 text-white text-xs font-bold uppercase tracking-widest hover:bg-purple-800 active:bg-purple-950 disabled:opacity-40 disabled:cursor-not-allowed transition-all shadow-md flex items-center justify-center gap-2 group min-h-[44px]"
                 >
                   <ShoppingBag size={15} />
                   <span>Order Bespoke Arrangement</span>
-                  <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                  <ChevronRight size={14} className="group-hover:translate-x-1 transition-transform text-amber-300" />
                 </button>
               </div>
 
@@ -983,13 +1265,13 @@ export function BouquetBuilder() {
               </motion.div>
             )}
 
-            {/* Florist advice card */}
-            <div className="p-4 rounded-2xl bg-white border border-stone-200/80 shadow-sm flex gap-3.5 items-start">
+            {/* Florist advice card (Hidden as requested) */}
+            <div className="hidden" aria-hidden="true">
               <div className="w-8 h-8 rounded-full bg-amber-50 text-amber-700 flex items-center justify-center shrink-0 mt-0.5 border border-amber-200/50">
                 <Info size={15} />
               </div>
               <div className="text-xs text-stone-600 leading-relaxed">
-                <strong className="font-semibold text-stone-900 block mb-0.5">Debnath Master Florist Tip:</strong>
+                <strong className="font-semibold text-stone-900 block mb-0.5">Gift Hub World Master Florist Tip:</strong>
                 Combine 4–6 focal blooms (Peonies or Roses) with 2 sprigs of Eucalyptus to provide airy botanical breathing space and longevity.
               </div>
             </div>
@@ -1026,6 +1308,80 @@ export function BouquetBuilder() {
               Continue
             </a>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Fullscreen Realistic Preview Modal */}
+      <AnimatePresence>
+        {isFullscreenModalOpen && aiGeneratedImage && (
+          <div className="fixed inset-0 z-[150] flex items-center justify-center p-4 sm:p-8">
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsFullscreenModalOpen(false)}
+              className="fixed inset-0 bg-stone-950/80 backdrop-blur-md"
+            />
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="relative max-w-2xl w-full bg-white rounded-3xl overflow-hidden shadow-2xl z-10 p-4 sm:p-6 space-y-4"
+            >
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="p-1.5 rounded-lg bg-amber-100 text-amber-800">
+                    <Sparkles size={16} />
+                  </span>
+                  <div>
+                    <h3 className="font-display font-medium text-stone-900 text-lg">
+                      Realistic Studio Preview
+                    </h3>
+                    <p className="text-xs text-stone-500">
+                      {totalStems} stems • {activeWrapObj.name} • {activeRibbonObj.name}
+                    </p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setIsFullscreenModalOpen(false)}
+                  className="p-2 rounded-full hover:bg-stone-100 text-stone-500 hover:text-stone-900 transition-colors"
+                >
+                  <X size={18} />
+                </button>
+              </div>
+
+              <div className="relative aspect-[3/4] rounded-2xl overflow-hidden bg-stone-100 border border-stone-200">
+                <img
+                  src={aiGeneratedImage}
+                  alt="Custom Bouquet Studio Preview"
+                  className="w-full h-full object-cover"
+                  referrerPolicy="no-referrer"
+                />
+              </div>
+
+              <div className="flex items-center justify-between pt-2">
+                <a
+                  href={aiGeneratedImage}
+                  download="gift-hub-world-custom-bouquet.png"
+                  className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-stone-100 hover:bg-stone-200 text-stone-800 text-xs font-semibold transition-colors"
+                >
+                  <Download size={14} />
+                  <span>Download High-Res</span>
+                </a>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsFullscreenModalOpen(false);
+                    handleAddToBag();
+                  }}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-purple-900 hover:bg-purple-800 text-white text-xs font-bold uppercase tracking-wider transition-colors shadow-md min-h-[44px]"
+                >
+                  <ShoppingBag size={14} />
+                  <span>Add Bespoke Bouquet to Bag</span>
+                </button>
+              </div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
 

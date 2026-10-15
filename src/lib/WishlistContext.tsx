@@ -43,7 +43,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
       setUserId(user?.uid || null);
       if (!user) {
         try {
-          const saved = JSON.parse(localStorage.getItem('debnath_wishlist') || '[]');
+          const saved = JSON.parse(localStorage.getItem('gifthubworld_wishlist') || localStorage.getItem('debnath_wishlist') || '[]');
           setWishlist(saved);
         } catch {
           setWishlist([]);
@@ -66,7 +66,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
     }, (error) => {
       console.warn("Wishlist remote sync note (using local cache):", error);
       try {
-        const saved = JSON.parse(localStorage.getItem('debnath_wishlist') || '[]');
+        const saved = JSON.parse(localStorage.getItem('gifthubworld_wishlist') || localStorage.getItem('debnath_wishlist') || '[]');
         setWishlist(saved);
       } catch {}
       setIsLoading(false);
@@ -95,7 +95,7 @@ export function WishlistProvider({ children }: { children: React.ReactNode }) {
 
     setWishlist(updatedList);
     try {
-      localStorage.setItem('debnath_wishlist', JSON.stringify(updatedList));
+      localStorage.setItem('gifthubworld_wishlist', JSON.stringify(updatedList));
     } catch {}
 
     if (userId) {

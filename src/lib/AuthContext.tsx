@@ -39,7 +39,8 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 const ADMIN_EMAIL = "rupammaxdas@gmail.com";
-const LOCAL_STORAGE_KEY = "debnath_customer_profile";
+const LOCAL_STORAGE_KEY = "gifthubworld_customer_profile";
+const LEGACY_STORAGE_KEY = "debnath_customer_profile";
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AppUser | null>(null);
@@ -91,7 +92,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         // Save/update local profile for seamless pre-filling
         if (firebaseUser.displayName || firebaseUser.email) {
           try {
-            const saved = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || "{}");
+            const saved = JSON.parse(localStorage.getItem(LOCAL_STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY) || "{}");
             localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify({
               ...saved,
               name: firebaseUser.displayName || saved.name || "",
@@ -104,7 +105,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       } else {
         // Fallback: Check if there's a local customer profile previously saved
         try {
-          const savedStr = localStorage.getItem(LOCAL_STORAGE_KEY);
+          const savedStr = localStorage.getItem(LOCAL_STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
           if (savedStr) {
             const saved = JSON.parse(savedStr);
             if (saved.name && saved.email) {

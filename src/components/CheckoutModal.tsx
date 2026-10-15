@@ -123,12 +123,12 @@ export function CheckoutModal({ isOpen, onClose, onOrderSuccess }: CheckoutModal
         currentUserEmail = anonCred.user.email || "";
       } catch (authError) {
         console.warn("Anonymous auth unavailable; using persistent device guest profile:", authError);
-        currentUserId = localStorage.getItem("debnath_guest_uid") || `guest_${Math.random().toString(36).substring(2, 10)}`;
-        localStorage.setItem("debnath_guest_uid", currentUserId);
+        currentUserId = localStorage.getItem("gifthubworld_guest_uid") || localStorage.getItem("debnath_guest_uid") || `guest_${Math.random().toString(36).substring(2, 10)}`;
+        localStorage.setItem("gifthubworld_guest_uid", currentUserId);
       }
     }
 
-    const orderNum = `DNF-${Math.floor(100000 + Math.random() * 900000)}`;
+    const orderNum = `GHW-${Math.floor(100000 + Math.random() * 900000)}`;
     const fullAddress = `${deliveryAddress.trim()}, ${city} - ${pincode}`;
     const now = new Date().toISOString();
 
@@ -156,9 +156,9 @@ export function CheckoutModal({ isOpen, onClose, onOrderSuccess }: CheckoutModal
 
     // 1. Always save order to local storage history so the receipt and live tracking work 100% reliably
     try {
-      const existingHistoryStr = localStorage.getItem("debnath_orders_history");
+      const existingHistoryStr = localStorage.getItem("gifthubworld_orders_history") || localStorage.getItem("debnath_orders_history");
       const existingHistory = existingHistoryStr ? JSON.parse(existingHistoryStr) : [];
-      localStorage.setItem("debnath_orders_history", JSON.stringify([orderPayload, ...existingHistory]));
+      localStorage.setItem("gifthubworld_orders_history", JSON.stringify([orderPayload, ...existingHistory]));
     } catch (storageErr) {
       console.warn("Order local storage write error:", storageErr);
     }
@@ -299,7 +299,7 @@ export function CheckoutModal({ isOpen, onClose, onOrderSuccess }: CheckoutModal
             <div className="w-full max-w-lg space-y-2">
               <a
                 href={`https://mail.google.com/mail/?view=cm&fs=1&to=rupammaxdas@gmail.com&su=${encodeURIComponent(`New Order Confirmed: ${createdOrderId} - ${recipientName}`)}&body=${encodeURIComponent(
-                  `DEBNATH FLOWER BOUTIQUE - NEW ORDER\n\n` +
+                  `GIFT HUB WORLD FLOWER BOUTIQUE - NEW ORDER\n\n` +
                   `Order ID: ${createdOrderId}\n` +
                   `Payment Method: Pay on Hand Delivery (Cash/UPI)\n\n` +
                   `CUSTOMER & DELIVERY DETAILS:\n` +
@@ -317,7 +317,7 @@ export function CheckoutModal({ isOpen, onClose, onOrderSuccess }: CheckoutModal
                   (discount > 0 ? `Discount: -₹${discount.toLocaleString()}\n` : '') +
                   `Delivery Fee: ₹${deliveryFee}\n` +
                   `Final Total Payable: ₹${finalTotal.toLocaleString()}\n\n` +
-                  `Handcrafted under the creative direction of Trisha Debnath at Debnath Flower Boutique.`
+                  `Handcrafted under the creative direction of Rupam Max Das at Gift Hub World Flower Boutique.`
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -352,7 +352,7 @@ export function CheckoutModal({ isOpen, onClose, onOrderSuccess }: CheckoutModal
             <div className="p-6 bg-stone-50 border-b border-stone-200 flex items-center justify-between">
               <div>
                 <span className="text-[10px] font-bold uppercase tracking-widest text-stone-400 block">
-                  Debnath Luxury Checkout • Step {step} of 3
+                  Gift Hub World Luxury Checkout • Step {step} of 3
                 </span>
                 <h3 className="text-xl font-display font-medium text-stone-900 mt-0.5">
                   {step === 1 && "Recipient & Delivery Details"}
@@ -399,7 +399,7 @@ export function CheckoutModal({ isOpen, onClose, onOrderSuccess }: CheckoutModal
                         required
                         value={recipientName}
                         onChange={(e) => setRecipientName(e.target.value)}
-                        placeholder="e.g. Trisha Debnath"
+                        placeholder="e.g. Rupam Max Das"
                         className="w-full px-3.5 py-2.5 bg-stone-50 border border-stone-200 rounded-xl text-xs focus:outline-none focus:border-stone-900 focus:bg-white transition-all"
                       />
                     </div>
@@ -676,10 +676,10 @@ export function CheckoutModal({ isOpen, onClose, onOrderSuccess }: CheckoutModal
                 <button
                   type="submit"
                   form={`step-${step}-form`}
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-full bg-stone-900 text-white text-xs font-bold uppercase tracking-wider hover:bg-stone-800 transition-all shadow-md group"
+                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#38e8ff] via-[#6f7dff] to-[#ff39d4] text-[#26152c] text-xs font-extrabold uppercase tracking-wider hover:brightness-110 active:scale-95 transition-all shadow-[0_4px_20px_rgba(86,245,255,0.25)] group min-h-[44px]"
                 >
                   <span>Continue</span>
-                  <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                  <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform text-[#26152c]" />
                 </button>
               ) : (
                 <button
