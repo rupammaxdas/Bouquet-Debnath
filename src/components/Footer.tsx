@@ -82,6 +82,14 @@ export function Footer() {
             </h4>
             <ul className="space-y-3 text-xs sm:text-sm">
               <li>
+                <a href="#cakes" className="text-amber-400 hover:text-amber-300 transition-colors font-medium flex items-center gap-1.5">
+                  <span>🎂 Gourmet Celebration Cakes</span>
+                  <span className="text-[9px] uppercase px-1.5 py-0.2 rounded-full bg-amber-400/20 text-amber-300 font-bold border border-amber-400/30">
+                    New
+                  </span>
+                </a>
+              </li>
+              <li>
                 <a href="#collection" className="text-amber-400 hover:text-amber-300 transition-colors font-medium">
                   Romantic & Rose Bouquets
                 </a>

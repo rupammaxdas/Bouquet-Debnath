@@ -17,6 +17,14 @@ export interface CategoryItem {
 
 const CATEGORIES: CategoryItem[] = [
   {
+    id: "cakes",
+    name: "Cakes & Confections",
+    tagline: "Artisanal Belgian Truffle & Fresh Floral Celebration Cakes",
+    count: 3,
+    image: "./assets/images/cake_chocolate_truffle_1792324189953.jpg",
+    categoryFilter: "Cakes & Confections"
+  },
+  {
     id: "roses",
     name: "Romantic & Roses",
     tagline: "Velvety Red Naomi & Damask Petals",

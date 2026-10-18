@@ -29,6 +29,12 @@ export function Hero() {
               <span>FOUNDED & CURATED BY RUPAM MAX DAS • EST. 2026</span>
             </div>
 
+            {/* Bouquet Tab Identifier */}
+            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sky-600/10 border border-sky-600/20 text-sky-950 text-xs font-semibold tracking-wider uppercase font-mono">
+              <span className="text-sm">💐</span>
+              <span>Bouquet Tab • Artisanal Floral Boutique</span>
+            </div>
+
             {/* Headline with Elegant Typography */}
             <h1 className="text-4xl sm:text-5xl lg:text-7xl font-display font-medium text-stone-900 leading-[1.08] tracking-tight">
               Artisanal Blooms & <br className="hidden sm:inline" />
@@ -39,7 +45,7 @@ export function Hero() {
 
             {/* Description */}
             <p className="text-base sm:text-lg text-stone-600 max-w-xl leading-relaxed">
-              From velvety Dutch Naomi roses to bespoke money bouquets, gourmet chocolates, and eternal paper sculptures — crafted with signature gold packaging for life's most momentous occasions.
+              From velvety Dutch Naomi roses to bespoke money bouquets, artisanal celebration cakes, gourmet chocolates, and eternal paper sculptures — crafted with signature gold packaging for life's most momentous occasions.
             </p>
 
             {/* CTAs: Gold Shop Now Button & Bespoke Button */}

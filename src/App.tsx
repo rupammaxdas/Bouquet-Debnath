@@ -21,6 +21,7 @@ import { OrdersModal } from "./components/OrdersModal";
 import { AuthModal } from "./components/AuthModal";
 import { ThemeModal } from "./components/ThemeModal";
 import { ThemeSwitcherBar } from "./components/ThemeSwitcherBar";
+import { CakesPage } from "./components/CakesPage";
 import { AuthProvider } from "./lib/AuthContext";
 import { WishlistProvider } from "./lib/WishlistContext";
 import { CartProvider } from "./lib/CartContext";
@@ -50,6 +51,7 @@ function MainApp() {
   const [highlightOrderId, setHighlightOrderId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
+  const [activePage, setActivePage] = useState<"bouquets" | "cakes">("bouquets");
 
   const handleOrderSuccess = (orderId: string) => {
     setHighlightOrderId(orderId);
@@ -63,6 +65,9 @@ function MainApp() {
         onOpenAuth={() => setIsAuthOpen(true)}
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
+        onSelectCategory={setSelectedCategory}
+        activePage={activePage}
+        onNavigate={setActivePage}
       />
       
       {/* Top Theme Quick Switcher Bar (Hidden as requested) */}
@@ -71,20 +76,33 @@ function MainApp() {
       </div>
 
       <main>
-        <Hero />
-        <CategorySection 
-          selectedCategory={selectedCategory}
-          onSelectCategory={setSelectedCategory}
-        />
-        <OffersSection />
-        <ProductGrid 
-          searchQuery={searchQuery}
-          selectedCategory={selectedCategory}
-          onSelectCategory={setSelectedCategory}
-        />
-        <BouquetBuilder />
-        <Story />
-        <SocialShowcase />
+        {activePage === "cakes" ? (
+          <CakesPage onBackToHome={() => setActivePage("bouquets")} />
+        ) : (
+          <>
+            <Hero />
+            <CategorySection 
+              selectedCategory={selectedCategory}
+              onSelectCategory={(cat) => {
+                if (cat === "Cakes & Confections") {
+                  setActivePage("cakes");
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                } else {
+                  setSelectedCategory(cat);
+                }
+              }}
+            />
+            <OffersSection />
+            <ProductGrid 
+              searchQuery={searchQuery}
+              selectedCategory={selectedCategory}
+              onSelectCategory={setSelectedCategory}
+            />
+            <BouquetBuilder />
+            <Story />
+            <SocialShowcase />
+          </>
+        )}
       </main>
       <Footer />
 

@@ -318,10 +318,139 @@ const DEFAULT_PRODUCTS: ProductType[] = [
       composition: "Sunflowers, yellow spray roses, chamomile & keepsake ribbon"
     }
   },
+  {
+    id: 20,
+    itemNumber: "20",
+    name: "Artisanal Chocolate Truffle & Rose Cake",
+    category: "Cakes & Confections",
+    price: "1,499",
+    image: "./assets/images/cake_chocolate_truffle_1792324189953.jpg",
+    description: "Decadent layered dark Belgian chocolate truffle sponge cake, crowned with edible organic pink garden roses and delicate 24K edible gold leaf flakes.",
+    tag: "Chef Signature Cake",
+    specs: {
+      lifespan: "Freshly Baked on Delivery Day",
+      fragrance: "Rich Belgian Cocoa & Fresh Rose Petals",
+      height: "Approx. 18 cm (Serves 6–8)",
+      composition: "Belgian 70% dark chocolate, Dutch cocoa sponge, edible roses & gold leaf"
+    }
+  },
+  {
+    id: 21,
+    itemNumber: "21",
+    name: "Parisian Berry & Floral Celebration Cake",
+    category: "Cakes & Confections",
+    price: "1,699",
+    image: "./assets/images/cake_berry_floral_1792324210197.jpg",
+    description: "Multi-tiered Madagascar vanilla bean celebration cake adorned with fresh farm raspberries, delicate French strawberry macarons, and dusted edible rose petals.",
+    tag: "Celebration Special",
+    specs: {
+      lifespan: "Freshly Baked on Delivery Day",
+      fragrance: "Madagascar Bourbon Vanilla & Fresh Raspberries",
+      height: "Approx. 22 cm (Serves 8–10)",
+      composition: "Vanilla bean sponge, whipped buttercream, French macarons & fresh berries"
+    }
+  },
+  {
+    id: 22,
+    itemNumber: "22",
+    name: "Luxury Rose Bouquet & Truffle Cake Combo",
+    category: "Cakes & Confections",
+    price: "2,699",
+    image: "./assets/images/cake_chocolate_truffle_1792324189953.jpg",
+    description: "The quintessential celebration pairing: a freshly baked artisan chocolate truffle cake paired with a hand-tied bouquet of 12 red velvet roses and personalized greeting card.",
+    tag: "Bestseller Combo",
+    specs: {
+      lifespan: "Same-Day Baked Cake + 7 Days Fresh Roses",
+      fragrance: "Velvety Damask Rose & Cocoa Aroma",
+      height: "Cake 18 cm + Rose Bouquet 45 cm",
+      composition: "Belgian truffle cake + 12 Dutch Naomi roses & personalized gift card"
+    }
+  },
+  {
+    id: 23,
+    itemNumber: "23",
+    name: "Royal Rasmalai Fusion Cake",
+    category: "Cakes & Confections",
+    price: "1,499",
+    image: "./assets/images/cake_rasmalai_kesar_1792325117942.jpg",
+    description: "The pride of Indian fusion patisserie: cardamom-infused vanilla sponge soaked in saffron rabri milk, topped with mini juicy rasmalai chenna discs, slivered pistachios, and silver vark.",
+    tag: "Indian Royal Specialty",
+    specs: {
+      lifespan: "Baked Fresh on Delivery Morning",
+      fragrance: "Saffron Kesar & Cardamom Rabri",
+      height: "1.0 kg (Serves 8–10)",
+      composition: "Saffron rabri milk, mini rasmalai balls, pistachios, almonds & silver vark"
+    }
+  },
+  {
+    id: 24,
+    itemNumber: "24",
+    name: "Classic Indian Black Forest Cake",
+    category: "Cakes & Confections",
+    price: "999",
+    image: "./assets/images/cake_black_forest_1792325134041.jpg",
+    description: "All-time bakery favorite: layers of rich chocolate sponge soaked in cherry syrup, loaded with whipped cream, dark chocolate shavings, and glossy maraschino cherries.",
+    tag: "All-Time Bestseller",
+    specs: {
+      lifespan: "Baked Fresh on Delivery Morning",
+      fragrance: "Dark Chocolate & Sweet Cream",
+      height: "1.0 kg (Serves 8–10)",
+      composition: "Dutch chocolate sponge, dark chocolate curls, maraschino cherries & vanilla whip"
+    }
+  },
+  {
+    id: 25,
+    itemNumber: "25",
+    name: "Crunchy Butterscotch Praline Cake",
+    category: "Cakes & Confections",
+    price: "999",
+    image: "./assets/images/cake_butterscotch_1792325150158.jpg",
+    description: "Golden vanilla sponge layered with caramelized butterscotch cream, topped with generous homemade cashew praline crunch and golden caramel drizzle.",
+    tag: "Crowd Favorite",
+    specs: {
+      lifespan: "Baked Fresh on Delivery Morning",
+      fragrance: "Brown Butter Toffee & Roasted Cashews",
+      height: "1.0 kg (Serves 8–10)",
+      composition: "Vanilla sponge, butterscotch cream, crunchy cashew praline & caramel drizzle"
+    }
+  },
+  {
+    id: 26,
+    itemNumber: "26",
+    name: "Festive Gulab Jamun Celebration Cake",
+    category: "Cakes & Confections",
+    price: "1,399",
+    image: "./assets/images/cake_rasmalai_kesar_1792325117942.jpg",
+    description: "Warm cardamom sponge layered with rose-scented cream, studded with melt-in-mouth syrup-soaked mini gulab jamuns, roasted almonds, and saffron strands.",
+    tag: "Mithai Fusion",
+    specs: {
+      lifespan: "Baked Fresh on Delivery Morning",
+      fragrance: "Cardamom & Damask Rosewater",
+      height: "1.0 kg (Serves 8–10)",
+      composition: "Cardamom sponge, mini gulab jamuns, roasted almonds & saffron cream"
+    }
+  },
+  {
+    id: 27,
+    itemNumber: "27",
+    name: "Belgian Lotus Biscoff Cake",
+    category: "Cakes & Confections",
+    price: "1,599",
+    image: "./assets/images/cake_butterscotch_1792325150158.jpg",
+    description: "Trendsetting patisserie creation: spiced Belgian Lotus Biscoff speculoos spread layered with caramelized cinnamon cookie crumb and crunchy Biscoff biscuits.",
+    tag: "Modern Gourmet",
+    specs: {
+      lifespan: "Baked Fresh on Delivery Morning",
+      fragrance: "Spiced Cinnamon & Speculoos Cookie",
+      height: "1.0 kg (Serves 8–10)",
+      composition: "Belgian Lotus Biscoff spread, cinnamon cream & caramelized cookie crust"
+    }
+  }
 ];
 
 const CATEGORIES = [
   "All",
+  "Cakes & Confections",
   "Celebrations & Gifts",
   "Romantic & Roses",
   "Weddings & Bridal",
@@ -499,11 +628,11 @@ export function ProductGrid({
                   : "bg-white text-stone-600 border border-stone-200 hover:border-purple-300 hover:text-purple-900"
               }`}
             >
-              {cat === "All" ? "All 19 Bouquets" : cat}
+              {cat === "All" ? `All (${products.length})` : cat}
             </button>
           ))}
           <span className="text-xs text-stone-500 ml-auto font-mono font-semibold">
-            {filteredProducts.length} {filteredProducts.length === 1 ? 'bouquet' : 'bouquets'} listed
+            {filteredProducts.length} {filteredProducts.length === 1 ? 'item' : 'creations'} listed
           </span>
         </div>
 

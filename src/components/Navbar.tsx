@@ -28,9 +28,20 @@ interface NavbarProps {
   onOpenAuth: () => void;
   searchQuery: string;
   setSearchQuery: (q: string) => void;
+  onSelectCategory?: (category: string) => void;
+  activePage?: "bouquets" | "cakes";
+  onNavigate?: (page: "bouquets" | "cakes") => void;
 }
 
-export function Navbar({ onOpenOrders, onOpenAuth, searchQuery, setSearchQuery }: NavbarProps) {
+export function Navbar({ 
+  onOpenOrders, 
+  onOpenAuth, 
+  searchQuery, 
+  setSearchQuery, 
+  onSelectCategory,
+  activePage = "bouquets",
+  onNavigate
+}: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -40,56 +51,146 @@ export function Navbar({ onOpenOrders, onOpenAuth, searchQuery, setSearchQuery }
   const { wishlist } = useWishlist();
   const { cartCount, setIsCartOpen } = useCart();
 
+  const handleNavClick = (e: React.MouseEvent, item: { label: string; href: string; page?: "bouquets" | "cakes" }) => {
+    if (item.page) {
+      e.preventDefault();
+      if (onNavigate) {
+        onNavigate(item.page);
+        window.scrollTo({ top: 0, behavior: "smooth" });
+      }
+      return;
+    }
+
+    if (activePage === "cakes" && onNavigate) {
+      onNavigate("bouquets");
+    }
+  };
+
   return (
     <>
       {/* Top Luxury Announcement Bar */}
       <div className="bg-gradient-to-r from-[#101a4b] via-[#30206c] to-[#101a4b] text-center py-2 px-3 text-[11px] sm:text-xs font-semibold tracking-wider text-[#fff1d1] border-b border-white/10 z-50 relative">
-        ✦ A LITTLE LUXURY FOR EVERY MOMENT &nbsp; · &nbsp; MAKE EVERY GIFT FEEL EXTRAORDINARY ✦
+        ✦ ARTISANAL BOUQUETS & GOURMET CAKES &nbsp; · &nbsp; SEPARATE DEDICATED ATELIERS ✦
+      </div>
+
+      {/* Prominent Separate Tabs Switcher: Bouquet Tab | Cake Tab (Hidden as requested) */}
+      <div className="hidden" aria-hidden="true">
+        <div className="max-w-md mx-auto flex items-center justify-center p-1 rounded-full bg-white/[0.08] border border-white/15">
+          <button
+            type="button"
+            onClick={() => {
+              if (onNavigate) onNavigate("bouquets");
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-full text-xs sm:text-sm font-bold tracking-wide transition-all ${
+              activePage === "bouquets"
+                ? "bg-gradient-to-r from-sky-400 via-sky-300 to-blue-500 text-stone-950 shadow-md font-extrabold scale-102"
+                : "text-sky-100/75 hover:text-white hover:bg-white/5"
+            }`}
+          >
+            <span className="text-base">💐</span>
+            <span>Bouquet Tab</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={() => {
+              if (onNavigate) onNavigate("cakes");
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            className={`flex-1 flex items-center justify-center gap-2 py-2 px-4 rounded-full text-xs sm:text-sm font-bold tracking-wide transition-all ${
+              activePage === "cakes"
+                ? "bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-400 text-stone-950 shadow-md font-extrabold scale-102"
+                : "text-sky-100/75 hover:text-white hover:bg-white/5"
+            }`}
+          >
+            <span className="text-base">🎂</span>
+            <span>Cake Tab</span>
+          </button>
+        </div>
       </div>
 
       {/* Main Sticky Header */}
       <header className="sticky top-0 z-40 bg-[rgba(8,7,19,0.85)] backdrop-blur-xl border-b border-white/10 transition-all">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-20 flex items-center justify-between gap-4">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 h-18 flex items-center justify-between gap-4">
           
           {/* Brand Mark & Title */}
-          <a href="#home" className="flex items-center gap-3 group focus:outline-none">
-            <span className="w-11 h-11 rounded-2xl border border-[rgba(86,245,255,0.6)] bg-gradient-to-br from-[rgba(86,245,255,0.18)] to-[rgba(164,77,255,0.18)] text-[#38e8ff] flex items-center justify-center text-xl font-bold shadow-[0_0_25px_rgba(86,245,255,0.2)] group-hover:scale-105 transition-transform">
+          <a 
+            href="#home" 
+            onClick={(e) => {
+              e.preventDefault();
+              if (onNavigate) onNavigate("bouquets");
+              window.scrollTo({ top: 0, behavior: "smooth" });
+            }}
+            className="flex items-center gap-3 group focus:outline-none cursor-pointer"
+          >
+            <span className="w-10 h-10 rounded-2xl border border-[rgba(86,245,255,0.6)] bg-gradient-to-br from-[rgba(86,245,255,0.18)] to-[rgba(164,77,255,0.18)] text-[#38e8ff] flex items-center justify-center text-xl font-bold shadow-[0_0_25px_rgba(86,245,255,0.2)] group-hover:scale-105 transition-transform">
               ✧
             </span>
             <div>
-              <span className="text-xl sm:text-2xl font-bold tracking-tight text-[#f5f7ff] block group-hover:text-[#38e8ff] transition-colors leading-tight">
+              <span className="text-lg sm:text-xl font-bold tracking-tight text-[#f5f7ff] block group-hover:text-[#38e8ff] transition-colors leading-tight">
                 Gift Hub World
               </span>
-              <span className="text-[10px] font-semibold tracking-[0.22em] text-[#38e8ff] uppercase block -mt-0.5">
-                Give beautifully
+              <span className="text-[9px] font-semibold tracking-[0.22em] text-[#38e8ff] uppercase block -mt-0.5">
+                {activePage === "bouquets" ? "Bouquet Boutique" : "Cake Patisserie"}
               </span>
             </div>
           </a>
 
-          {/* Navigation Links */}
-          <nav className="hidden lg:flex items-center gap-7 text-sm font-medium text-[#aab7d8]" aria-label="Main navigation">
+          {/* Navigation Links with Separate Bouquet and Cake Tabs */}
+          <nav className="hidden lg:flex items-center gap-6 text-sm font-medium text-[#aab7d8]" aria-label="Main navigation">
             {[
-              { label: "Home", href: "#home" },
-              { label: "Categories", href: "#categories" },
-              { label: "Shop Gifts", href: "#shop" },
+              { label: "Bouquet Tab", href: "#bouquets", page: "bouquets" as const, icon: "💐" },
+              { label: "Cake Tab", href: "#cakes", page: "cakes" as const, icon: "🎂" },
               { label: "Bespoke", href: "#bespoke" },
               { label: "Our Story", href: "#story" },
               { label: "Contact", href: "#contact" }
-            ].map((item) => (
-              <a
-                key={item.label}
-                href={item.href}
-                className="hover:text-[#e4f7ff] transition-colors relative py-1 group tracking-wide text-xs sm:text-sm font-medium"
-              >
-                {item.label}
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-gradient-to-r from-[#38e8ff] to-[#ff39d4] transition-all duration-300 group-hover:w-full" />
-              </a>
-            ))}
+            ].map((item) => {
+              const isActive = item.page === activePage;
+
+              return (
+                <a
+                  key={item.label}
+                  href={item.href}
+                  onClick={(e) => handleNavClick(e, item)}
+                  className={`hover:text-[#e4f7ff] transition-colors relative py-1 group tracking-wide text-xs sm:text-sm font-medium flex items-center gap-1.5 ${
+                    isActive ? "text-[#38e8ff] font-bold" : ""
+                  }`}
+                >
+                  {item.icon && <span>{item.icon}</span>}
+                  <span>{item.label}</span>
+                  <span className={`absolute bottom-0 left-0 h-0.5 bg-gradient-to-r from-[#38e8ff] to-[#ff39d4] transition-all duration-300 ${
+                    isActive ? "w-full" : "w-0 group-hover:w-full"
+                  }`} />
+                </a>
+              );
+            })}
           </nav>
 
           {/* Action Icons */}
           <div className="flex items-center gap-2 sm:gap-2.5">
             
+            {/* Quick Switch Button */}
+            <button
+              onClick={() => {
+                if (onNavigate) {
+                  onNavigate(activePage === "cakes" ? "bouquets" : "cakes");
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }
+              }}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-bold tracking-wide transition-all shadow-sm ${
+                activePage === "cakes"
+                  ? "bg-sky-400 text-stone-950 border-sky-400 shadow-sky-400/20"
+                  : "bg-amber-400 text-stone-950 border-amber-400 shadow-amber-400/20"
+              }`}
+              title={activePage === "cakes" ? "Go to Bouquet Tab" : "Go to Cake Tab"}
+            >
+              <span>{activePage === "cakes" ? "💐" : "🎂"}</span>
+              <span className="hidden sm:inline">
+                {activePage === "cakes" ? "Bouquet Tab" : "Cake Tab"}
+              </span>
+            </button>
+
             {/* Live Search Toggle */}
             <div className="relative">
               {isSearchOpen ? (
@@ -251,22 +352,36 @@ export function Navbar({ onOpenOrders, onOpenAuth, searchQuery, setSearchQuery }
               className="lg:hidden px-6 py-5 bg-[#0d1430] border-t border-white/10 space-y-3.5"
             >
               {[
-                { label: "Home", href: "#home" },
-                { label: "Categories", href: "#categories" },
-                { label: "Shop Gifts", href: "#shop" },
+                { label: "💐 Bouquet Tab", href: "#bouquets", page: "bouquets" as const },
+                { label: "🎂 Cake Tab (30 Flavours)", href: "#cakes", page: "cakes" as const },
                 { label: "Bespoke Builder", href: "#bespoke" },
                 { label: "Our Story", href: "#story" },
                 { label: "Contact", href: "#contact" }
-              ].map((item) => (
-                <a
-                  key={item.label}
-                  href={item.href}
-                  onClick={() => setIsOpen(false)}
-                  className="block text-sm font-medium text-[#f5f7ff] hover:text-[#38e8ff] py-1 transition-colors"
-                >
-                  {item.label}
-                </a>
-              ))}
+              ].map((item) => {
+                const isActive = item.page === activePage;
+                return (
+                  <a
+                    key={item.label}
+                    href={item.href}
+                    onClick={() => {
+                      setIsOpen(false);
+                      if (item.page && onNavigate) {
+                        onNavigate(item.page);
+                        window.scrollTo({ top: 0, behavior: "smooth" });
+                      }
+                    }}
+                    className={`block text-sm font-semibold py-2 px-3 rounded-xl transition-all ${
+                      isActive 
+                        ? item.page === "cakes"
+                          ? "bg-amber-400 text-stone-950 font-bold"
+                          : "bg-sky-400 text-stone-950 font-bold"
+                        : "text-[#f5f7ff] hover:text-[#38e8ff] hover:bg-white/5"
+                    }`}
+                  >
+                    {item.label}
+                  </a>
+                );
+              })}
 
               <div className="pt-3 border-t border-white/10 flex flex-col gap-2.5">
                 <button
