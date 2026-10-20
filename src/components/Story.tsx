@@ -61,18 +61,40 @@ export function Story() {
               <span>Founder's Atelier</span>
             </div>
 
-            <h2 className="text-4xl lg:text-5xl font-display font-medium text-stone-900 leading-tight">
-              A Symphony of Petals, <br />
-              <span className="italic font-normal">Founded by Rupam Max Das.</span>
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-medium text-stone-900 leading-tight">
+              Founded by Rupam Max Das
             </h2>
 
+            <div className="border-l-2 border-amber-400 pl-4 py-0.5">
+              <h3 className="text-xl sm:text-2xl font-display font-semibold text-stone-900 tracking-tight">
+                Gift Hub World Flower Boutique
+              </h3>
+              <p className="italic text-amber-700 font-serif text-sm sm:text-base mt-0.5">
+                Where Nature Meets Elegance
+              </p>
+            </div>
+
             <p className="text-stone-600 text-sm sm:text-base leading-relaxed">
-              Founded by <strong>Rupam Max Das</strong> in 2026, Gift Hub World Flower Boutique emerged from an intimate love for classical botanical design and modern aesthetic luxury. With a keen eye for delicate color palettes and architectural foliage, Rupam curates each arrangement as living poetry for life's most momentous occasions.
+              Founded by <strong>Rupam Max Das in 2026</strong>, Gift Hub World Flower Boutique was born from a passion for timeless floral artistry, botanical beauty, and modern luxury. With a refined eye for delicate color palettes, elegant arrangements, and natural textures, Rupam transforms every bouquet into a living expression of beauty, emotion, and creativity.
             </p>
 
             <p className="text-stone-600 text-sm sm:text-base leading-relaxed">
-              Every petal, stem, and ribbon that graces our studio is personally hand-inspected by Rupam and the team. We partner with ethical growers to bring you resilient, farm-fresh blooms delivered in temperature-preserved elegance.
+              Every petal, stem, and ribbon is carefully selected and inspected by Rupam and the dedicated team to uphold our commitment to quality and elegance. We strive to source fresh blooms from responsible growers and present every arrangement with exceptional care, ensuring that each creation brings beauty and meaning to life's most cherished moments.
             </p>
+
+            <p className="text-stone-600 text-sm sm:text-base leading-relaxed">
+              From romantic gestures and birthdays to weddings, anniversaries, celebrations, and thoughtful gifts, <strong>Gift Hub World Flower Boutique</strong> is dedicated to making every occasion unforgettable.
+            </p>
+
+            {/* Our Promise Callout */}
+            <div className="p-4 sm:p-5 rounded-2xl bg-gradient-to-r from-sky-50 via-sky-100/40 to-blue-50 border border-sky-200/80 shadow-xs space-y-1.5">
+              <div className="text-stone-900 text-sm sm:text-base leading-relaxed">
+                <strong className="text-sky-950 font-bold">Our Promise:</strong> Fresh flowers. Thoughtful designs. Timeless elegance.
+              </div>
+              <p className="italic text-xs sm:text-sm text-sky-800/90 font-serif">
+                Gift Hub World Flower Boutique — Every Flower Tells a Story.
+              </p>
+            </div>
 
             {/* Founder Quote Card */}
             <div className="p-6 rounded-2xl bg-white border border-stone-200/80 shadow-sm relative">
