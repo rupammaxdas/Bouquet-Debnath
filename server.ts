@@ -115,10 +115,10 @@ Lighting & Setting: Soft diffused morning atelier sunlight, warm Parisian floris
       message: "Studio atelier realistic composition ready",
     });
   } catch (error: any) {
-    console.error("Error in generate-bouquet-preview endpoint:", error);
+    console.error("Error in generate-bouquet-preview endpoint:", error?.message || error);
     return res.status(500).json({
       success: false,
-      error: error?.message || "Failed to generate bouquet preview",
+      error: "Unable to generate custom preview at this moment. Please try again.",
     });
   }
 });

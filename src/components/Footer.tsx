@@ -3,11 +3,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Instagram, Facebook, Sparkles, Send, Palette } from "lucide-react";
+import { Instagram, Facebook, Sparkles, Send, Palette, MapPin, Phone, Mail, MessageCircle } from "lucide-react";
 import { useState } from "react";
 import { useTheme } from "../lib/ThemeContext";
 
-export function Footer() {
+interface FooterProps {
+  onOpenContact?: () => void;
+}
+
+export function Footer({ onOpenContact }: FooterProps) {
   const [email, setEmail] = useState("");
   const [isSubscribed, setIsSubscribed] = useState(false);
   const { currentTheme, setIsThemeModalOpen } = useTheme();
@@ -41,7 +45,7 @@ export function Footer() {
                 </h3>
                 <span className="text-amber-400 text-2xl font-serif">.</span>
               </div>
-              <p className="text-[11px] text-amber-300/90 font-medium tracking-wider uppercase mt-1.5 font-mono">
+              <p className="hidden" aria-hidden="true">
                 FOUNDER & CREATIVE DIRECTOR: <strong className="text-amber-300 font-bold">RUPAM MAX DAS</strong>
               </p>
             </div>
@@ -117,55 +121,56 @@ export function Footer() {
             </ul>
           </div>
 
-          {/* Column 3: Atelier Assistance & Social (Gold Links) */}
-          <div>
+          {/* Column 3: Contact & Atelier Concierge (Gold Links) */}
+          <div id="contact">
             <h4 className="text-white text-xs font-bold uppercase tracking-widest mb-5 flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-amber-400" />
-              <span>Atelier Assistance</span>
+              <span>Contact Us</span>
             </h4>
             <ul className="space-y-3 text-xs sm:text-sm">
-              <li className="hidden" aria-hidden="true">
-                <a href="#bespoke" className="hidden text-amber-400 hover:text-amber-300 transition-colors font-medium">
-                  Design Bespoke with AI Studio
+              <li className="hidden">
+                <button 
+                  onClick={onOpenContact}
+                  className="hidden"
+                  aria-hidden="true"
+                >
+                  <MapPin size={14} className="text-amber-400 shrink-0" />
+                  <span>Address: G.S. Road, Guwahati</span>
+                </button>
+              </li>
+              <li>
+                <a 
+                  href="tel:+919876543249" 
+                  className="text-amber-400 hover:text-amber-300 transition-colors font-medium flex items-center gap-2"
+                >
+                  <Phone size={14} className="text-amber-400 shrink-0" />
+                  <span>Phone: +91 XXXXX XXX49</span>
                 </a>
               </li>
-              <li className="hidden" aria-hidden="true">
-                <button 
-                  onClick={() => setIsThemeModalOpen(true)}
-                  className="hidden text-amber-400 hover:text-amber-300 transition-colors font-medium flex items-center gap-1.5 text-left"
+              <li>
+                <a 
+                  href="mailto:rupammaxdas@gmail.com" 
+                  className="text-amber-400 hover:text-amber-300 transition-colors font-medium flex items-center gap-2"
                 >
-                  <Palette size={14} className="shrink-0" />
-                  <span>Update Themes ({currentTheme.name})</span>
-                </button>
+                  <Mail size={14} className="text-amber-400 shrink-0" />
+                  <span>Email: rupammaxdas@gmail.com</span>
+                </a>
+              </li>
+              <li className="hidden">
+                <a 
+                  href="https://wa.me/919876543249?text=Hello%20Gift%20Hub%20World!%20I%20would%20like%20to%20inquire%20about%20a%20bouquet%20or%20cake."
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="hidden"
+                  aria-hidden="true"
+                >
+                  <MessageCircle size={14} className="text-emerald-400 shrink-0" />
+                  <span>WhatsApp: Chat with us directly</span>
+                </a>
               </li>
               <li>
                 <a href="#offers" className="text-amber-400 hover:text-amber-300 transition-colors font-medium">
                   Promotions & Privileges
-                </a>
-              </li>
-              <li className="hidden" aria-hidden="true">
-                <a 
-                  href="https://www.facebook.com/share/1YFvXyHpju/" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="hidden text-amber-400 hover:text-amber-300 transition-colors font-medium flex items-center gap-1.5"
-                >
-                  <span>Founder Facebook Support</span>
-                </a>
-              </li>
-              <li className="hidden" aria-hidden="true">
-                <a 
-                  href="https://www.instagram.com/rupammaxdas" 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="text-amber-400 hover:text-amber-300 transition-colors font-medium flex items-center gap-1.5"
-                >
-                  <span>DM on Instagram (@rupammaxdas)</span>
-                </a>
-              </li>
-              <li className="hidden" aria-hidden="true">
-                <a href="mailto:rupammaxdas@gmail.com" className="text-amber-400 hover:text-amber-300 transition-colors font-medium">
-                  rupammaxdas@gmail.com
                 </a>
               </li>
             </ul>

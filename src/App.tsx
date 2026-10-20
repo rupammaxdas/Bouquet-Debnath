@@ -22,6 +22,7 @@ import { AuthModal } from "./components/AuthModal";
 import { ThemeModal } from "./components/ThemeModal";
 import { ThemeSwitcherBar } from "./components/ThemeSwitcherBar";
 import { CakesPage } from "./components/CakesPage";
+import { ContactModal } from "./components/ContactModal";
 import { AuthProvider } from "./lib/AuthContext";
 import { WishlistProvider } from "./lib/WishlistContext";
 import { CartProvider } from "./lib/CartContext";
@@ -48,6 +49,7 @@ function MainApp() {
   const [isCheckoutOpen, setIsCheckoutOpen] = useState(false);
   const [isOrdersOpen, setIsOrdersOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
+  const [isContactOpen, setIsContactOpen] = useState(false);
   const [highlightOrderId, setHighlightOrderId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
@@ -68,6 +70,7 @@ function MainApp() {
         onSelectCategory={setSelectedCategory}
         activePage={activePage}
         onNavigate={setActivePage}
+        onOpenContact={() => setIsContactOpen(true)}
       />
       
       {/* Top Theme Quick Switcher Bar (Hidden as requested) */}
@@ -83,14 +86,7 @@ function MainApp() {
             <Hero />
             <CategorySection 
               selectedCategory={selectedCategory}
-              onSelectCategory={(cat) => {
-                if (cat === "Cakes & Confections") {
-                  setActivePage("cakes");
-                  window.scrollTo({ top: 0, behavior: "smooth" });
-                } else {
-                  setSelectedCategory(cat);
-                }
-              }}
+              onSelectCategory={setSelectedCategory}
             />
             <OffersSection />
             <ProductGrid 
@@ -104,7 +100,7 @@ function MainApp() {
           </>
         )}
       </main>
-      <Footer />
+      <Footer onOpenContact={() => setIsContactOpen(true)} />
 
       {/* Floating Theme Quick Action */}
       <FloatingThemeButton />
@@ -128,6 +124,12 @@ function MainApp() {
       <AuthModal
         isOpen={isAuthOpen}
         onClose={() => setIsAuthOpen(false)}
+      />
+
+      {/* Contact Concierge Modal */}
+      <ContactModal
+        isOpen={isContactOpen}
+        onClose={() => setIsContactOpen(false)}
       />
 
       {/* Theme Modal */}

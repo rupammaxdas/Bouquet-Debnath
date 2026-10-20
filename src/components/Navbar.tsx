@@ -31,6 +31,7 @@ interface NavbarProps {
   onSelectCategory?: (category: string) => void;
   activePage?: "bouquets" | "cakes";
   onNavigate?: (page: "bouquets" | "cakes") => void;
+  onOpenContact?: () => void;
 }
 
 export function Navbar({ 
@@ -40,7 +41,8 @@ export function Navbar({
   setSearchQuery, 
   onSelectCategory,
   activePage = "bouquets",
-  onNavigate
+  onNavigate,
+  onOpenContact
 }: NavbarProps) {
   const [isOpen, setIsOpen] = useState(false);
   const [isWishlistOpen, setIsWishlistOpen] = useState(false);
@@ -52,6 +54,14 @@ export function Navbar({
   const { cartCount, setIsCartOpen } = useCart();
 
   const handleNavClick = (e: React.MouseEvent, item: { label: string; href: string; page?: "bouquets" | "cakes" }) => {
+    if (item.label === "Contact" || item.href === "#contact") {
+      e.preventDefault();
+      if (onOpenContact) {
+        onOpenContact();
+        return;
+      }
+    }
+
     if (item.page) {
       e.preventDefault();
       if (onNavigate) {
@@ -140,11 +150,11 @@ export function Navbar({
           {/* Navigation Links with Separate Bouquet and Cake Tabs */}
           <nav className="hidden lg:flex items-center gap-6 text-sm font-medium text-[#aab7d8]" aria-label="Main navigation">
             {[
-              { label: "Bouquet Tab", href: "#bouquets", page: "bouquets" as const, icon: "💐" },
-              { label: "Cake Tab", href: "#cakes", page: "cakes" as const, icon: "🎂" },
+              { label: "Bouquet", href: "#bouquets", page: "bouquets" as const, icon: "💐" },
+              { label: "Cake", href: "#cakes", page: "cakes" as const, icon: "🎂" },
               { label: "Bespoke", href: "#bespoke" },
               { label: "Our Story", href: "#story" },
-              { label: "Contact", href: "#contact" }
+              { label: "Contact Us", href: "#contact" }
             ].map((item) => {
               const isActive = item.page === activePage;
 
@@ -170,7 +180,7 @@ export function Navbar({
           {/* Action Icons */}
           <div className="flex items-center gap-2 sm:gap-2.5">
             
-            {/* Quick Switch Button */}
+            {/* Quick Switch Button (Hidden as requested) */}
             <button
               onClick={() => {
                 if (onNavigate) {
@@ -178,16 +188,13 @@ export function Navbar({
                   window.scrollTo({ top: 0, behavior: "smooth" });
                 }
               }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full border text-xs font-bold tracking-wide transition-all shadow-sm ${
-                activePage === "cakes"
-                  ? "bg-sky-400 text-stone-950 border-sky-400 shadow-sky-400/20"
-                  : "bg-amber-400 text-stone-950 border-amber-400 shadow-amber-400/20"
-              }`}
-              title={activePage === "cakes" ? "Go to Bouquet Tab" : "Go to Cake Tab"}
+              className="hidden"
+              aria-hidden="true"
+              title={activePage === "cakes" ? "Go to Bouquet" : "Go to Cake"}
             >
               <span>{activePage === "cakes" ? "💐" : "🎂"}</span>
               <span className="hidden sm:inline">
-                {activePage === "cakes" ? "Bouquet Tab" : "Cake Tab"}
+                {activePage === "cakes" ? "Bouquet" : "Cake"}
               </span>
             </button>
 
@@ -352,19 +359,24 @@ export function Navbar({
               className="lg:hidden px-6 py-5 bg-[#0d1430] border-t border-white/10 space-y-3.5"
             >
               {[
-                { label: "💐 Bouquet Tab", href: "#bouquets", page: "bouquets" as const },
-                { label: "🎂 Cake Tab (30 Flavours)", href: "#cakes", page: "cakes" as const },
+                { label: "💐 Bouquet", href: "#bouquets", page: "bouquets" as const },
+                { label: "🎂 Cake (30 Flavours)", href: "#cakes", page: "cakes" as const },
                 { label: "Bespoke Builder", href: "#bespoke" },
                 { label: "Our Story", href: "#story" },
-                { label: "Contact", href: "#contact" }
+                { label: "Contact Us", href: "#contact" }
               ].map((item) => {
                 const isActive = item.page === activePage;
                 return (
                   <a
                     key={item.label}
                     href={item.href}
-                    onClick={() => {
+                    onClick={(e) => {
                       setIsOpen(false);
+                      if (item.label === "Contact" || item.href === "#contact") {
+                        e.preventDefault();
+                        if (onOpenContact) onOpenContact();
+                        return;
+                      }
                       if (item.page && onNavigate) {
                         onNavigate(item.page);
                         window.scrollTo({ top: 0, behavior: "smooth" });

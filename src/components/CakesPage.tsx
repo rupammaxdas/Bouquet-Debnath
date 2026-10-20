@@ -550,7 +550,7 @@ export function CakesPage({ onBackToHome }: CakesPageProps) {
           className="inline-flex items-center gap-2 text-xs font-bold text-stone-700 hover:text-sky-700 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full border border-sky-200 shadow-sm transition-all hover:scale-102"
         >
           <ArrowLeft size={14} />
-          <span>Switch to 💐 Bouquet Tab</span>
+          <span>Switch to 💐 Bouquet</span>
         </button>
 
         <div className="flex items-center gap-2 text-xs text-sky-900 bg-sky-50/80 px-3.5 py-1.5 rounded-full border border-sky-200/60 font-medium">

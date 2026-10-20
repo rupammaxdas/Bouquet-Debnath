@@ -6,15 +6,26 @@
 import { initializeApp } from 'firebase/app';
 import { getAuth, GoogleAuthProvider, signInWithPopup, signOut, signInAnonymously } from 'firebase/auth';
 import { initializeFirestore, doc, getDocFromServer } from 'firebase/firestore';
-import firebaseConfig from '../../firebase-applet-config.json';
+import firebaseConfigFile from '../../firebase-applet-config.json';
 
-const app = initializeApp(firebaseConfig);
+// Support full environment variable configuration with fallback to local JSON
+const resolvedFirebaseConfig = {
+  apiKey: (import.meta.env.VITE_FIREBASE_API_KEY as string) || firebaseConfigFile.apiKey,
+  authDomain: (import.meta.env.VITE_FIREBASE_AUTH_DOMAIN as string) || firebaseConfigFile.authDomain,
+  projectId: (import.meta.env.VITE_FIREBASE_PROJECT_ID as string) || firebaseConfigFile.projectId,
+  firestoreDatabaseId: (import.meta.env.VITE_FIREBASE_FIRESTORE_DATABASE_ID as string) || firebaseConfigFile.firestoreDatabaseId,
+  storageBucket: (import.meta.env.VITE_FIREBASE_STORAGE_BUCKET as string) || firebaseConfigFile.storageBucket,
+  messagingSenderId: (import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID as string) || firebaseConfigFile.messagingSenderId,
+  appId: (import.meta.env.VITE_FIREBASE_APP_ID as string) || firebaseConfigFile.appId,
+};
+
+const app = initializeApp(resolvedFirebaseConfig);
 export const db = initializeFirestore(
   app,
   {
     experimentalForceLongPolling: true,
   },
-  firebaseConfig.firestoreDatabaseId
+  resolvedFirebaseConfig.firestoreDatabaseId
 );
 export const auth = getAuth();
 export const googleProvider = new GoogleAuthProvider();
@@ -33,7 +44,7 @@ export const parseAuthError = (err: unknown): AuthErrorInfo => {
   const errorObj = err as { code?: string; message?: string };
   const code = errorObj?.code || 'unknown';
   const currentHost = typeof window !== 'undefined' ? window.location.hostname : '';
-  const projectId = firebaseConfig.projectId;
+  const projectId = resolvedFirebaseConfig.projectId;
   const consoleUrl = `https://console.firebase.google.com/project/${projectId}/authentication/settings`;
 
   if (code === 'auth/unauthorized-domain') {

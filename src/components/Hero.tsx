@@ -29,10 +29,10 @@ export function Hero() {
               <span>FOUNDED & CURATED BY RUPAM MAX DAS • EST. 2026</span>
             </div>
 
-            {/* Bouquet Tab Identifier */}
+            {/* Bouquet Identifier */}
             <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sky-600/10 border border-sky-600/20 text-sky-950 text-xs font-semibold tracking-wider uppercase font-mono">
               <span className="text-sm">💐</span>
-              <span>Bouquet Tab • Artisanal Floral Boutique</span>
+              <span>Bouquet • Artisanal Floral Boutique</span>
             </div>
 
             {/* Headline with Elegant Typography */}
