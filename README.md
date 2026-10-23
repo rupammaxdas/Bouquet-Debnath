@@ -2,6 +2,10 @@
 
 Gift Hub World is a full-stack luxury e-commerce web application featuring handcrafted flower bouquets, bespoke floral atelier, and an authentic 30-flavour Indian bakery cake patisserie.
 
+- **GitHub Repository**: [rupammaxdas/Bouquet-Debnath](https://github.com/rupammaxdas/Bouquet-Debnath)
+- **Primary Branch**: `main`
+- **GitHub Pages Site**: [https://rupammaxdas.github.io/Bouquet-Debnath/](https://rupammaxdas.github.io/Bouquet-Debnath/)
+
 ---
 
 ## 🔒 Security & Secret Safety Architecture

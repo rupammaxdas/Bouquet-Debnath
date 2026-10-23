@@ -1,7 +1,13 @@
 {
-  "name": "react-example",
+  "name": "bouquet-debnath",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Gift Hub World Flower Boutique & Cake Atelier by Rupam Max Das",
+  "homepage": "https://rupammaxdas.github.io/Bouquet-Debnath",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/rupammaxdas/Bouquet-Debnath.git"
+  },
   "type": "module",
   "scripts": {
     "dev": "tsx server.ts",
