@@ -124,7 +124,8 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
                   {/* Phone Number */}
                   <a
                     href="tel:+919876543249"
-                    className="p-4 rounded-2xl bg-white border border-stone-200/80 hover:border-sky-400 hover:shadow-md transition-all group flex flex-col justify-between"
+                    className="hidden"
+                    aria-hidden="true"
                   >
                     <div>
                       <div className="w-8 h-8 rounded-lg bg-sky-100 text-sky-700 flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform">
@@ -146,7 +147,7 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
                   {/* Email Address */}
                   <a
                     href="mailto:rupammaxdas@gmail.com"
-                    className="p-4 rounded-2xl bg-white border border-stone-200/80 hover:border-sky-400 hover:shadow-md transition-all group flex flex-col justify-between"
+                    className="p-4 rounded-2xl bg-white border border-stone-200/80 hover:border-sky-400 hover:shadow-md transition-all group flex flex-col justify-between col-span-full"
                   >
                     <div>
                       <div className="w-8 h-8 rounded-lg bg-purple-100 text-purple-700 flex items-center justify-center mb-2.5 group-hover:scale-105 transition-transform">
