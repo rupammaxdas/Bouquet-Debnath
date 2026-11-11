@@ -4,7 +4,7 @@
  */
 
 import { motion } from "framer-motion";
-import { ArrowUpRight } from "lucide-react";
+import { FolderTree, ArrowRight, ChevronRight } from "lucide-react";
 
 export interface CategoryItem {
   id: string;
@@ -20,7 +20,7 @@ const CATEGORIES: CategoryItem[] = [
     id: "roses",
     name: "Romantic & Roses",
     tagline: "Velvety Red Naomi & Damask Petals",
-    count: 3,
+    count: 4,
     image: "./assets/images/bouquet_romantic_roses_1790272159677.jpg",
     categoryFilter: "Romantic & Roses"
   },
@@ -52,7 +52,7 @@ const CATEGORIES: CategoryItem[] = [
     id: "everlasting",
     name: "Everlasting & Crafts",
     tagline: "Archival Crepe Paper & Botanical Silk",
-    count: 3,
+    count: 2,
     image: "./assets/images/bouquet_paper_1791794757056.jpg",
     categoryFilter: "Everlasting & Crafts"
   },
@@ -81,47 +81,32 @@ export function CategorySection({ onSelectCategory, selectedCategory }: Category
   };
 
   return (
-    <section id="categories" className="py-16 sm:py-20 bg-gradient-to-b from-white/80 via-sky-50/50 to-sky-100/30 border-b border-sky-100/70">
-      <div className="max-w-7xl mx-auto px-6">
-        
-        {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-10 sm:mb-12">
-          <div>
-            <div className="flex items-center gap-2 mb-2">
-              <span className="w-6 h-px bg-sky-600" />
-              <span className="text-xs font-semibold tracking-widest text-sky-800 uppercase">
-                Curated Departments
-              </span>
-            </div>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-medium text-stone-900 tracking-tight">
-              Explore by Category
-            </h2>
-            <p className="text-stone-500 text-xs sm:text-sm mt-2 max-w-xl">
-              Clean, artisan collections tailored for romantic expressions, life celebrations, bespoke surprises, and timeless botanical memories.
-            </p>
-          </div>
-
-          <button
-            onClick={() => handleClick("All")}
-            className="self-start md:self-auto text-xs font-semibold tracking-wider uppercase text-sky-700 hover:text-sky-900 flex items-center gap-1.5 transition-colors py-2"
-          >
-            <span>View All Arrangements</span>
-            <ArrowUpRight size={15} />
-          </button>
+    <section id="categories" className="box-panel mb-6 font-sans">
+      {/* Box Header */}
+      <div className="box-header-gradient flex items-center justify-between text-xs">
+        <div className="flex items-center gap-2">
+          <FolderTree size={15} className="text-sky-300" />
+          <span className="uppercase tracking-wider">Featured Floral Departments</span>
         </div>
+        <button
+          type="button"
+          onClick={() => handleClick("All")}
+          className="text-sky-200 hover:text-white flex items-center gap-1 font-semibold underline text-[11px]"
+        >
+          <span>View All 19 Designs</span>
+          <ArrowRight size={12} />
+        </button>
+      </div>
 
-        {/* Clean White Cards with Rounded Corners & Subtle Shadows */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6">
-          {CATEGORIES.map((cat, index) => {
+      {/* Box Body */}
+      <div className="p-4 sm:p-5 bg-white">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {CATEGORIES.map((cat) => {
             const isSelected = selectedCategory === cat.categoryFilter;
 
             return (
-              <motion.div
+              <div
                 key={cat.id}
-                initial={{ opacity: 0, y: 15 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.05 }}
                 onClick={() => handleClick(cat.categoryFilter)}
                 role="button"
                 tabIndex={0}
@@ -130,49 +115,44 @@ export function CategorySection({ onSelectCategory, selectedCategory }: Category
                     handleClick(cat.categoryFilter);
                   }
                 }}
-                className={`bg-white/95 backdrop-blur-xs rounded-2xl sm:rounded-3xl p-4 sm:p-5 border transition-all duration-300 cursor-pointer group flex flex-col justify-between ${
+                className={`border rounded p-3 bg-white transition-all cursor-pointer flex flex-col justify-between group ${
                   isSelected 
-                    ? "border-sky-600 shadow-md ring-2 ring-sky-500/20" 
-                    : "border-sky-100/80 shadow-sm hover:shadow-md hover:border-sky-300"
+                    ? "border-blue-600 bg-blue-50/40 shadow-xs" 
+                    : "border-slate-200 hover:border-blue-400 hover:shadow-xs"
                 }`}
               >
-                {/* Image Frame */}
-                <div className="relative aspect-[16/10] overflow-hidden rounded-xl sm:rounded-2xl bg-stone-100 mb-4">
+                {/* Photo */}
+                <div className="relative aspect-[16/10] overflow-hidden rounded bg-slate-100 mb-2.5 border border-slate-200">
                   <img
                     src={cat.image}
                     alt={cat.name}
-                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                     referrerPolicy="no-referrer"
                     loading="lazy"
                   />
-                  <div className="absolute inset-0 bg-stone-900/5 group-hover:bg-stone-900/0 transition-colors" />
-                  
-                  {/* Item Count Chip */}
-                  <span className="absolute top-3 right-3 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-md text-stone-800 text-[10px] font-mono font-bold tracking-wider shadow-xs">
-                    {cat.count} Designs
+                  <span className="absolute top-2 right-2 px-2 py-0.5 rounded bg-slate-900/80 text-white text-[10px] font-mono font-bold">
+                    {cat.count} Items
                   </span>
                 </div>
 
-                {/* Card Content */}
-                <div className="flex items-center justify-between gap-2 pt-1">
+                {/* Details */}
+                <div className="flex items-center justify-between pt-1">
                   <div>
-                    <h3 className="font-display text-lg sm:text-xl font-semibold text-stone-900 group-hover:text-purple-900 transition-colors leading-snug">
+                    <h3 className="font-bold text-xs sm:text-sm text-slate-900 group-hover:text-blue-700 transition-colors">
                       {cat.name}
                     </h3>
-                    <p className="text-xs text-stone-500 mt-1 line-clamp-1">
+                    <p className="text-[11px] text-slate-500 line-clamp-1">
                       {cat.tagline}
                     </p>
                   </div>
-
-                  <div className="w-9 h-9 shrink-0 rounded-full bg-stone-50 border border-stone-200 flex items-center justify-center text-stone-600 group-hover:bg-purple-900 group-hover:text-white group-hover:border-purple-900 transition-all duration-300">
-                    <ArrowUpRight size={16} />
+                  <div className="w-6 h-6 rounded glossy-icon-box flex items-center justify-center shrink-0">
+                    <ChevronRight size={13} />
                   </div>
                 </div>
-              </motion.div>
+              </div>
             );
           })}
         </div>
-
       </div>
     </section>
   );

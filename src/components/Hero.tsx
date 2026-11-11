@@ -4,145 +4,140 @@
  */
 
 import { motion } from "framer-motion";
-import { Sparkles, ArrowRight, ShieldCheck, HeartHandshake, Truck } from "lucide-react";
+import { Sparkles, ArrowRight, ShieldCheck, HeartHandshake, Truck, Award, Cake } from "lucide-react";
 
-export function Hero() {
+interface HeroProps {
+  onNavigate?: (page: "bouquets" | "cakes") => void;
+}
+
+export function Hero({ onNavigate }: HeroProps) {
   return (
-    <section className="relative pt-28 pb-16 sm:pt-36 sm:pb-24 lg:pt-40 lg:pb-28 overflow-hidden bg-gradient-to-b from-sky-100/70 via-sky-50/50 to-white/90 border-b border-sky-100/60">
-      {/* Sky atmospheric ambient glows */}
-      <div className="absolute top-10 left-1/4 w-96 h-96 bg-sky-200/40 rounded-full blur-3xl pointer-events-none -z-10" />
-      <div className="absolute bottom-10 right-10 w-80 h-80 bg-blue-100/50 rounded-full blur-3xl pointer-events-none -z-10" />
+    <section className="box-panel mb-6 font-sans">
+      {/* Box Header */}
+      <div className="box-header-gradient flex items-center justify-between text-xs">
+        <div className="flex items-center gap-2">
+          <Award size={15} className="text-amber-300" />
+          <span className="uppercase tracking-wider">Featured Atelier Collection • Season 2026</span>
+        </div>
+        <span className="hidden sm:inline text-[11px] text-sky-200 font-mono">
+          Handcrafted in Guwahati & Delivered Across India
+        </span>
+      </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6">
-        <div className="grid lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+      {/* Box Content Body */}
+      <div className="p-5 sm:p-7 bg-gradient-to-b from-white via-slate-50/50 to-blue-50/20">
+        <div className="grid md:grid-cols-12 gap-6 sm:gap-8 items-center">
           
-          {/* Left Column: Elegant Typography & Gold Shop Now Button */}
-          <motion.div
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
-            className="lg:col-span-7 space-y-6 sm:space-y-8"
-          >
-            {/* Elegant Provenance Kicker (Hidden as requested) */}
-            <div className="hidden" aria-hidden="true">
-              <Sparkles size={13} className="text-amber-500" />
-              <span>FOUNDED & CURATED BY RUPAM MAX DAS • EST. 2026</span>
+          {/* Left Column: Text & Glossy CTAs */}
+          <div className="md:col-span-7 space-y-4">
+            
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded bg-blue-100 border border-blue-300 text-blue-900 text-xs font-bold tracking-wide">
+              <span>💐 Artisanal Floral Boutique & 🎂 Gourmet Bakery</span>
             </div>
 
-            {/* Bouquet Identifier */}
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-sky-600/10 border border-sky-600/20 text-sky-950 text-xs font-semibold tracking-wider uppercase font-mono">
-              <span className="text-sm">💐</span>
-              <span>Bouquet • Artisanal Floral Boutique</span>
-            </div>
-
-            {/* Headline with Elegant Typography */}
-            <h1 className="text-4xl sm:text-5xl lg:text-7xl font-display font-medium text-stone-900 leading-[1.08] tracking-tight">
-              Artisanal Blooms & <br className="hidden sm:inline" />
-              <span className="italic font-normal bg-gradient-to-r from-sky-950 via-sky-900 to-amber-700 bg-clip-text text-transparent">
-                Luxury Gifts.
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-display font-bold text-slate-900 leading-[1.15] tracking-tight">
+              Artisanal Blooms & <br />
+              <span className="text-blue-800">
+                Gourmet Celebration Cakes
               </span>
             </h1>
 
-            {/* Description */}
-            <p className="text-base sm:text-lg text-stone-600 max-w-xl leading-relaxed">
-              From velvety Dutch Naomi roses to bespoke money bouquets, artisanal celebration cakes, gourmet chocolates, and eternal paper sculptures — crafted with signature gold packaging for life's most momentous occasions.
+            <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-xl">
+              Welcome to <strong>Gift Hub World</strong>, where nature meets elegance. Handcrafted by <strong>Rupam Max Das</strong> since 2026, offering 19 signature floral curations, money bouquets, everlasting paper crafts, and an authentic 30-flavour Indian bakery cake patisserie.
             </p>
 
-            {/* CTAs: Gold Shop Now Button & Bespoke Button */}
-            <div className="flex flex-wrap items-center gap-4 pt-2">
-              <a 
-                href="#collection" 
-                className="px-8 py-4 rounded-full bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-500 text-purple-950 font-bold text-sm sm:text-base tracking-wide shadow-lg shadow-amber-400/25 hover:from-amber-300 hover:to-yellow-400 active:scale-95 transition-all inline-flex items-center gap-2 group min-h-[48px]"
+            {/* Glossy Action Buttons */}
+            <div className="flex flex-wrap items-center gap-3 pt-2">
+              <a
+                href="#collection"
+                className="glossy-btn-blue px-5 py-2.5 rounded text-xs sm:text-sm inline-flex items-center gap-2"
               >
-                <span>Shop Now</span>
-                <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform text-purple-950" />
+                <span>Shop Bouquets</span>
+                <ArrowRight size={15} />
               </a>
 
-              <a 
-                href="#bespoke" 
-                className="px-7 py-4 rounded-full border border-stone-300 hover:border-purple-900 text-stone-900 hover:text-purple-900 text-sm sm:text-base font-semibold tracking-wide transition-all inline-flex items-center gap-2 hover:bg-purple-50/50 min-h-[48px]"
+              <button
+                type="button"
+                onClick={() => {
+                  if (onNavigate) {
+                    onNavigate("cakes");
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                  }
+                }}
+                className="glossy-btn-gold px-5 py-2.5 rounded text-xs sm:text-sm inline-flex items-center gap-2"
               >
-                <span>Request Bespoke</span>
+                <Cake size={16} />
+                <span>Explore 30 Cakes</span>
+              </button>
+
+              <a
+                href="#bespoke"
+                className="glossy-btn-grey px-4 py-2.5 rounded text-xs sm:text-sm inline-flex items-center gap-1.5"
+              >
+                <Sparkles size={14} className="text-blue-600" />
+                <span>Atelier 3D Builder</span>
               </a>
             </div>
 
-            {/* Trust Pillars */}
-            <div className="grid grid-cols-3 gap-3 pt-4 sm:pt-6 border-t border-stone-200/80">
+            {/* Trust Highlights */}
+            <div className="grid grid-cols-3 gap-2.5 pt-4 border-t border-slate-200 text-slate-700">
               <div className="flex items-center gap-2">
-                <Truck size={17} className="text-amber-500 shrink-0" />
-                <span className="text-[11px] sm:text-xs text-stone-600 font-medium">Same-Day Delivery</span>
+                <div className="w-7 h-7 rounded glossy-icon-box flex items-center justify-center shrink-0">
+                  <Truck size={14} />
+                </div>
+                <div>
+                  <strong className="block text-[11px] text-slate-900">Same-Day</strong>
+                  <span className="text-[10px] text-slate-500">Fast Dispatch</span>
+                </div>
               </div>
+
               <div className="flex items-center gap-2">
-                <ShieldCheck size={17} className="text-amber-500 shrink-0" />
-                <span className="text-[11px] sm:text-xs text-stone-600 font-medium">Fresh Stems Seal</span>
+                <div className="w-7 h-7 rounded glossy-icon-box flex items-center justify-center shrink-0">
+                  <ShieldCheck size={14} />
+                </div>
+                <div>
+                  <strong className="block text-[11px] text-slate-900">100% Fresh</strong>
+                  <span className="text-[10px] text-slate-500">Direct From Farms</span>
+                </div>
               </div>
+
               <div className="flex items-center gap-2">
-                <HeartHandshake size={17} className="text-amber-500 shrink-0" />
-                <span className="text-[11px] sm:text-xs text-stone-600 font-medium">Gold Foil Packaging</span>
+                <div className="w-7 h-7 rounded glossy-icon-box flex items-center justify-center shrink-0">
+                  <HeartHandshake size={14} />
+                </div>
+                <div>
+                  <strong className="block text-[11px] text-slate-900">Guaranteed</strong>
+                  <span className="text-[10px] text-slate-500">Secure Packaging</span>
+                </div>
               </div>
             </div>
 
-          </motion.div>
+          </div>
 
-          {/* Right Column: Premium Gift Photography Showcase */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ duration: 0.9, delay: 0.15 }}
-            className="lg:col-span-5 relative"
-          >
-            {/* Main Premium Gift Photography Card */}
-            <div className="relative aspect-[4/5] rounded-3xl overflow-hidden shadow-2xl border-4 border-white ring-1 ring-purple-900/10 bg-stone-100 group">
+          {/* Right Column: Hero Visual in Classical Frame */}
+          <div className="md:col-span-5">
+            <div className="relative aspect-[4/3] sm:aspect-[1/1] rounded border-2 border-slate-300 shadow-md overflow-hidden bg-slate-100 group">
               <img
                 src="./assets/images/hero_floral_bouquet_1790272143558.jpg"
-                alt="Gift Hub World Signature Floral Arrangement"
+                alt="Gift Hub World Luxury Floral Arrangement"
                 className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
                 referrerPolicy="no-referrer"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-stone-950/60 via-transparent to-transparent pointer-events-none" />
+              <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-transparent to-transparent pointer-events-none" />
 
-              {/* Founder Signature Badge (Hidden as requested) */}
-              <div className="hidden" aria-hidden="true">
-                <span className="w-2 h-2 rounded-full bg-amber-400" />
-                <span>Founder Curation • Rupam Max Das</span>
-              </div>
-
-              {/* Bottom Caption on Photo */}
-              <div className="absolute bottom-4 left-4 right-4 text-white">
-                <span className="text-[10px] uppercase tracking-widest text-amber-300 font-bold font-mono">
-                  SIGNATURE CREATION № 01
+              <div className="absolute bottom-3 left-3 right-3 text-white">
+                <span className="text-[10px] uppercase font-bold tracking-widest text-amber-300 font-mono">
+                  Curated Creation № 01
                 </span>
-                <p className="font-display text-xl sm:text-2xl font-semibold leading-tight text-white mt-0.5">
-                  The Heritage Peony & Damask Rose
+                <p className="font-display text-lg sm:text-xl font-bold leading-tight text-white mt-0.5">
+                  Signature Peony & Dutch Damask Roses
                 </p>
+                <span className="text-[11px] text-slate-200">
+                  Hand-tied with satin ribbon and gold debossed presentation
+                </span>
               </div>
             </div>
-
-            {/* Overlapping Floating Gift Accent Card (Hidden as requested) */}
-            <div className="hidden" aria-hidden="true">
-              <img
-                src="./assets/images/bouquet_surprise_gift_1791795336071.jpg"
-                alt="Curated Gift Hamper"
-                className="w-14 h-14 rounded-xl object-cover shrink-0"
-              />
-              <div>
-                <span className="inline-block px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 text-[9px] font-bold uppercase tracking-wider">
-                  Gold Seal Gift
-                </span>
-                <p className="text-xs font-semibold text-stone-900 mt-0.5 leading-snug">
-                  Surprise Gift Hampers
-                </p>
-                <p className="text-[11px] text-stone-500 font-mono">
-                  From ₹1,499
-                </p>
-              </div>
-            </div>
-
-            {/* Ambient Gold Glow Behind Photo */}
-            <div className="absolute -top-6 -right-6 w-48 h-48 bg-amber-200/40 rounded-full blur-3xl -z-10" />
-            <div className="absolute -bottom-6 -left-6 w-48 h-48 bg-purple-300/30 rounded-full blur-3xl -z-10" />
-
-          </motion.div>
+          </div>
 
         </div>
       </div>

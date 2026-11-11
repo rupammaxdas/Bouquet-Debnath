@@ -4,12 +4,10 @@
  */
 
 import { useState, useEffect, useMemo } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { Heart, ShoppingBag, Eye, SlidersHorizontal, Check } from "lucide-react";
+import { Heart, ShoppingBag, Eye, SlidersHorizontal, Check, Sparkles, Filter } from "lucide-react";
 import { useWishlist } from "../lib/WishlistContext";
 import { useCart } from "../lib/CartContext";
-import { useTheme } from "../lib/ThemeContext";
-import { auth, login, db } from "../lib/firebase";
+import { db } from "../lib/firebase";
 import { collection, onSnapshot } from "firebase/firestore";
 import { ProductDetailModal, ProductType } from "./ProductDetailModal";
 
@@ -59,7 +57,7 @@ const DEFAULT_PRODUCTS: ProductType[] = [
       lifespan: "7 to 9 Days Fresh",
       fragrance: "Sunny Citrus & Honeysuckle",
       height: "Approx. 42 cm",
-      composition: "Asiatic lilies, marigold gerberas & baby's breath"
+      composition: "Sunflowers, yellow ranunculus, spray roses & greenery"
     }
   },
   {
@@ -67,127 +65,127 @@ const DEFAULT_PRODUCTS: ProductType[] = [
     itemNumber: "04",
     name: "Anniversary Bouquets",
     category: "Romantic & Roses",
-    price: "1,899",
-    image: "./assets/images/hero_floral_bouquet_1790272143558.jpg",
-    description: "Symbolizing everlasting love and devotion with lush Sarah Bernhardt peonies, romantic garden roses, and cascading silk ribbon.",
-    tag: "Romantic Luxe",
+    price: "1,699",
+    image: "./assets/images/bouquet_sympathy_lilies_1790272187494.jpg",
+    description: "Opulent anniversary gathering of imperial white Oriental lilies, powdery blush garden roses, and double-faced satin ribbon.",
+    tag: "Milestone Romance",
     specs: {
-      lifespan: "8 to 11 Days Fresh",
-      fragrance: "Sweet Spring Floral Powder",
-      height: "Approx. 45 cm",
-      composition: "Heritage garden peonies, blush roses & Italian ruscus"
+      lifespan: "9 to 14 Days Fresh",
+      fragrance: "Imperial Oriental Lily Nectar",
+      height: "Approx. 50 cm",
+      composition: "White Casablanca lilies, pastel roses & Italian ruscus"
     }
   },
   {
     id: 5,
     itemNumber: "05",
-    name: "Wedding Bouquets",
+    name: "Bridal Flower Bouquets",
     category: "Weddings & Bridal",
-    price: "2,499",
+    price: "1,899",
     image: "./assets/images/bouquet_bridal_1791794787656.jpg",
-    description: "Breathtaking bridal ceremony creation with pristine white Casablanca lilies, David Austin ivory roses, and delicate trailing greenery.",
-    tag: "Bridal Couture",
+    description: "Graceful cascading bridal handheld with ivory garden roses, fragrant white sweet peas, and French trailing silk ribbon.",
+    tag: "Bridal Heirloom",
     specs: {
-      lifespan: "Ceremony Ready (7+ Days Fresh)",
-      fragrance: "Pure White Lily & Garden Jasmine",
-      height: "Approx. 48 cm",
-      composition: "Casablanca lilies, garden gardenias & seeded eucalyptus"
+      lifespan: "Special Event Preservation",
+      fragrance: "Delicate White Peony & Orange Blossom",
+      height: "Approx. 38 cm Compact",
+      composition: "Ivory garden roses, white sweet peas & pure silk ribbon"
     }
   },
   {
     id: 6,
     itemNumber: "06",
-    name: "Valentine’s Day Special Bouquets",
-    category: "Romantic & Roses",
+    name: "Wedding Bouquet Arrangements",
+    category: "Weddings & Bridal",
     price: "1,999",
-    image: "./assets/images/bouquet_romantic_roses_1790272159677.jpg",
-    description: "The quintessential expression of passion. Two dozen velvety crimson roses in signature Gift Hub World gold-stamped luxury packaging.",
-    tag: "Valentine Exclusive",
+    image: "./assets/images/bouquet_bridal_1791794787656.jpg",
+    description: "Grand editorial wedding stage and sweetheart table arrangement designed with rare white hydrangeas and premium Dutch imports.",
+    tag: "Grand Ceremony",
     specs: {
-      lifespan: "8 to 12 Days Fresh",
-      fragrance: "Deep Crimson Rose & Musk",
-      height: "Approx. 50 cm",
-      composition: "24 Long-stem crimson roses & Gypsophila"
+      lifespan: "Full Ceremony Freshness",
+      fragrance: "Subtle Floral Sweetness",
+      height: "Approx. 55 cm Deluxe",
+      composition: "White hydrangea globes, peonies & trailing ivy"
     }
   },
   {
     id: 7,
     itemNumber: "07",
-    name: "Artificial Flower Bouquets",
+    name: "Money Bouquet Ideas",
     category: "Everlasting & Crafts",
-    price: "1,399",
-    image: "./assets/images/bouquet_sympathy_lilies_1790272187494.jpg",
-    description: "High-grade everlasting faux silk botanicals that retain eternal fresh vibrancy for home decor, executive desks, and timeless keepsakes.",
-    tag: "Everlasting Life",
+    price: "1,799",
+    image: "./assets/images/bouquet_money_1791794732308.jpg",
+    description: "Clever artistic arrangement blending fresh red roses with ornamental currency folds, gold wire accents, and royal presentation wrap.",
+    tag: "Artistic Keepsake",
     specs: {
-      lifespan: "Perpetual / Years of Beauty",
-      fragrance: "Subtle Linen Floral Mist (Infused)",
+      lifespan: "Fresh Blooms + Keepsake Accents",
+      fragrance: "Sweet Rose Petal Aroma",
       height: "Approx. 40 cm",
-      composition: "Fine botanical silk hydrangeas, roses & eucalyptus"
+      composition: "Roses, decorative currency folds, gold mesh wrap"
     }
   },
   {
     id: 8,
     itemNumber: "08",
-    name: "Paper Flower Bouquets",
-    category: "Everlasting & Crafts",
-    price: "1,299",
-    image: "./assets/images/bouquet_paper_1791794757056.jpg",
-    description: "Intricately sculpted Italian crepe paper peonies and origami blooms, handmade with archival fine art papers for a sculptural statement.",
-    tag: "Hand-Folded Art",
+    name: "Chocolate Bouquet Designs",
+    category: "Celebrations & Gifts",
+    price: "1,499",
+    image: "./assets/images/bouquet_chocolate_1791794714326.jpg",
+    description: "Indulgent gourmet gift bouquet pairing artisan Ferrero Rocher pralines and Swiss truffles with deep burgundy spray carnations.",
+    tag: "Sweet Gourmet",
     specs: {
-      lifespan: "Permanent Archival Sculpture",
-      fragrance: "Delicate Paper & Cotton Scent",
-      height: "Approx. 38 cm",
-      composition: "180gsm Italian heavy crepe paper & floral brass wire"
+      lifespan: "Gourmet Confections & Long-Lasting Blooms",
+      fragrance: "Rich Cocoa & Delicate Floral Accent",
+      height: "Approx. 35 cm",
+      composition: "16 Ferrero pralines, burgundy blooms & luxury paper wrap"
     }
   },
   {
     id: 9,
     itemNumber: "09",
-    name: "Money Bouquets",
-    category: "Celebrations & Gifts",
-    price: "2,999",
-    image: "./assets/images/bouquet_money_1791794732308.jpg",
-    description: "Opulent bespoke celebration bouquet featuring artistically folded currency notes interwoven with fresh blush roses and baby's breath.",
-    tag: "Luxury Gift",
+    name: "Paper Flower Bouquets",
+    category: "Everlasting & Crafts",
+    price: "1,299",
+    image: "./assets/images/bouquet_paper_1791794757056.jpg",
+    description: "Handcrafted eternal botanical art created with Italian crepe paper, individually sculpted petals, and preserved eucalyptus stems.",
+    tag: "Everlasting Craft",
     specs: {
-      lifespan: "Fresh Blooms 7 Days + Preserved Notes",
-      fragrance: "Fresh Rosewater & Baby's Breath",
-      height: "Approx. 44 cm",
-      composition: "Crisp artfully folded currency cones, blush roses & foliage"
+      lifespan: "Forever Keepsake (Years)",
+      fragrance: "Scent-Free / Hypoallergenic",
+      height: "Approx. 38 cm",
+      composition: "100% handcrafted Italian crepe paper florals"
     }
   },
   {
     id: 10,
     itemNumber: "10",
-    name: "Chocolate Bouquets",
-    category: "Celebrations & Gifts",
-    price: "1,799",
-    image: "./assets/images/bouquet_chocolate_1791794714326.jpg",
-    description: "Indulgent gourmet gift arrangement combining imported Ferrero Rocher hazelnut chocolates with fragrant pink garden roses.",
-    tag: "Gourmet Delight",
+    name: "Artificial Flower Arrangements",
+    category: "Everlasting & Crafts",
+    price: "1,399",
+    image: "./assets/images/bouquet_paper_1791794757056.jpg",
+    description: "Botanically accurate real-touch silk peonies and hydrangeas arranged in a matte ceramic vase for timeless interior elegance.",
+    tag: "Real-Touch Silk",
     specs: {
-      lifespan: "Fresh Blooms 7 Days + Chocolates Freshness Seal",
-      fragrance: "Sweet Rose & Hazelnut Cocoa",
-      height: "Approx. 40 cm",
-      composition: "16 Ferrero Rocher chocolates, baby pink roses & silk wrap"
+      lifespan: "Permanent Home Decor",
+      fragrance: "Optional Botanical Mist",
+      height: "Approx. 42 cm",
+      composition: "Real-touch silk peonies, faux seeded eucalyptus"
     }
   },
   {
     id: 11,
     itemNumber: "11",
-    name: "Bridal Hand Bouquets",
-    category: "Weddings & Bridal",
-    price: "2,799",
-    image: "./assets/images/bouquet_bridal_1791794787656.jpg",
-    description: "Opulent cascade hand-tied bridal bouquet featuring David Austin ivory roses, sweet peas, and cascading champagne silk ribbons.",
-    tag: "Handcrafted Bridal",
+    name: "Dried Flower Bouquets",
+    category: "Everlasting & Crafts",
+    price: "1,199",
+    image: "./assets/images/bouquet_seasonal_wildflowers_1790272175129.jpg",
+    description: "Earthy bohemian curation of naturally air-dried lavender, bunny tails, wheat stems, and golden starflowers tied with hemp cord.",
+    tag: "Boho Chic",
     specs: {
-      lifespan: "Ceremony Day Prime (7+ Days Fresh)",
-      fragrance: "Sweet Pea & David Austin Roses",
-      height: "Approx. 42 cm cascade",
-      composition: "Ivory garden roses, white sweet peas & pure silk ribbon"
+      lifespan: "1 to 2 Years Preserved",
+      fragrance: "Natural Provence Dried Lavender",
+      height: "Approx. 45 cm",
+      composition: "Dried lavender, lagurus ovatus, bleached ruscus"
     }
   },
   {
@@ -241,32 +239,32 @@ const DEFAULT_PRODUCTS: ProductType[] = [
   {
     id: 15,
     itemNumber: "15",
-    name: "Premium Luxury Bouquets",
-    category: "Luxury & Editorial",
-    price: "3,499",
-    image: "./assets/images/hero_floral_bouquet_1790272143558.jpg",
-    description: "The pinnacle of floral couture. Rare seasonal imports, Dutch garden roses, exotic orchids, and heavyweight emerald velvet wrapping.",
-    tag: "Haute Couture",
+    name: "Flower Wrapping Techniques",
+    category: "DIY & Workshops",
+    price: "999",
+    image: "./assets/images/wrap_kraft_paper_1790273651373.jpg",
+    description: "Interactive masterclass bundle featuring 5 premium wrapping paper sheets, ribbons, and master video guide by Rupam Max Das.",
+    tag: "Florist Masterclass",
     specs: {
-      lifespan: "10 to 14 Days Fresh",
-      fragrance: "Exotic Night Orchid & Gardenia",
-      height: "Approx. 52 cm",
-      composition: "Imported Cymbidium orchids, Dutch roses & velvet wrap"
+      lifespan: "Lifetime Video Access + Paper Bundle",
+      fragrance: "Subtle Studio Cedar & Paper",
+      height: "Comprehensive Studio Pack",
+      composition: "Korean frosted wraps, Italian kraft paper & satin ribbons"
     }
   },
   {
     id: 16,
     itemNumber: "16",
-    name: "Bouquet Making Tutorials",
+    name: "How to Make a Flower Bouquet",
     category: "DIY & Workshops",
-    price: "899",
-    image: "./assets/images/bouquet_diy_1791794818629.jpg",
-    description: "Comprehensive masterclass video guide and recipe booklet teaching spiral hand-tied bouquet techniques by master florist Rupam Max Das.",
-    tag: "Masterclass Video",
+    price: "999",
+    image: "./assets/images/bouquet_bridal_1791794787656.jpg",
+    description: "Step-by-step digital atelier video guide covering stem conditioning, the European spiral technique, and presentation finishing.",
+    tag: "Video Course",
     specs: {
-      lifespan: "Lifetime On-Demand Video Access",
-      fragrance: "Learn floral aroma theory",
-      height: "Digital 4K Video Course + PDF Manual",
+      lifespan: "Digital HD Video Access",
+      fragrance: "Digital Masterclass",
+      height: "Instant Digital Enrollment",
       composition: "6 Modules: Spiral tie, stem cut, hydration & wrapping"
     }
   },
@@ -335,23 +333,24 @@ interface ProductGridProps {
   searchQuery?: string;
   selectedCategory?: string;
   onSelectCategory?: (category: string) => void;
+  priceFilter?: string;
 }
 
 export function ProductGrid({ 
   searchQuery = "", 
   selectedCategory: propCategory, 
-  onSelectCategory: propSetCategory 
+  onSelectCategory: propSetCategory,
+  priceFilter = "all"
 }: ProductGridProps) {
   const { toggleWishlist, isInWishlist } = useWishlist();
   const { addToCart } = useCart();
-  const { currentTheme } = useTheme();
   
   const [products, setProducts] = useState<ProductType[]>(DEFAULT_PRODUCTS);
   const [internalCategory, setInternalCategory] = useState("All");
   const selectedCategory = propCategory !== undefined ? propCategory : internalCategory;
   const setSelectedCategory = propSetCategory || setInternalCategory;
 
-  const [sortBy, setSortBy] = useState<"featured" | "number-asc" | "price-asc" | "price-desc">("number-asc");
+  const [sortBy, setSortBy] = useState<"number-asc" | "price-asc" | "price-desc">("number-asc");
   const [selectedProduct, setSelectedProduct] = useState<ProductType | null>(null);
   const [quickAddedId, setQuickAddedId] = useState<string | number | null>(null);
 
@@ -364,7 +363,6 @@ export function ProductGrid({
           ...doc.data()
         })) as ProductType[];
 
-        // Merge: keep all 19 default catalog items and integrate Firestore updates
         const catalogMap = new Map<string, ProductType>();
         DEFAULT_PRODUCTS.forEach(p => catalogMap.set(p.name.toLowerCase(), p));
         firestoreList.forEach(fp => {
@@ -393,7 +391,7 @@ export function ProductGrid({
     e.stopPropagation();
     const priceNum = typeof product.price === "number"
       ? product.price
-      : parseInt(product.price.toString().replace(/,/g, ""), 10) || 1999;
+      : parseInt(product.price.toString().replace(/,/g, ""), 10) || 1299;
 
     await addToCart({
       productId: product.id.toString(),
@@ -425,7 +423,14 @@ export function ProductGrid({
         )) ||
         (p.tag && p.tag.toLowerCase().includes(q));
 
-      return matchesCategory && matchesSearch;
+      // Price Filter
+      const priceNum = typeof p.price === "number" ? p.price : parseInt(p.price.toString().replace(/,/g, ""), 10) || 0;
+      let matchesPrice = true;
+      if (priceFilter === "under-1200") matchesPrice = priceNum < 1200;
+      else if (priceFilter === "1200-1500") matchesPrice = priceNum >= 1200 && priceNum <= 1500;
+      else if (priceFilter === "above-1500") matchesPrice = priceNum > 1500;
+
+      return matchesCategory && matchesSearch && matchesPrice;
     }).sort((a, b) => {
       if (sortBy === "number-asc") {
         const numA = parseInt(a.itemNumber || a.id.toString(), 10) || 0;
@@ -440,216 +445,181 @@ export function ProductGrid({
       if (sortBy === "price-desc") return priceB - priceA;
       return 0;
     });
-  }, [products, selectedCategory, searchQuery, sortBy]);
+  }, [products, selectedCategory, searchQuery, sortBy, priceFilter]);
 
   return (
-    <section id="collection" className="py-24 bg-gradient-to-b from-sky-50/60 via-blue-50/30 to-sky-50/50 border-t border-sky-100/70">
-      <div className="max-w-7xl mx-auto px-6">
-        
-        {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-12">
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <span className="text-xs font-semibold tracking-widest text-stone-400 uppercase">
-                Curated Catalog
-              </span>
-              <span className="px-2.5 py-0.5 rounded-full bg-stone-200/80 text-stone-700 text-[10px] font-mono font-bold tracking-wider">
-                19 Handcrafted Creations
-              </span>
-            </div>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-medium text-stone-900 tracking-tight">
-              Featured Arrangements
-            </h2>
-            <p className="text-stone-500 text-xs sm:text-sm mt-2 max-w-xl">
-              From fresh rose and bridal creations to paper, money, chocolate artistry, and florist masterclasses — each handcrafted with signature perfection.
-            </p>
-          </div>
-
-          {/* Sort & Filter controls */}
-          <div className="flex items-center gap-3">
-            <div className="flex items-center gap-2 bg-white px-3 py-2 rounded-xl border border-stone-200 text-xs text-stone-600 shadow-xs">
-              <SlidersHorizontal size={14} className="text-stone-400" />
-              <select
-                value={sortBy}
-                onChange={(e) => setSortBy(e.target.value as any)}
-                className="bg-transparent focus:outline-none text-xs font-semibold text-stone-800 cursor-pointer"
-              >
-                <option value="number-asc">Catalog Order: № 01 to 19</option>
-                <option value="featured">Sort: Featured</option>
-                <option value="price-asc">Price: Low to High</option>
-                <option value="price-desc">Price: High to Low</option>
-              </select>
-            </div>
-          </div>
+    <section id="collection" className="box-panel mb-6 font-sans">
+      
+      {/* Box Header: Gradient Title Bar */}
+      <div className="box-header-gradient flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+        <div className="flex items-center gap-2">
+          <ShoppingBag size={15} className="text-sky-300" />
+          <span className="uppercase tracking-wider">
+            Curated Flower Bouquet Catalog (19 Designs)
+          </span>
         </div>
 
-        {/* Category Pills Bar */}
-        <div className="flex flex-wrap items-center gap-2 mb-10 border-b border-stone-200/70 pb-4">
+        {/* Sort Dropdown */}
+        <div className="flex items-center gap-2">
+          <span className="text-slate-300 hidden sm:inline">Sort by:</span>
+          <select
+            value={sortBy}
+            onChange={(e) => setSortBy(e.target.value as any)}
+            className="bg-blue-950 text-white border border-blue-800 text-xs rounded px-2.5 py-1 focus:outline-none cursor-pointer"
+          >
+            <option value="number-asc">Catalog № 01 to 19</option>
+            <option value="price-asc">Price: Low to High</option>
+            <option value="price-desc">Price: High to Low</option>
+          </select>
+        </div>
+      </div>
+
+      {/* Sub-toolbar: Category Tabs */}
+      <div className="bg-slate-100 border-b border-slate-300 p-2.5 flex flex-wrap items-center justify-between gap-2">
+        <div className="flex flex-wrap items-center gap-1">
           {CATEGORIES.map((cat) => (
             <button
               key={cat}
               onClick={() => setSelectedCategory(cat)}
-              style={{
-                backgroundColor: selectedCategory === cat ? currentTheme.primaryPurple : undefined,
-                color: selectedCategory === cat ? "#ffffff" : undefined
-              }}
-              className={`px-4 py-2 rounded-full text-xs font-semibold tracking-wide transition-all min-h-[38px] ${
+              className={`px-2.5 py-1 text-xs rounded font-medium transition-all ${
                 selectedCategory === cat
-                  ? "shadow-sm"
-                  : "bg-white text-stone-600 border border-stone-200 hover:border-purple-300 hover:text-purple-900"
+                  ? "bg-blue-700 text-white font-bold shadow-xs"
+                  : "bg-white text-slate-700 border border-slate-300 hover:bg-slate-200"
               }`}
             >
-              {cat === "All" ? `All Bouquets (${products.length})` : cat}
+              {cat === "All" ? `All (${products.length})` : cat}
             </button>
           ))}
-          <span className="text-xs text-stone-500 ml-auto font-mono font-semibold">
-            {filteredProducts.length} {filteredProducts.length === 1 ? 'bouquet' : 'bouquets'} listed
-          </span>
         </div>
 
-        {/* Product Cards Grid: White backgrounds, clear product images, readable prices and purple Add to Cart buttons */}
+        <span className="text-[11px] font-mono text-slate-600 ml-auto">
+          Showing <strong>{filteredProducts.length}</strong> items
+        </span>
+      </div>
+
+      {/* Box Body: Products Grid */}
+      <div className="p-4 sm:p-5 bg-white">
         {filteredProducts.length === 0 ? (
-          <div className="py-20 text-center space-y-3 bg-white rounded-3xl border border-stone-200/60 p-8 shadow-sm">
-            <p className="text-stone-400 font-display italic text-lg">No arrangements found</p>
-            <p className="text-stone-500 text-xs">Try selecting another category or clear your search query.</p>
+          <div className="py-16 text-center space-y-2 bg-slate-50 border border-slate-200 rounded p-6">
+            <p className="text-slate-500 font-semibold text-sm">No floral arrangements match your filter</p>
+            <p className="text-slate-400 text-xs">Try selecting 'All' categories or resetting the budget filter.</p>
             <button
-              onClick={() => { setSelectedCategory("All"); }}
-              style={{ backgroundColor: currentTheme.primaryPurple }}
-              className="mt-4 px-6 py-2.5 rounded-full text-white text-xs font-semibold uppercase tracking-wider transition-colors hover:brightness-110"
+              onClick={() => setSelectedCategory("All")}
+              className="mt-3 px-4 py-1.5 rounded glossy-btn-blue text-xs"
             >
               Reset Filters
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {filteredProducts.map((product, index) => {
               const isFav = isInWishlist(product.id.toString());
               const isAdded = quickAddedId === product.id;
               const displayNum = product.itemNumber || (index + 1).toString().padStart(2, "0");
 
               return (
-                <motion.div
+                <div
                   key={product.id}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: (index % 4) * 0.05 }}
-                  className="bg-white/95 backdrop-blur-xs rounded-2xl p-4 sm:p-5 border border-sky-100/80 shadow-sm hover:shadow-md transition-all duration-300 flex flex-col justify-between group hover:border-sky-300"
+                  className="bg-white border border-slate-300 rounded p-3 flex flex-col justify-between hover:border-blue-500 hover:shadow-md transition-all group"
                 >
                   <div>
-                    {/* Clear Product Image Container */}
+                    {/* Image Container with Framing */}
                     <div 
                       onClick={() => setSelectedProduct(product)}
-                      className="relative aspect-[4/5] overflow-hidden rounded-xl bg-stone-100 mb-4 cursor-pointer border border-stone-100"
+                      className="relative aspect-[4/3] rounded overflow-hidden bg-slate-100 border border-slate-200 mb-3 cursor-pointer"
                     >
                       <img
                         src={product.image}
                         alt={product.name}
-                        className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                        className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
                         referrerPolicy="no-referrer"
                         loading="lazy"
                       />
-                      <div className="absolute inset-0 bg-stone-900/0 group-hover:bg-stone-900/10 transition-colors duration-300" />
 
-                      {/* Catalog Number Badge & Tag */}
-                      <div className="absolute top-3 left-3 flex items-center gap-1.5 z-10 flex-wrap">
-                        <span className="px-2.5 py-1 rounded-full bg-stone-900/90 text-white backdrop-blur-md text-[10px] font-mono font-bold tracking-wider shadow-sm">
-                          № {displayNum}
-                        </span>
-                        {product.tag && (
-                          <span className="px-2 py-0.5 rounded-full bg-white/95 text-purple-950 backdrop-blur-md text-[9px] font-semibold tracking-wide shadow-xs border border-purple-100">
-                            {product.tag}
-                          </span>
-                        )}
-                      </div>
+                      {/* Number Tag */}
+                      <span className="absolute top-2 left-2 px-2 py-0.5 rounded bg-slate-900/85 text-white text-[10px] font-mono font-bold">
+                        № {displayNum}
+                      </span>
 
-                      {/* Wishlist Toggle (Touch friendly) */}
-                      <button 
+                      {/* Wishlist Button */}
+                      <button
+                        type="button"
                         onClick={(e) => handleWishlistClick(e, product)}
-                        className="absolute top-3 right-3 p-2.5 bg-white/95 backdrop-blur-md rounded-full shadow-md transition-all hover:scale-110 z-10 min-w-[36px] min-h-[36px] flex items-center justify-center"
-                        title={isFav ? "Saved in Wishlist" : "Save to Wishlist"}
-                        aria-label="Toggle Wishlist"
+                        className="absolute top-2 right-2 w-7 h-7 rounded bg-white/95 border border-slate-300 flex items-center justify-center shadow-xs hover:scale-110 transition-transform"
+                        title="Wishlist"
                       >
-                        <Heart 
-                          size={16} 
-                          className={`transition-colors ${isFav ? "fill-red-500 text-red-500" : "text-stone-400 hover:text-stone-700"}`} 
+                        <Heart
+                          size={13}
+                          className={isFav ? "fill-rose-500 text-rose-500" : "text-slate-400"}
                         />
                       </button>
 
-                      {/* Quick View Prompt */}
-                      <div className="absolute bottom-3 left-3 opacity-0 group-hover:opacity-100 transition-opacity z-10">
-                        <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-white/95 backdrop-blur-md text-[10px] font-semibold tracking-wider uppercase text-stone-800 shadow-xs">
-                          <Eye size={12} /> Inspect
+                      {/* Hover Inspect Prompt */}
+                      <div className="absolute bottom-2 left-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <span className="px-2 py-0.5 rounded bg-blue-900/90 text-white text-[10px] font-bold flex items-center gap-1 shadow-xs">
+                          <Eye size={11} /> Quick View
                         </span>
                       </div>
                     </div>
 
-                    {/* Product Meta */}
-                    <div className="space-y-1.5">
-                      <div className="flex items-center justify-between text-stone-500 text-[11px] uppercase tracking-wider font-semibold">
+                    {/* Metadata */}
+                    <div className="space-y-1">
+                      <div className="flex items-center justify-between text-[10px] uppercase font-bold text-slate-500">
                         <span className="truncate">{product.category}</span>
-                        <span className="text-[10px] font-mono text-emerald-700 shrink-0 font-medium">● In Studio</span>
+                        <span className="text-emerald-700 font-mono">● Fresh</span>
                       </div>
-                      
-                      <h3 
+
+                      <h3
                         onClick={() => setSelectedProduct(product)}
-                        className="text-base sm:text-lg font-display font-semibold text-stone-900 group-hover:text-purple-900 transition-colors line-clamp-1 cursor-pointer"
+                        className="font-bold text-xs sm:text-sm text-slate-900 group-hover:text-blue-800 transition-colors line-clamp-1 cursor-pointer"
                       >
                         {product.name}
                       </h3>
 
-                      <p className="text-xs text-stone-500 line-clamp-2 leading-relaxed">
+                      <p className="text-[11px] text-slate-500 line-clamp-2 leading-relaxed">
                         {product.description}
                       </p>
                     </div>
                   </div>
 
-                  {/* Bottom Row: Readable Price & Purple Add to Cart Button */}
-                  <div className="pt-4 mt-3 border-t border-stone-100 space-y-3">
-                    <div className="flex items-baseline justify-between">
-                      <div className="flex items-baseline gap-1.5">
-                        <span className="text-xs text-stone-400 uppercase font-medium">Price</span>
-                        <span className="text-xl sm:text-2xl font-bold font-mono text-stone-900 tracking-tight tabular-nums">
-                          ₹{typeof product.price === "number" ? product.price.toLocaleString() : product.price}
-                        </span>
-                      </div>
-                      <span className="text-[10px] text-amber-700 bg-amber-50 px-2 py-0.5 rounded-md font-medium">
-                        Handcrafted
-                      </span>
+                  {/* Price & Action Button */}
+                  <div className="pt-3 mt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+                    <div>
+                      <span className="text-[10px] uppercase font-semibold text-slate-400 block -mb-0.5">Price</span>
+                      <strong className="text-base sm:text-lg font-bold text-slate-900 font-mono">
+                        ₹{typeof product.price === "number" ? product.price.toLocaleString() : product.price}
+                      </strong>
                     </div>
 
-                    {/* Purple Add to Cart Button (Adheres to theme palette) */}
                     <button
+                      type="button"
                       onClick={(e) => handleQuickAdd(e, product)}
                       disabled={isAdded}
-                      style={{
-                        backgroundColor: isAdded ? undefined : currentTheme.primaryPurple
-                      }}
-                      className={`w-full py-3 px-4 rounded-xl text-xs sm:text-sm font-semibold tracking-wide transition-all duration-200 flex items-center justify-center gap-2 min-h-[44px] shadow-sm active:scale-95 touch-manipulation text-white ${
+                      className={`px-3 py-1.5 rounded text-xs flex items-center gap-1.5 ${
                         isAdded
-                          ? "bg-emerald-700 text-white cursor-default"
-                          : "hover:brightness-110 active:brightness-95 hover:shadow-md"
+                          ? "bg-emerald-600 text-white font-bold"
+                          : "glossy-btn-blue"
                       }`}
                     >
                       {isAdded ? (
                         <>
-                          <Check size={16} />
-                          <span>Added to Bag</span>
+                          <Check size={13} />
+                          <span>Added</span>
                         </>
                       ) : (
                         <>
-                          <ShoppingBag size={16} />
+                          <ShoppingBag size={13} />
                           <span>Add to Cart</span>
                         </>
                       )}
                     </button>
                   </div>
-                </motion.div>
+
+                </div>
               );
             })}
           </div>
         )}
-
       </div>
 
       {/* Product Detail Modal */}

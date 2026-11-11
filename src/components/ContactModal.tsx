@@ -235,7 +235,7 @@ export function ContactModal({ isOpen, onClose }: ContactModalProps) {
                     />
                     <button
                       type="submit"
-                      className="w-full py-2.5 px-5 rounded-xl bg-sky-700 hover:bg-sky-600 text-white font-semibold text-xs tracking-wide transition-all shadow-md flex items-center justify-center gap-2 active:scale-98"
+                      className="w-full py-2.5 px-5 rounded glossy-btn-blue text-xs tracking-wide transition-all flex items-center justify-center gap-2"
                     >
                       <Send size={13} />
                       <span>Send Inquiry to Concierge</span>

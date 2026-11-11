@@ -20,7 +20,8 @@ import {
   Star,
   CheckCircle2,
   ChevronDown,
-  Filter
+  Filter,
+  Cake
 } from "lucide-react";
 import { useCart } from "../lib/CartContext";
 import { useWishlist } from "../lib/WishlistContext";
@@ -541,104 +542,101 @@ export function CakesPage({ onBackToHome }: CakesPageProps) {
   };
 
   return (
-    <div className="min-h-screen pt-24 pb-24 text-stone-900">
+    <div className="space-y-6 font-sans text-slate-800">
       
       {/* Top Breadcrumb & Return Nav */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 mb-6 flex items-center justify-between flex-wrap gap-3">
+      <div className="bg-slate-100 p-2.5 rounded border border-slate-300 flex items-center justify-between flex-wrap gap-2 text-xs">
         <button
           onClick={onBackToHome}
-          className="inline-flex items-center gap-2 text-xs font-bold text-stone-700 hover:text-sky-700 bg-white/90 backdrop-blur-sm px-4 py-2 rounded-full border border-sky-200 shadow-sm transition-all hover:scale-102"
+          className="glossy-btn-grey px-3 py-1.5 rounded flex items-center gap-1.5"
         >
-          <ArrowLeft size={14} />
-          <span>Switch to 💐 Bouquet</span>
+          <ArrowLeft size={13} />
+          <span>Return to 💐 Bouquet Boutique</span>
         </button>
 
-        <div className="flex items-center gap-2 text-xs text-sky-900 bg-sky-50/80 px-3.5 py-1.5 rounded-full border border-sky-200/60 font-medium">
+        <div className="flex items-center gap-1.5 text-blue-900 font-semibold font-mono text-[11px]">
           <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-          <span>30 Authentic Indian Bakery Flavours Available Daily</span>
+          <span>30 Authentic Indian Bakery Cake Flavours Available</span>
         </div>
       </div>
 
-      {/* Hero Banner for Indian Bakery Cakes */}
-      <section className="relative overflow-hidden mb-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
-          <div className="relative rounded-3xl bg-gradient-to-br from-[#0c2340] via-[#0f2e52] to-[#081729] text-white p-8 sm:p-12 lg:p-16 shadow-2xl border border-sky-600/30 overflow-hidden">
-            
-            {/* Background Atmosphere */}
-            <div className="absolute top-0 right-0 w-96 h-96 bg-amber-400/15 rounded-full blur-3xl pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-80 h-80 bg-sky-500/20 rounded-full blur-3xl pointer-events-none" />
+      {/* Hero Banner Box Panel */}
+      <section className="box-panel">
+        <div className="box-header-gradient flex items-center justify-between text-xs">
+          <div className="flex items-center gap-2">
+            <Cake size={15} className="text-amber-300" />
+            <span className="uppercase tracking-wider">Gourmet Patisserie & Indian Fusion Cakes</span>
+          </div>
+          <span className="text-[11px] text-sky-200">
+            Same-Day Fresh Baking
+          </span>
+        </div>
 
-            <div className="relative z-10 grid lg:grid-cols-12 gap-8 items-center">
-              <div className="lg:col-span-7 space-y-5">
-                <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-400/15 border border-amber-400/30 text-amber-300 text-xs font-semibold tracking-wider uppercase font-mono">
-                  <Sparkles size={13} className="text-amber-400" />
-                  <span>30 Signature Indian Bakery Cake Flavours</span>
+        <div className="p-5 sm:p-6 bg-gradient-to-b from-white to-blue-50/20">
+          <div className="grid lg:grid-cols-12 gap-6 items-center">
+            <div className="lg:col-span-7 space-y-3.5">
+              <span className="px-2.5 py-0.5 rounded bg-blue-100 text-blue-900 font-bold text-[10px] uppercase tracking-wider font-mono">
+                30 Signature Indian Bakery Cake Flavours
+              </span>
+
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-display font-bold text-slate-900 leading-tight">
+                Authentic Indian Bakery & Fusion Cakes
+              </h1>
+
+              <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                From traditional mithai fusion cakes (Rasmalai, Gulab Jamun, Kaju Katli) and retro bakery classics (Black Forest, Butterscotch, Pineapple) to premium Lotus Biscoff and Ferrero Rocher. Freshly baked same-day in 100% Pure Veg (Eggless) or Gourmet options.
+              </p>
+
+              <div className="grid grid-cols-3 gap-2 pt-3 border-t border-slate-200 text-xs text-slate-600">
+                <div className="flex items-center gap-1.5">
+                  <Clock size={14} className="text-blue-600 shrink-0" />
+                  <span className="text-[11px]">Baked Same Day</span>
                 </div>
-
-                <h1 className="text-3xl sm:text-5xl lg:text-6xl font-display font-medium text-white tracking-tight leading-[1.1]">
-                  Authentic Indian Bakery & Fusion Cakes
-                </h1>
-
-                <p className="text-sky-100/85 text-xs sm:text-base leading-relaxed max-w-xl">
-                  From traditional mithai fusion cakes (Rasmalai, Gulab Jamun, Kaju Katli) and retro bakery classics (Black Forest, Butterscotch, Pineapple) to premium Lotus Biscoff and Ferrero Rocher. Freshly baked same-day in 100% Pure Veg (Eggless) or Gourmet options.
-                </p>
-
-                {/* Trust Badges */}
-                <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-4 border-t border-sky-700/40 text-xs text-sky-200">
-                  <div className="flex items-center gap-2">
-                    <Clock size={16} className="text-amber-400 shrink-0" />
-                    <span>Baked on delivery day</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <ShieldCheck size={16} className="text-emerald-400 shrink-0" />
-                    <span>100% Eggless for all 30</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Award size={16} className="text-amber-400 shrink-0" />
-                    <span>Free message & candles</span>
-                  </div>
+                <div className="flex items-center gap-2">
+                  <ShieldCheck size={14} className="text-emerald-600 shrink-0" />
+                  <span className="text-[11px]">100% Eggless Option</span>
                 </div>
-              </div>
-
-              {/* Hero Image Showcase */}
-              <div className="lg:col-span-5 relative">
-                <div className="relative aspect-[4/3] rounded-2xl overflow-hidden shadow-2xl border-2 border-white/20 group">
-                  <img
-                    src="./assets/images/cake_rasmalai_kesar_1792325117942.jpg"
-                    alt="Authentic Indian Rasmalai Fusion Cake"
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-stone-950/80 via-transparent to-transparent pointer-events-none" />
-                  <div className="absolute bottom-4 left-4 right-4 text-white">
-                    <span className="text-[10px] font-mono uppercase tracking-widest text-amber-300 font-bold block">
-                      INDIAN FUSION MASTERPIECE № 11
-                    </span>
-                    <p className="font-display text-lg font-semibold text-white">
-                      Royal Saffron & Pistachio Rasmalai Cake
-                    </p>
-                  </div>
+                <div className="flex items-center gap-2">
+                  <Award size={14} className="text-amber-500 shrink-0" />
+                  <span className="text-[11px]">Free Candles & Card</span>
                 </div>
               </div>
             </div>
 
+            <div className="lg:col-span-5">
+              <div className="aspect-[4/3] rounded border border-slate-300 overflow-hidden shadow-xs relative">
+                <img
+                  src="./assets/images/cake_rasmalai_kesar_1792325117942.jpg"
+                  alt="Authentic Indian Rasmalai Fusion Cake"
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute bottom-2 left-2 right-2 bg-slate-900/80 p-2 rounded text-white text-xs">
+                  <strong className="block text-amber-300 text-[10px] uppercase font-mono">№ 11 Rasmalai Kesar Cake</strong>
+                  <span className="text-[11px] text-slate-300">Saffron cream, soft rasgulla milk sponge & pistachios</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Interactive Custom Cake Designer with ALL 30 Flavours */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 mb-20">
-        <div className="bg-white/95 backdrop-blur-md rounded-3xl p-6 sm:p-10 border border-sky-100 shadow-xl">
-          <div className="max-w-3xl mb-8">
-            <div className="flex items-center gap-2 mb-2">
-              <span className="w-6 h-px bg-sky-600" />
-              <span className="text-xs font-semibold tracking-widest text-sky-800 uppercase">
-                Custom Celebration Order
-              </span>
-            </div>
-            <h2 className="text-2xl sm:text-3xl font-display font-medium text-stone-900 tracking-tight">
+      <section className="box-panel">
+        <div className="box-header-gradient flex items-center justify-between text-xs">
+          <div className="flex items-center gap-2">
+            <Sparkles size={15} className="text-amber-300" />
+            <span className="uppercase tracking-wider">Custom Celebration Cake Order Form</span>
+          </div>
+          <span className="text-[11px] text-sky-200">
+            Select Any Weight & Eggless Option
+          </span>
+        </div>
+        <div className="p-4 sm:p-6 bg-white">
+          <div className="max-w-3xl mb-6 pb-3 border-b border-slate-200">
+            <h2 className="text-xl sm:text-2xl font-display font-bold text-slate-900 tracking-tight">
               Design Your Cake from 30 Indian Bakery Flavours
             </h2>
-            <p className="text-stone-500 text-xs sm:text-sm mt-1">
+            <p className="text-slate-500 text-xs mt-1">
               Select any of our 30 bakery flavours, customize weight (0.5kg to 1.5kg), choose dietary preferences, and write your personal chocolate piping message.
             </p>
           </div>
@@ -885,33 +883,40 @@ export function CakesPage({ onBackToHome }: CakesPageProps) {
       </section>
 
       {/* Complete 30-Flavour Indian Bakery Catalog Grid */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6">
-        
-        {/* Header & Controls */}
-        <div className="space-y-6 mb-10 pb-6 border-b border-sky-100">
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-            <div>
-              <div className="flex items-center gap-2 mb-1.5">
-                <span className="px-2.5 py-0.5 rounded-full bg-amber-400/20 text-amber-900 font-mono text-[10px] font-bold uppercase tracking-wider border border-amber-400/30">
-                  Full Menu • 30 Flavours
-                </span>
-                <span className="text-xs text-stone-500 font-medium">Same-Day Baking in Guwahati</span>
-              </div>
-              <h2 className="text-2xl sm:text-4xl font-display font-medium text-stone-900">
-                Explore All 30 Indian Bakery Cake Flavours
-              </h2>
-            </div>
+      <section className="box-panel">
+        <div className="box-header-gradient flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+          <div className="flex items-center gap-2">
+            <Cake size={15} className="text-amber-300" />
+            <span className="uppercase tracking-wider">Complete 30-Flavour Indian Bakery Catalog</span>
+          </div>
+          <span className="text-[11px] text-sky-200">
+            Freshly Baked in Guwahati • 100% Eggless Option
+          </span>
+        </div>
 
-            {/* Quick Live Search Bar */}
-            <div className="relative w-full md:w-72">
-              <Search size={15} className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search any of 30 flavours..."
-                className="w-full pl-9 pr-9 py-2 text-xs rounded-full border border-sky-200 bg-white focus:outline-none focus:ring-2 focus:ring-sky-500 shadow-xs"
-              />
+        <div className="p-4 sm:p-5 bg-white">
+          {/* Header & Controls */}
+          <div className="space-y-4 mb-6 pb-4 border-b border-slate-200">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-3">
+              <div>
+                <h2 className="text-lg sm:text-xl font-display font-bold text-slate-900">
+                  Explore All 30 Indian Bakery Cake Flavours
+                </h2>
+                <span className="text-[11px] text-slate-500">
+                  Mithai Fusion · Chocolates & Truffles · Classic Bakery Bestsellers · Fruit & Floral
+                </span>
+              </div>
+
+              {/* Quick Live Search Bar */}
+              <div className="relative w-full md:w-64">
+                <Search size={14} className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search 30 flavours..."
+                  className="w-full pl-8 pr-8 py-1.5 text-xs rounded border border-slate-300 bg-white focus:outline-none focus:border-blue-500 shadow-xs"
+                />
               {searchQuery && (
                 <button
                   onClick={() => setSearchQuery("")}
@@ -1106,7 +1111,7 @@ export function CakesPage({ onBackToHome }: CakesPageProps) {
             })}
           </div>
         )}
-
+        </div>
       </section>
 
     </div>

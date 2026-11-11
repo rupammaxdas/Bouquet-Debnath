@@ -676,17 +676,17 @@ export function CheckoutModal({ isOpen, onClose, onOrderSuccess }: CheckoutModal
                 <button
                   type="submit"
                   form={`step-${step}-form`}
-                  className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-gradient-to-r from-[#38e8ff] via-[#6f7dff] to-[#ff39d4] text-[#26152c] text-xs font-extrabold uppercase tracking-wider hover:brightness-110 active:scale-95 transition-all shadow-[0_4px_20px_rgba(86,245,255,0.25)] group min-h-[44px]"
+                  className="glossy-btn-blue inline-flex items-center gap-2 px-6 py-2.5 rounded text-xs font-bold uppercase tracking-wider group min-h-[40px]"
                 >
                   <span>Continue</span>
-                  <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform text-[#26152c]" />
+                  <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                 </button>
               ) : (
                 <button
                   type="button"
                   onClick={handlePlaceOrder}
                   disabled={isSubmitting || cart.length === 0}
-                  className="inline-flex items-center gap-2 px-8 py-3.5 rounded-full bg-emerald-700 text-white text-xs font-bold uppercase tracking-wider hover:bg-emerald-800 disabled:opacity-50 transition-all shadow-lg"
+                  className="glossy-btn-gold inline-flex items-center gap-2 px-6 py-2.5 rounded text-xs font-extrabold uppercase tracking-wider disabled:opacity-50 min-h-[40px]"
                 >
                   {isSubmitting ? (
                     <>

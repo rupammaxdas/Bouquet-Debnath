@@ -483,42 +483,47 @@ export function BouquetBuilder() {
   const activeRibbonObj = RIBBONS.find((r) => r.id === selectedRibbon) || RIBBONS[0];
 
   return (
-    <section id="bespoke" className="py-24 bg-gradient-to-b from-sky-50/50 via-blue-50/30 to-sky-100/40 border-y border-sky-100/80 overflow-hidden relative">
-      <div className="max-w-7xl mx-auto px-6">
-        
-        {/* Section Header */}
-        <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-14">
-          <div>
-            <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-purple-900/10 border border-purple-900/20 text-purple-950 text-xs font-semibold tracking-wider uppercase mb-3">
-              <Sparkles size={13} className="text-amber-500" />
-              <span>Interactive Atelier</span>
-            </div>
-            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-display font-medium text-stone-900 tracking-tight">
-              Dynamic Bouquet Builder
-            </h2>
-            <p className="text-stone-600 text-sm sm:text-base mt-2 max-w-xl">
-              Hand-select individual stems, craft your silhouette, and preview your one-of-a-kind arrangement in real-time.
-            </p>
-          </div>
+    <section id="bespoke" className="box-panel mb-6 font-sans">
+      {/* Box Header */}
+      <div className="box-header-gradient flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs">
+        <div className="flex items-center gap-2">
+          <Sparkles size={15} className="text-amber-300" />
+          <span className="uppercase tracking-wider">
+            Interactive Bouquet Atelier & Real-Time Builder
+          </span>
+        </div>
 
-          {/* Quick preset selector & reset */}
-          <div className="flex flex-wrap items-center gap-2.5">
-            <button
-              onClick={handleRandomize}
-              className="inline-flex items-center gap-2 px-3.5 py-2 rounded-xl bg-white border border-stone-200 text-stone-700 hover:text-stone-950 hover:border-stone-400 text-xs font-semibold transition-all shadow-sm"
-              title="Surprise me with a florist mix"
-            >
-              <Sparkles size={14} className="text-amber-500" />
-              <span>Surprise Mix</span>
-            </button>
-            <button
-              onClick={handleReset}
-              className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-white border border-stone-200 text-stone-600 hover:text-red-600 hover:border-red-200 text-xs font-semibold transition-all shadow-sm"
-              title="Clear all stems"
-            >
-              <RotateCcw size={13} />
-              <span>Reset</span>
-            </button>
+        {/* Quick action buttons */}
+        <div className="flex items-center gap-2">
+          <button
+            onClick={handleRandomize}
+            className="glossy-btn-grey px-2.5 py-1 rounded text-xs flex items-center gap-1.5"
+            title="Surprise me with a florist mix"
+          >
+            <Sparkles size={12} className="text-amber-500" />
+            <span>Surprise Mix</span>
+          </button>
+          <button
+            onClick={handleReset}
+            className="glossy-btn-grey px-2.5 py-1 rounded text-xs flex items-center gap-1 hover:text-rose-600"
+            title="Clear all stems"
+          >
+            <RotateCcw size={12} />
+            <span>Reset</span>
+          </button>
+        </div>
+      </div>
+
+      <div className="p-4 sm:p-6 bg-white">
+        {/* Intro */}
+        <div className="mb-6 pb-4 border-b border-slate-200 flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+          <div>
+            <h2 className="text-xl sm:text-2xl font-display font-bold text-slate-900 tracking-tight">
+              Craft Your Signature Custom Arrangement
+            </h2>
+            <p className="text-slate-500 text-xs mt-0.5">
+              Select stems, choose artisanal wrapping papers, custom ribbons, and preview live.
+            </p>
           </div>
         </div>
 

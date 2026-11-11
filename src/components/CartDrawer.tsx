@@ -299,10 +299,10 @@ export function CartDrawer({ onCheckout }: { onCheckout: () => void }) {
                     setIsCartOpen(false);
                     onCheckout();
                   }}
-                  className="w-full py-4 rounded-xl bg-gradient-to-r from-[#38e8ff] via-[#6f7dff] to-[#ff39d4] text-[#26152c] text-xs font-extrabold uppercase tracking-[0.18em] hover:brightness-110 active:scale-95 transition-all shadow-[0_8px_30px_rgba(86,245,255,0.25)] flex items-center justify-center gap-2 group min-h-[48px]"
+                  className="w-full py-3 px-4 rounded glossy-btn-gold text-slate-950 text-xs font-bold uppercase tracking-wider transition-all flex items-center justify-center gap-2 group min-h-[44px]"
                 >
                   <span>Proceed to Checkout</span>
-                  <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform text-[#26152c]" />
+                  <ArrowRight size={15} className="group-hover:translate-x-1 transition-transform" />
                 </button>
 
                 <div className="flex items-center justify-center gap-4 text-[10px] text-stone-400 pt-1">

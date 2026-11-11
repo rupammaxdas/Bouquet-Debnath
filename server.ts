@@ -31,12 +31,12 @@ const ai = geminiApiKey
 // Fallback high-res studio images in case API is unavailable or quota is exceeded
 const FALLBACK_STUDIO_IMAGES: Record<string, string> = {
   rose: "./assets/images/bouquet_romantic_roses_1790272159677.jpg",
-  peony: "./assets/images/bouquet_luxury_peonies_1790272191599.jpg",
-  lily: "./assets/images/bouquet_modern_lilies_1790272204642.jpg",
-  hydrangea: "./assets/images/bouquet_newborn_baby.jpg",
-  ranunculus: "./assets/images/bouquet_festival_special.jpg",
+  peony: "./assets/images/bouquet_bridal_1791794787656.jpg",
+  lily: "./assets/images/bouquet_sympathy_lilies_1790272187494.jpg",
+  hydrangea: "./assets/images/bouquet_newborn_baby_1791795252415.jpg",
+  ranunculus: "./assets/images/bouquet_festival_special_1791795274318.jpg",
   eucalyptus: "./assets/images/bouquet_seasonal_wildflowers_1790272175129.jpg",
-  default: "./assets/images/bouquet_surprise_gift.jpg",
+  default: "./assets/images/bouquet_surprise_gift_1791795336071.jpg",
 };
 
 /**

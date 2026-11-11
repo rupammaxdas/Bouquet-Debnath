@@ -6,6 +6,7 @@
 import { useState } from "react";
 import { Settings, Palette } from "lucide-react";
 import { Navbar } from "./components/Navbar";
+import { Sidebar } from "./components/Sidebar";
 import { Hero } from "./components/Hero";
 import { CategorySection } from "./components/CategorySection";
 import { OffersSection } from "./components/OffersSection";
@@ -20,7 +21,6 @@ import { CheckoutModal } from "./components/CheckoutModal";
 import { OrdersModal } from "./components/OrdersModal";
 import { AuthModal } from "./components/AuthModal";
 import { ThemeModal } from "./components/ThemeModal";
-import { ThemeSwitcherBar } from "./components/ThemeSwitcherBar";
 import { CakesPage } from "./components/CakesPage";
 import { ContactModal } from "./components/ContactModal";
 import { AuthProvider } from "./lib/AuthContext";
@@ -54,6 +54,7 @@ function MainApp() {
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [activePage, setActivePage] = useState<"bouquets" | "cakes">("bouquets");
+  const [priceFilter, setPriceFilter] = useState("all");
 
   const handleOrderSuccess = (orderId: string) => {
     setHighlightOrderId(orderId);
@@ -61,46 +62,85 @@ function MainApp() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-sky-50/60 via-sky-100/30 to-blue-50/40 font-sans text-stone-900 selection:bg-sky-200 selection:text-sky-950">
-      <Navbar 
-        onOpenOrders={() => setIsOrdersOpen(true)}
-        onOpenAuth={() => setIsAuthOpen(true)}
-        searchQuery={searchQuery}
-        setSearchQuery={setSearchQuery}
-        onSelectCategory={setSelectedCategory}
-        activePage={activePage}
-        onNavigate={setActivePage}
-        onOpenContact={() => setIsContactOpen(true)}
-      />
+    <div className="min-h-screen bg-[#e5e9f0] py-0 sm:py-4 px-0 sm:px-2 font-sans text-slate-800">
       
-      {/* Top Theme Quick Switcher Bar (Hidden as requested) */}
-      <div className="hidden" aria-hidden="true">
-        <ThemeSwitcherBar />
-      </div>
+      {/* Fixed-Width Centered Portal Container (1240px) */}
+      <div className="max-w-[1240px] mx-auto bg-white border-x border-b border-slate-300 shadow-2xl overflow-hidden flex flex-col">
+        
+        {/* Gradient Header & Navigation Bar */}
+        <Navbar 
+          onOpenOrders={() => setIsOrdersOpen(true)}
+          onOpenAuth={() => setIsAuthOpen(true)}
+          searchQuery={searchQuery}
+          setSearchQuery={setSearchQuery}
+          onSelectCategory={setSelectedCategory}
+          activePage={activePage}
+          onNavigate={setActivePage}
+          onOpenContact={() => setIsContactOpen(true)}
+        />
 
-      <main>
-        {activePage === "cakes" ? (
-          <CakesPage onBackToHome={() => setActivePage("bouquets")} />
-        ) : (
-          <>
-            <Hero />
-            <CategorySection 
-              selectedCategory={selectedCategory}
-              onSelectCategory={setSelectedCategory}
-            />
-            <OffersSection />
-            <ProductGrid 
-              searchQuery={searchQuery}
-              selectedCategory={selectedCategory}
-              onSelectCategory={setSelectedCategory}
-            />
-            <BouquetBuilder />
-            <Story />
-            <SocialShowcase />
-          </>
-        )}
-      </main>
-      <Footer onOpenContact={() => setIsContactOpen(true)} />
+        {/* Main Body: Desktop-First 12-Column Layout */}
+        <main className="p-3 sm:p-5 bg-slate-50/70 border-b border-slate-200">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
+            
+            {/* Left Column: Classic Sidebar Menus (3 cols) */}
+            <div className="lg:col-span-3">
+              <Sidebar
+                selectedCategory={selectedCategory}
+                onSelectCategory={setSelectedCategory}
+                activePage={activePage}
+                onNavigate={setActivePage}
+                onOpenContact={() => setIsContactOpen(true)}
+                priceFilter={priceFilter}
+                onSelectPriceFilter={setPriceFilter}
+              />
+            </div>
+
+            {/* Right Column: Main Content Area (9 cols) */}
+            <div className="lg:col-span-9 space-y-5 min-w-0">
+              {activePage === "cakes" ? (
+                <CakesPage onBackToHome={() => setActivePage("bouquets")} />
+              ) : (
+                <>
+                  {/* Box 1: Hero Featured Collection */}
+                  <Hero onNavigate={setActivePage} />
+
+                  {/* Box 2: Category Department Cards */}
+                  <CategorySection 
+                    selectedCategory={selectedCategory}
+                    onSelectCategory={setSelectedCategory}
+                  />
+
+                  {/* Box 3: Limited-Time Privileges & Coupons */}
+                  <OffersSection />
+
+                  {/* Box 4: Curated Product Catalog Grid */}
+                  <ProductGrid 
+                    searchQuery={searchQuery}
+                    selectedCategory={selectedCategory}
+                    onSelectCategory={setSelectedCategory}
+                    priceFilter={priceFilter}
+                  />
+
+                  {/* Box 5: Interactive 3D Bouquet Atelier */}
+                  <BouquetBuilder />
+
+                  {/* Box 6: Founder's Story & Heritage */}
+                  <Story />
+
+                  {/* Box 7: Daily Studio Showcase */}
+                  <SocialShowcase />
+                </>
+              )}
+            </div>
+
+          </div>
+        </main>
+
+        {/* Traditional Footer */}
+        <Footer onOpenContact={() => setIsContactOpen(true)} />
+
+      </div>
 
       {/* Floating Theme Quick Action */}
       <FloatingThemeButton />

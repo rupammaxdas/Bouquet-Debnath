@@ -3,9 +3,8 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-import { Instagram, Facebook, Sparkles, Send, Palette, MapPin, Phone, Mail, MessageCircle } from "lucide-react";
+import { Sparkles, Send, Mail, ShieldCheck, Truck, CreditCard, ChevronRight, Check } from "lucide-react";
 import { useState } from "react";
-import { useTheme } from "../lib/ThemeContext";
 
 interface FooterProps {
   onOpenContact?: () => void;
@@ -14,7 +13,6 @@ interface FooterProps {
 export function Footer({ onOpenContact }: FooterProps) {
   const [email, setEmail] = useState("");
   const [isSubscribed, setIsSubscribed] = useState(false);
-  const { currentTheme, setIsThemeModalOpen } = useTheme();
 
   const handleSubscribe = (e: React.FormEvent) => {
     e.preventDefault();
@@ -22,191 +20,167 @@ export function Footer({ onOpenContact }: FooterProps) {
       setIsSubscribed(true);
       setTimeout(() => {
         setEmail("");
-      }, 2000);
+      }, 2500);
     }
   };
 
   return (
     <footer 
-      className="text-white py-16 sm:py-20 border-t border-purple-950 transition-colors"
-      style={{ backgroundColor: currentTheme.footerBg }}
+      className="bg-gradient-to-b from-slate-900 via-blue-950 to-slate-950 text-slate-300 border-t-4 border-blue-600 font-sans"
     >
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-[1240px] mx-auto px-6 py-12 sm:py-16">
         
-        {/* Main Footer Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-10 lg:gap-12 mb-16">
+        {/* Main 4-Column Traditional Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10 mb-12">
           
-          {/* Column 1: Brand & Founder */}
-          <div className="space-y-5">
+          {/* Column 1: Brand & Founder Heritage */}
+          <div className="space-y-3.5">
             <div>
               <div className="flex items-baseline gap-1.5">
-                <h3 className="text-white text-2xl sm:text-3xl font-display font-semibold tracking-tight">
+                <span className="text-white text-2xl font-display font-bold tracking-tight">
                   Gift Hub World
-                </h3>
-                <span className="text-amber-400 text-2xl font-serif">.</span>
+                </span>
+                <span className="text-amber-400 text-xl font-serif">.</span>
               </div>
-              <p className="hidden" aria-hidden="true">
-                FOUNDER & CREATIVE DIRECTOR: <strong className="text-amber-300 font-bold">RUPAM MAX DAS</strong>
-              </p>
+              <span className="text-[10px] uppercase font-bold tracking-widest text-sky-300 block font-mono">
+                Luxury Flower Boutique & Cake Patisserie
+              </span>
             </div>
             
-            <p className="text-xs sm:text-sm leading-relaxed max-w-xs text-purple-100/85">
-              Handcrafting botanical elegance under the creative direction of Rupam Max Das since 2026. Bespoke floral arrangements and luxury gifts for those who appreciate the finer details of nature.
+            <p className="text-xs text-slate-400 leading-relaxed">
+              Founded by <strong>Rupam Max Das in 2026</strong>. Dedicated to timeless floral artistry, handcrafted bespoke bouquets, and authentic gourmet cakes crafted for life's most cherished milestones.
             </p>
 
-            <div className="hidden" aria-hidden="true">
-              <a 
-                href="https://www.instagram.com/rupammaxdas" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="hidden"
-                aria-hidden="true"
-                title="Instagram @rupammaxdas"
-              >
-                <Instagram size={17} />
-              </a>
-              <a 
-                href="https://www.facebook.com/share/1YFvXyHpju/" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="hidden"
-                aria-hidden="true"
-                title="Facebook Profile"
-              >
-                <Facebook size={17} />
-              </a>
+            <div className="pt-1 text-xs text-slate-400 space-y-1">
+              <p>📍 Guwahati Atelier & Nationwide Deliveries</p>
+              <p className="font-mono text-sky-300 flex items-center gap-1.5">
+                <Mail size={12} />
+                <span>rupammaxdas@gmail.com</span>
+              </p>
             </div>
           </div>
 
-          {/* Column 2: Curated Collections (Gold Links) */}
+          {/* Column 2: Floral & Cake Collections */}
           <div>
-            <h4 className="text-white text-xs font-bold uppercase tracking-widest mb-5 flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-amber-400" />
-              <span>Catalog Collections</span>
+            <h4 className="text-white text-xs font-bold uppercase tracking-wider mb-4 pb-2 border-b border-slate-800 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+              <span>Catalog Sitemap</span>
             </h4>
-            <ul className="space-y-3 text-xs sm:text-sm">
+            <ul className="space-y-2 text-xs">
               <li>
-                <a href="#cakes" className="text-amber-400 hover:text-amber-300 transition-colors font-medium flex items-center gap-1.5">
-                  <span>🎂 Gourmet Celebration Cakes</span>
-                  <span className="text-[9px] uppercase px-1.5 py-0.2 rounded-full bg-amber-400/20 text-amber-300 font-bold border border-amber-400/30">
-                    New
-                  </span>
+                <a href="#collection" className="text-slate-300 hover:text-white transition-colors flex items-center gap-1.5">
+                  <ChevronRight size={12} className="text-blue-400" />
+                  <span>Romantic & Rose Bouquets</span>
                 </a>
               </li>
               <li>
-                <a href="#collection" className="text-amber-400 hover:text-amber-300 transition-colors font-medium">
-                  Romantic & Rose Bouquets
+                <a href="#collection" className="text-slate-300 hover:text-white transition-colors flex items-center gap-1.5">
+                  <ChevronRight size={12} className="text-blue-400" />
+                  <span>Handmade Seasonal Wildflowers</span>
                 </a>
               </li>
               <li>
-                <a href="#collection" className="text-amber-400 hover:text-amber-300 transition-colors font-medium">
-                  Handmade Seasonal Wildflowers
+                <a href="#collection" className="text-slate-300 hover:text-white transition-colors flex items-center gap-1.5">
+                  <ChevronRight size={12} className="text-blue-400" />
+                  <span>Celebration & Birthday Stems</span>
                 </a>
               </li>
               <li>
-                <a href="#collection" className="text-amber-400 hover:text-amber-300 transition-colors font-medium">
-                  Celebration & Birthday Stems
+                <a href="#collection" className="text-slate-300 hover:text-white transition-colors flex items-center gap-1.5">
+                  <ChevronRight size={12} className="text-blue-400" />
+                  <span>Everlasting Paper & Silk Crafts</span>
                 </a>
               </li>
               <li>
-                <a href="#collection" className="text-amber-400 hover:text-amber-300 transition-colors font-medium">
-                  Everlasting Paper & Silk Crafts
+                <a href="#collection" className="text-slate-300 hover:text-white transition-colors flex items-center gap-1.5">
+                  <ChevronRight size={12} className="text-blue-400" />
+                  <span>Money & Chocolate Arrangements</span>
                 </a>
               </li>
               <li>
-                <a href="#collection" className="text-amber-400 hover:text-amber-300 transition-colors font-medium">
-                  Money & Chocolate Arrangements
+                <a href="#cakes" className="text-amber-300 hover:text-amber-200 transition-colors font-bold flex items-center gap-1.5">
+                  <ChevronRight size={12} className="text-amber-400" />
+                  <span>🎂 Gourmet Cakes (30 Flavours)</span>
                 </a>
               </li>
             </ul>
           </div>
 
-          {/* Column 3: Contact & Atelier Concierge (Gold Links) */}
+          {/* Column 3: Customer Care & Services */}
           <div id="contact">
-            <h4 className="text-white text-xs font-bold uppercase tracking-widest mb-5 flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-amber-400" />
-              <span>Contact Us</span>
+            <h4 className="text-white text-xs font-bold uppercase tracking-wider mb-4 pb-2 border-b border-slate-800 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
+              <span>Customer Care</span>
             </h4>
-            <ul className="space-y-3 text-xs sm:text-sm">
-              <li className="hidden">
-                <button 
-                  onClick={onOpenContact}
-                  className="hidden"
-                  aria-hidden="true"
-                >
-                  <MapPin size={14} className="text-amber-400 shrink-0" />
-                  <span>Address: G.S. Road, Guwahati</span>
-                </button>
-              </li>
-              <li>
-                <a 
-                  href="tel:+919876543249" 
-                  className="text-amber-400 hover:text-amber-300 transition-colors font-medium flex items-center gap-2"
-                >
-                  <Phone size={14} className="text-amber-400 shrink-0" />
-                  <span>Phone: +91 XXXXX XXX49</span>
-                </a>
-              </li>
+            <ul className="space-y-2.5 text-xs">
               <li>
                 <a 
                   href="mailto:rupammaxdas@gmail.com" 
-                  className="text-amber-400 hover:text-amber-300 transition-colors font-medium flex items-center gap-2"
+                  className="text-slate-300 hover:text-white transition-colors flex items-center gap-2"
                 >
-                  <Mail size={14} className="text-amber-400 shrink-0" />
+                  <Mail size={13} className="text-blue-400 shrink-0" />
                   <span>Email: rupammaxdas@gmail.com</span>
                 </a>
               </li>
-              <li className="hidden">
-                <a 
-                  href="https://wa.me/919876543249?text=Hello%20Gift%20Hub%20World!%20I%20would%20like%20to%20inquire%20about%20a%20bouquet%20or%20cake."
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="hidden"
-                  aria-hidden="true"
-                >
-                  <MessageCircle size={14} className="text-emerald-400 shrink-0" />
-                  <span>WhatsApp: Chat with us directly</span>
-                </a>
+              <li>
+                <span className="text-slate-400 flex items-center gap-2">
+                  <Truck size={13} className="text-blue-400 shrink-0" />
+                  <span>Dispatch: Same-Day Delivery Daily</span>
+                </span>
               </li>
               <li>
-                <a href="#offers" className="text-amber-400 hover:text-amber-300 transition-colors font-medium">
-                  Promotions & Privileges
-                </a>
+                <span className="text-slate-400 flex items-center gap-2">
+                  <ShieldCheck size={13} className="text-blue-400 shrink-0" />
+                  <span>100% Farm Fresh Bloom Guarantee</span>
+                </span>
+              </li>
+              <li className="pt-2">
+                {onOpenContact && (
+                  <button
+                    type="button"
+                    onClick={onOpenContact}
+                    className="w-full py-2 px-3 rounded glossy-btn-blue text-xs flex items-center justify-center gap-1.5"
+                  >
+                    <Mail size={13} />
+                    <span>Open Concierge Modal</span>
+                  </button>
+                )}
               </li>
             </ul>
           </div>
 
-          {/* Column 4: The Bloom Journal */}
+          {/* Column 4: Newsletter / The Bloom Journal */}
           <div>
-            <h4 className="text-white text-xs font-bold uppercase tracking-widest mb-5 flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-amber-400" />
+            <h4 className="text-white text-xs font-bold uppercase tracking-wider mb-4 pb-2 border-b border-slate-800 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-blue-500" />
               <span>The Bloom Journal</span>
             </h4>
-            <p className="text-xs sm:text-sm mb-5 text-purple-100/85 leading-relaxed">
-              Receive secret seasonal bouquet releases, masterclasses, and floral care guides directly from Rupam's desk.
+            <p className="text-xs text-slate-400 leading-relaxed mb-3">
+              Receive seasonal bouquet releases, masterclasses, and floral care guides directly from Rupam Max Das.
             </p>
             
-            <form onSubmit={handleSubscribe} className="space-y-3">
-              <div className="relative">
-                <input 
-                  type="email" 
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  placeholder="Enter your email..."
-                  className="w-full bg-purple-950/70 border border-purple-800/80 rounded-xl px-4 py-3 text-xs text-white placeholder-purple-300/60 focus:outline-none focus:border-amber-400 transition-colors"
-                />
-              </div>
+            <form onSubmit={handleSubscribe} className="space-y-2">
+              <input 
+                type="email" 
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                placeholder="Enter your email address..."
+                className="w-full bg-slate-900 border border-slate-700 rounded px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-blue-500"
+              />
               <button 
                 type="submit"
-                className="w-full py-2.5 px-4 rounded-xl bg-gradient-to-r from-amber-400 via-amber-300 to-yellow-500 text-purple-950 font-bold text-xs uppercase tracking-wider hover:from-amber-300 hover:to-yellow-400 transition-all flex items-center justify-center gap-1.5 shadow-md active:scale-95"
+                className="w-full py-2 px-3 rounded glossy-btn-gold text-xs flex items-center justify-center gap-1.5"
               >
                 {isSubscribed ? (
-                  <span>✓ Subscribed to Journal</span>
+                  <>
+                    <Check size={13} />
+                    <span>Subscribed to Journal</span>
+                  </>
                 ) : (
                   <>
                     <span>Join Atelier List</span>
-                    <Send size={13} />
+                    <Send size={12} />
                   </>
                 )}
               </button>
@@ -215,17 +189,29 @@ export function Footer({ onOpenContact }: FooterProps) {
 
         </div>
 
-        {/* Bottom Bar: Copyright & Legal (White text & Gold Links) */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4 pt-8 border-t border-purple-900/60 text-[10px] uppercase tracking-widest text-purple-200/90 font-medium">
+        {/* Traditional Payment & Trust Badges Strip */}
+        <div className="py-4 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-400">
+          <div className="flex items-center gap-2">
+            <CreditCard size={15} className="text-blue-400" />
+            <span className="font-semibold text-slate-300">Accepted Payment Methods:</span>
+            <span className="text-[11px] text-slate-400">Visa · MasterCard · RuPay · UPI · NetBanking</span>
+          </div>
+          <div className="flex items-center gap-2 text-[11px] text-emerald-400 font-mono">
+            <span>🔒 256-Bit SSL Encrypted Checkout</span>
+          </div>
+        </div>
+
+        {/* Traditional Bottom Bar: Legal & Copyright */}
+        <div className="pt-6 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-3 text-[10px] uppercase tracking-wider text-slate-400">
           <p>© 2026 GIFT HUB WORLD FLOWER BOUTIQUE • FOUNDED & OWNED BY RUPAM MAX DAS. ALL RIGHTS RESERVED.</p>
-          <div className="flex gap-6 sm:gap-8">
-            <a href="#collection" className="text-amber-400 hover:text-amber-300 transition-colors">
+          <div className="flex gap-4 sm:gap-6 font-medium">
+            <a href="#collection" className="text-slate-300 hover:text-white transition-colors">
               Privacy Policy
             </a>
-            <a href="#collection" className="text-amber-400 hover:text-amber-300 transition-colors">
+            <a href="#collection" className="text-slate-300 hover:text-white transition-colors">
               Terms of Service
             </a>
-            <a href="#collection" className="text-amber-400 hover:text-amber-300 transition-colors">
+            <a href="#collection" className="text-slate-300 hover:text-white transition-colors">
               Security & Guarantees
             </a>
           </div>

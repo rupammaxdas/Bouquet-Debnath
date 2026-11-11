@@ -108,12 +108,12 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           batch.set(itemRef, item);
         });
         batch.commit().catch(err => {
-          handleFirestoreError(err, OperationType.WRITE, `users/${userId}/cart`);
+          console.warn("Cart batch upload note (using local cache):", err);
         });
       }
       setIsLoading(false);
     }, (error) => {
-      handleFirestoreError(error, OperationType.LIST, `users/${userId}/cart`);
+      console.warn("Cart remote sync note (using local cache):", error);
       setIsLoading(false);
     });
 
